@@ -69,7 +69,7 @@ public class Pawn extends Piece{
 	{
 		//Check if captured en passant
 		int cY = -1;
-		if(captured != null)
+		if(captured != null && end.getTileY() != captured.tileY)
 			cY = captured.tileY;
 		
 		super.unmove(start, end, board, captured);
