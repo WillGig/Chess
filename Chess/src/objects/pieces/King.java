@@ -53,11 +53,17 @@ public class King extends Piece{
 		super.unmove(start, end, board, captured);
 		//Castle Kingside
 		if(end.getTileX() - start.getTileX() == 2)
+		{
 			board[5 + tileY * 8].GetPiece().move(board[5 + tileY * 8], board[7 + tileY * 8], board);
-		
+			board[7 + tileY * 8].GetPiece().changeMoved(-2);
+		}
+			
 		//Castle Queenside
 		if(end.getTileX() - start.getTileX() == -2)
+		{
 			board[3 + tileY * 8].GetPiece().move(board[3 + tileY * 8], board[0 + tileY * 8], board);
+			board[0 + tileY * 8].GetPiece().changeMoved(-2);
+		}
 	}
 	
 	@Override

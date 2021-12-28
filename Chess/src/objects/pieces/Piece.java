@@ -111,6 +111,11 @@ public abstract class Piece extends GameObject{
 		return color;
 	}
 	
+	public void changeMoved(int change)
+	{
+		moveCounter += change;
+	}
+	
 	public boolean hasMoved()
 	{
 		return moveCounter > 0;
