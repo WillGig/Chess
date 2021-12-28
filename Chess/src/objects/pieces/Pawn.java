@@ -30,6 +30,12 @@ public class Pawn extends Piece{
 	}
 	
 	@Override
+	public String getNotationName()
+	{
+		return "";
+	}
+	
+	@Override
 	public void renderText(Graphics g)
 	{
 		g.setFont(new Font("Arial", 1, 20));

@@ -18,6 +18,12 @@ public class Rook extends Piece{
 	{
 		return "Rook";
 	}
+	
+	@Override
+	public String getNotationName()
+	{
+		return "R";
+	}
 
 	@Override
 	public void renderText(Graphics g)

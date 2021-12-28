@@ -20,6 +20,12 @@ public class Queen extends Piece{
 	}
 	
 	@Override
+	public String getNotationName()
+	{
+		return "Q";
+	}
+	
+	@Override
 	public void renderText(Graphics g)
 	{
 		g.setFont(new Font("Arial", 1, 20));

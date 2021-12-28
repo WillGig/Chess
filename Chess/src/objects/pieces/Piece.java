@@ -27,6 +27,8 @@ public abstract class Piece extends GameObject{
 	}
 	
 	public abstract String getName();
+	
+	public abstract String getNotationName();
 
 	@Override
 	public void update() {

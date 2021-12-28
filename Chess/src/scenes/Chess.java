@@ -24,34 +24,32 @@ public class Chess extends Scene{
 	
 	private ArrayList<Tile> moveOptions;
 	
-	public Chess()
-	{
-		start();
-	}
+	private int turnNumber = 0;
+	
+	private enum GameState { ONGOING, CHECKMATE, STALEMATE};
+	
+	private GameState gameState;
+	
+	private String wMoveHistory = "", bMoveHistory = "";
 	
 	@Override
 	public void update(Game game) 
 	{
+		if(gameState != GameState.ONGOING)
+			return;
+		
+		//Check for selected piece to be moved
 		if(selectedPieceTile != null)
 		{
 			for(Tile t: moveOptions)
 			{
 				t.update();
 				if(t.isClicked())
-				{
-					Pawn.enPassantTile = 0;
-					Pawn.epPawn = null;
-					selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);
-					selectedPieceTile = null;
-					if(turn == Color.WHITE)
-						turn = Color.BLACK;
-					else
-						turn = Color.WHITE;
-					return;
-				}
+					move(t);
 			}
 		}
 		
+		//Check for piece to be selected
 		for(Tile t: board)
 		{
 			t.update();
@@ -66,6 +64,79 @@ public class Chess extends Scene{
 				return;
 			}
 		}
+	}
+	
+	public void move(Tile t)
+	{
+		Pawn.enPassantTile = 0;
+		Pawn.epPawn = null;
+		
+		//Check for castling
+		int castling = 0;
+		if(selectedPieceTile.GetPiece() instanceof King)
+			castling = t.getTileX() - selectedPieceTile.getTileX();
+		
+		String moveText = selectedPieceTile.GetPiece().getNotationName();
+		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);
+		selectedPieceTile = null;
+		
+		if(captured != null)
+			moveText += "X";
+		moveText += t.GetSquareName();
+		
+		if(castling == 2)
+			moveText = "0-0";
+		else if(castling == -2)
+			moveText = "0-0-0";
+		
+		updateGameState();
+		
+		if(gameState == GameState.CHECKMATE)
+			moveText += "#";
+		else if(gameState == GameState.STALEMATE)
+			moveText += "\nStaleMate";
+		else if(King.findKing(board, turn).inCheck(board))
+			moveText += "+";
+		
+		if(turn == Color.BLACK)
+		{
+			turnNumber++;
+			wMoveHistory += turnNumber + ". " + moveText + "\n";
+		}
+		else
+			bMoveHistory += moveText + "\n";
+	}
+	
+	public void updateGameState()
+	{
+		if(turn == Color.WHITE)
+			turn = Color.BLACK;
+		else
+			turn = Color.WHITE;
+		
+		//ensure the current side has legal moves
+		boolean canMove = false;
+		for(int i = 0; i < board.length; i++)
+		{
+			Piece p = board[i].GetPiece();
+			
+			if(p == null || p.getColor() != turn)
+				continue;
+			
+			if(!p.getLegalMoves(board).isEmpty())
+			{
+				canMove = true;
+				break;
+			}
+		}
+		
+		if(canMove)
+			return;
+		
+		if(King.findKing(board, turn).inCheck(board))
+			gameState = GameState.CHECKMATE;
+		else
+			gameState = GameState.STALEMATE;
 	}
 
 	@Override
@@ -83,21 +154,29 @@ public class Chess extends Scene{
 	public void renderText(Graphics g) 
 	{
 		for(Tile t: board)
-		{
-			Piece p = t.GetPiece();
-			if(p != null)
-			{
-				g.setColor(p.getColor());
-				p.renderText(g);
-			}
-		}
+			t.renderText(g);
 		
+		g.setColor(Color.CYAN);
 		if(selectedPieceTile != null)
-		{
-			g.setColor(Color.CYAN);
 			selectedPieceTile.GetPiece().renderText(g);
+		
+		//Coordinates
+		g.setColor(Color.WHITE);
+		for(int i = 0; i < 8; i++)
+		{
+			g.drawString("" + (8 - i), (int)(board[0].getX() - board[0].getWidth()), (int)board[i * 8].getY() + 8);
+			g.drawString(String.valueOf((char)(i + 65)), (int)board[i].getX() - 8, (int)(board[7*8].getY() + board[0].getHeight()));
 		}
 		
+		//Move History
+		int h = g.getFontMetrics().getHeight();
+		int y = 100;
+		for (String line : wMoveHistory.split("\n"))
+            g.drawString(line, 20, y += h);
+		
+		y = 100;
+		for (String line : bMoveHistory.split("\n"))
+            g.drawString(line, 100, y += h);
 	}
 
 	@Override
@@ -109,6 +188,7 @@ public class Chess extends Scene{
 		int darkColor = 0xff663400;//0xff331C00;
 		int lightColor = 0xffFFE7BC;
 		
+		//Create board
 		board = new Tile[64];
 		for(int y = 0; y < 8; y++)
 		{
@@ -117,12 +197,13 @@ public class Chess extends Scene{
 				int color = lightColor;
 				if((x + y % 2 + 1) % 2 == 0)
 					color = darkColor;
-				int xC = (x * size) + (Game.WIDTH - 7 * size) / 2;
-				int yC = (y * size) + (Game.HEIGHT - 7 * size) / 2;
+				int xC = (x * size) + (Game.WIDTH - 7 * size) / 2 + 100;
+				int yC = (y * size) + (Game.HEIGHT - 7 * size) / 2 - 20;
 				board[x+y*8] = new Tile(xC, yC, size, size, x, y, color);
 			}
 		}
 			
+		//Setup pieces
 		for(int i = 0; i < 8; i++)
 			new Pawn(board[i + 6*8], Color.WHITE);
 		new Rook(board[0 + 7*8], Color.WHITE);
@@ -146,6 +227,8 @@ public class Chess extends Scene{
 		new King(board[4 + 0*8], Color.BLACK);
 		
 		selectedPieceTile = null;
+		
+		gameState = GameState.ONGOING;
 	}
 
 }

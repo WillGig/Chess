@@ -26,6 +26,12 @@ public class Bishop extends Piece{
 	}
 	
 	@Override
+	public String getNotationName()
+	{
+		return "B";
+	}
+	
+	@Override
 	public ArrayList<Tile> getPossibleMoves(Tile[] board) {
 		ArrayList<Tile> moves = new ArrayList<Tile>();
 		
