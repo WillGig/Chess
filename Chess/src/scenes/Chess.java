@@ -1,6 +1,7 @@
 package scenes;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
@@ -209,14 +210,8 @@ public class Chess extends Scene{
 	@Override
 	public void renderText(Graphics g) 
 	{
-		for(Tile t: board)
-			t.renderText(g);
-		
-		g.setColor(Color.CYAN);
-		if(selectedPieceTile != null)
-			selectedPieceTile.GetPiece().renderText(g);
-		
 		//Coordinates
+		g.setFont(new Font("Arial", 1, 20));
 		g.setColor(Color.WHITE);
 		for(int i = 0; i < 8; i++)
 		{
@@ -245,7 +240,7 @@ public class Chess extends Scene{
 		turn = Color.WHITE;
 		
 		int size = 64;
-		int darkColor = 0xff663400;//0xff331C00;
+		int darkColor = 0xff663400;
 		int lightColor = 0xffFFE7BC;
 		
 		//Create board

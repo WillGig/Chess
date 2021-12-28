@@ -1,7 +1,5 @@
 package objects;
 
-import java.awt.Graphics;
-
 import objects.pieces.Piece;
 import utils.InputHandler;
 
@@ -51,18 +49,6 @@ public class Tile extends GameObject{
 		super.render(pixels);
 		if(containedPiece != null)
 			containedPiece.render(pixels);
-	}
-	
-	@Override
-	public void renderText(Graphics g)
-	{
-		super.renderText(g);
-		if(containedPiece != null)
-		{
-			g.setColor(containedPiece.getColor());
-			containedPiece.renderText(g);
-		}
-			
 	}
 	
 	public int getTileX()

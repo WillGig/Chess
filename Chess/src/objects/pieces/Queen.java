@@ -9,10 +9,6 @@ import objects.Tile;
 
 public class Queen extends Piece{
 
-	public Queen(Color c) {
-		super(c);
-	}
-	
 	public Queen(Tile t, Color c) {
 		super(t, c);
 	}

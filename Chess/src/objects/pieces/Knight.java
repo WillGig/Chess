@@ -10,10 +10,6 @@ import objects.Tile;
 
 public class Knight extends Piece{
 
-	public Knight(Color c) {
-		super(c);
-	}
-	
 	public Knight(Tile t, Color c) {
 		super(t, c);
 	}

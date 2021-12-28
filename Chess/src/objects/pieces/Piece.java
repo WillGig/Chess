@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import objects.GameObject;
 import objects.Tile;
 import utils.InputHandler;
+import utils.Texture;
 
 public abstract class Piece extends GameObject{
 	
@@ -17,13 +18,6 @@ public abstract class Piece extends GameObject{
 	
 	private Color color;
 	
-	public Piece(Color color)
-	{
-		super(0, 0, 64, 64);
-		this.color = color;
-		moveCounter = 0;
-	}
-	
 	public Piece(Tile t, Color color) {
 		super(t.getX(), t.getY(), 64, 64);
 		t.SetPiece(this);
@@ -31,6 +25,12 @@ public abstract class Piece extends GameObject{
 		tileY = t.getTileY();
 		this.color = color;
 		moveCounter = 0;
+		String texName = getName();
+		if(color == Color.WHITE)
+			texName += "White";
+		else
+			texName += "Black";
+		image = Texture.GetTexture(texName).pixels;
 	}
 	
 	public abstract String getName();
@@ -79,6 +79,10 @@ public abstract class Piece extends GameObject{
 		ArrayList<Tile> moves = getPossibleMoves(board);
 		ArrayList<Tile> invalidMoves = new ArrayList<Tile>();
 		
+		//Store en passant data
+		int ept = Pawn.enPassantTile;
+		Pawn ep = Pawn.epPawn;
+		
 		King king = King.findKing(board, getColor());
 		Tile currentTile = board[tileX + tileY * 8];
 		for(Tile t : moves)
@@ -93,6 +97,10 @@ public abstract class Piece extends GameObject{
 		}
 		
 		moves.removeAll(invalidMoves);
+		
+		//Restore en passant data
+		Pawn.enPassantTile = ept;
+		Pawn.epPawn = ep;
 		
 		return moves;
 	}

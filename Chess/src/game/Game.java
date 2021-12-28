@@ -14,6 +14,7 @@ import scenes.Settings;
 import scenes.MainMenu;
 import scenes.Chess;
 import utils.InputHandler;
+import utils.Texture;
 
 public class Game implements Runnable
 {
@@ -68,6 +69,8 @@ public class Game implements Runnable
 		//Link pixels in image to int[] pixels
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		pixels = ((DataBufferInt)(image.getRaster().getDataBuffer())).getData();
+		
+		Texture.LoadAllTextures();
 		
 		scenes = new Scene[3];
 		scenes[0] = new MainMenu();

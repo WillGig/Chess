@@ -17,21 +17,6 @@ public class Pawn extends Piece{
 	
 	Button[] promotionOptions;
 	
-	public Pawn(Color c) {
-		super(c);
-		
-		if(c == Color.WHITE) 
-			direction = -1;
-		else
-			direction = 1;
-		
-		promotionOptions = new Button[4];
-		promotionOptions[0] = new Button(0, 0, width, height, "N");
-		promotionOptions[1] = new Button(0, 0, width, height, "B");
-		promotionOptions[2] = new Button(0, 0, width, height, "R");
-		promotionOptions[3] = new Button(0, 0, width, height, "Q");
-	}
-	
 	public Pawn(Tile t, Color c) {
 		super(t, c);
 

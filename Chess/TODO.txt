@@ -1,6 +1,6 @@
 TODO:
 
-use images for pieces
+allow drag to move
 
 scrolling through move history
 
@@ -12,3 +12,6 @@ main menu button (continue button on main menu?)
 
 menu with options to play again, return to menu after game
 
+Settings options
+	- show coords
+	- choose square colors
