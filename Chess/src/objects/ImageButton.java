@@ -4,7 +4,7 @@ import utils.Texture;
 
 public class ImageButton extends Button{
 	
-	Texture img;
+	private Texture img;
 	
 	public ImageButton(double x, double y, int width, int height, String image) {
 		super(x, y, width, height, "");
@@ -17,6 +17,11 @@ public class ImageButton extends Button{
 	{
 		super.render(pixels);
 		img.render(x, y, pixels);
+	}
+	
+	public Texture GetButtonImage()
+	{
+		return img;
 	}
 
 }

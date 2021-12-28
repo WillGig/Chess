@@ -2,6 +2,8 @@ package utils;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -64,6 +66,19 @@ public class Texture {
 		if(textures.containsKey(name))
 			return textures.get(name);
 		System.out.println("Error finding texture: " + name);
+		return null;
+	}
+	
+	public static String GetTextureName(Texture tex)
+	{
+		if(textures.containsValue(tex))
+		{
+			for (Entry<String, Texture> entry : textures.entrySet()) {
+		        if (Objects.equals(tex, entry.getValue())) {
+		            return entry.getKey();
+		        }
+		    }
+		}
 		return null;
 	}
 	

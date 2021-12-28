@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import game.Game;
-import objects.Button;
+import objects.ImageButton;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.King;
@@ -15,6 +15,7 @@ import objects.pieces.Pawn;
 import objects.pieces.Piece;
 import objects.pieces.Queen;
 import objects.pieces.Rook;
+import utils.Texture;
 
 public class Chess extends Scene{
 
@@ -47,16 +48,17 @@ public class Chess extends Scene{
 		//Check for pawn promotion options
 		if(promoting != null)
 		{
-			Button[] promotionOptions = promoting.GetPromotionOptions();
-			for(Button b : promotionOptions)
+			ImageButton[] promotionOptions = promoting.GetPromotionOptions();
+			for(ImageButton b : promotionOptions)
 			{
 				b.update();
 				if(b.IsClicked())
 				{
-					promotionPiece = b.getText();
+					promotionPiece = Texture.GetTextureName(b.GetButtonImage()).substring(0, 1);
 					move(promotionSquare);
 				}
 			}
+			return;
 		}
 		
 		//Check for selected piece to be moved
@@ -126,7 +128,7 @@ public class Chess extends Scene{
 		
 		if(promotionPiece != null)
 		{
-			if(promotionPiece.equals("N"))
+			if(promotionPiece.equals("K"))
 				new Knight(t, promoting.getColor());
 			else if(promotionPiece.equals("B"))
 				new Bishop(t, promoting.getColor());

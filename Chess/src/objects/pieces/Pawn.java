@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-import objects.Button;
 import objects.ImageButton;
 import objects.Tile;
 
@@ -16,7 +15,7 @@ public class Pawn extends Piece{
 	public static int enPassantTile;
 	public static Pawn epPawn;
 	
-	Button[] promotionOptions;
+	private ImageButton[] promotionOptions;
 	
 	public Pawn(Tile t, Color c) {
 		super(t, c);
@@ -33,7 +32,7 @@ public class Pawn extends Piece{
 			colorText = "Black";
 		}
 		
-		promotionOptions = new Button[4];
+		promotionOptions = new ImageButton[4];
 		promotionOptions[0] = new ImageButton(0, 0, width, height, "Knight" + colorText);
 		promotionOptions[1] = new ImageButton(0, 0, width, height, "Bishop" + colorText);
 		promotionOptions[2] = new ImageButton(0, 0, width, height, "Rook" + colorText);
@@ -126,7 +125,7 @@ public class Pawn extends Piece{
 		return moves;
 	}
 	
-	public Button[] GetPromotionOptions()
+	public ImageButton[] GetPromotionOptions()
 	{
 		return promotionOptions;
 	}
