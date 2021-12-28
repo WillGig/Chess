@@ -91,6 +91,12 @@ public class Chess extends Scene{
 				Piece p = t.GetPiece();
 				if(p != null && p.getColor() == turn)
 				{
+					if(t == selectedPieceTile)
+					{
+						selectedPieceTile = null;
+						moveOptions = null;
+						return;
+					}
 					selectedPieceTile = t;
 					moveOptions = t.GetPiece().getLegalMoves(board);
 				}
