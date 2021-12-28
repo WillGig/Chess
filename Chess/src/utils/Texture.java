@@ -5,34 +5,57 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import game.Game;
+
 public class Texture {
 	
 	private static HashMap<String, Texture> textures;
 	
 	public int width, height;
-	public int[] pixels;
+	public int[] image;
 	
 	public Texture(int w, int h, int[] p)
 	{
 		width = w;
 		height = h;
-		pixels = p;
+		image = p;
 	}
 	
 	public Texture(String fileName)
 	{
 		try 
 		{
-			BufferedImage image = ImageIO.read(Texture.class.getResource(fileName));
+			BufferedImage bi = ImageIO.read(Texture.class.getResource(fileName));
 
-			width = image.getWidth();
-			height = image.getHeight();
-			pixels = new int[width * height];
-			image.getRGB(0, 0, width, height, pixels, 0, width);
+			width = bi.getWidth();
+			height = bi.getHeight();
+			image = new int[width * height];
+			bi.getRGB(0, 0, width, height, image, 0, width);
 		} 
 		catch (Exception e) 
 		{
 			System.err.println("Error loading file:" + fileName);
+		}
+	}
+	
+	public void render(double xPos, double yPos, int[] pixels)
+	{
+		if(image == null)
+			return;
+		
+		for(int i = (int) (yPos - height/2); i < (int)(yPos+height/2); i++) 
+		{
+			for(int j = (int) (xPos - width/2); j < (int)(xPos+width/2); j++) 
+			{
+				if(j > 0 && j < Game.WIDTH && i > 0 && i < Game.HEIGHT) 
+				{
+					
+					int color = image[(j-(int)(xPos - width/2))+(i-(int)(yPos - height/2))*width];
+					
+					if(color != 0)
+						pixels[j+i*Game.WIDTH] = color;
+				}
+			}
 		}
 	}
 	

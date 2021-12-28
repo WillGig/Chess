@@ -30,7 +30,7 @@ public abstract class Piece extends GameObject{
 			texName += "White";
 		else
 			texName += "Black";
-		image = Texture.GetTexture(texName).pixels;
+		image = Texture.GetTexture(texName);
 	}
 	
 	public abstract String getName();

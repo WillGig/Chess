@@ -15,7 +15,7 @@ public class SpriteSheet {
 		int[] data = new int[spriteWidth*spriteHeight];
 		for(int y = 0; y < spriteHeight; y++)
 			for(int x = 0; x < spriteWidth; x++)
-				data[x + y * spriteWidth] = image.pixels[x + xOff*spriteWidth + (y+yOff*spriteHeight) * image.width];
+				data[x + y * spriteWidth] = image.image[x + xOff*spriteWidth + (y+yOff*spriteHeight) * image.width];
 		
 		return new Texture(spriteWidth, spriteHeight, data);
 	}

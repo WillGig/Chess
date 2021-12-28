@@ -6,6 +6,7 @@ import java.awt.Graphics;
 
 import game.Game;
 import utils.InputHandler;
+import utils.Texture;
 
 public class Slider extends GameObject
 {
@@ -29,10 +30,12 @@ public class Slider extends GameObject
 		this.label = label;
 		ball = new SliderBall(x - width/2, y, width);
 		
-		image = new int[width*height];
+		int[] pixels = new int[width*height];
 		
 		for(int i = 0; i < width * height; i++)
-			image[i] = 0xffffffff;
+			pixels[i] = 0xffffffff;
+		
+		image = new Texture(width, height, pixels);
 	}
 
 	@Override
@@ -85,10 +88,12 @@ public class Slider extends GameObject
 			minX = x;
 			maxX = x + length;
 			
-			image = new int[width*height];
+			int[] pixels = new int[width*height];
 			
 			for(int i = 0; i < width * height; i++)
-				image[i] = 0xffaaaaaa;
+				pixels[i] = 0xffaaaaaa;
+			
+			image = new Texture(width, height, pixels);
 			
 			dragging = false;
 		}

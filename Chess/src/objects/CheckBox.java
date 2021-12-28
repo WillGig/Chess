@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import game.Game;
+import utils.Texture;
 
 public class CheckBox extends Button{
 	
@@ -20,9 +21,11 @@ public class CheckBox extends Button{
 		checked = false;
 		fill = new Fill(x, y);
 		
-		image = new int[width*height];
+		int[] pixels = new int[width*height];
 		for(int i = 0; i < width * height; i++)
-			image[i] = 0xffffffff;
+			pixels[i] = 0xffffffff;
+		
+		image = new Texture(width, height, pixels);
 	}
 	
 	@Override
@@ -65,9 +68,9 @@ public class CheckBox extends Button{
 		
 		public Fill(double x, double y) {
 			super(x, y, 15, 15);
-			image = new int[width*height];
+			int[] pixels = new int[width*height];
 			for(int i = 0; i < width * height; i++)
-				image[i] = 0xffaaaaaa;
+				pixels[i] = 0xffaaaaaa;
 		}
 		
 		@Override

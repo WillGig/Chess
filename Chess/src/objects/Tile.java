@@ -2,6 +2,7 @@ package objects;
 
 import objects.pieces.Piece;
 import utils.InputHandler;
+import utils.Texture;
 
 public class Tile extends GameObject{
 	
@@ -11,24 +12,26 @@ public class Tile extends GameObject{
 	
 	private Piece containedPiece;
 	
-	int[] highlightedImage;
+	private Texture highlightedImage;
 
 	public Tile(double x, double y, int width, int height, int tX, int tY, int color) {
 		super(x, y, width, height);
 		tileX = tX;
 		tileY = tY;
-		image = new int[width*height];
-		highlightedImage = new int[width*height];
+		int[] pixels = new int[width*height];
+		int[] highlightedPixels = new int[width*height];
 		for(int i = 0; i < width*height; i++)
 		{
-			image[i] = color;
-			highlightedImage[i] = 0x77ffffff;
+			pixels[i] = color;
+			highlightedPixels[i] = 0x77ffffff;
 		}
+		image = new Texture(width, height, pixels);
+		highlightedImage = new Texture(width, height, highlightedPixels);
 	}
 
 	public void RenderHighLighted(int[] pixels)
 	{
-		int[] temp = image;
+		Texture temp = image;
 		image = highlightedImage;
 		render(pixels);
 		image = temp;

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Button;
+import objects.ImageButton;
 import objects.Tile;
 
 public class Pawn extends Piece{
@@ -20,16 +21,23 @@ public class Pawn extends Piece{
 	public Pawn(Tile t, Color c) {
 		super(t, c);
 
+		String colorText;
 		if(c == Color.WHITE) 
+		{
 			direction = -1;
+			colorText = "White";
+		}
 		else
+		{
 			direction = 1;
+			colorText = "Black";
+		}
 		
 		promotionOptions = new Button[4];
-		promotionOptions[0] = new Button(0, 0, width, height, "N");
-		promotionOptions[1] = new Button(0, 0, width, height, "B");
-		promotionOptions[2] = new Button(0, 0, width, height, "R");
-		promotionOptions[3] = new Button(0, 0, width, height, "Q");
+		promotionOptions[0] = new ImageButton(0, 0, width, height, "Knight" + colorText);
+		promotionOptions[1] = new ImageButton(0, 0, width, height, "Bishop" + colorText);
+		promotionOptions[2] = new ImageButton(0, 0, width, height, "Rook" + colorText);
+		promotionOptions[3] = new ImageButton(0, 0, width, height, "Queen" + colorText);
 	}
 
 	@Override

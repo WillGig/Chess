@@ -1,8 +1,8 @@
 package objects;
 import java.awt.Graphics;
 
-import game.Game;
 import utils.InputHandler;
+import utils.Texture;
 
 public abstract class GameObject 
 {
@@ -10,7 +10,7 @@ public abstract class GameObject
 	protected double x, y;
 	protected int width, height;
 	
-	protected int[] image;
+	protected Texture image;
 	
 	public GameObject(double x, double y, int width, int height) 
 	{
@@ -29,23 +29,7 @@ public abstract class GameObject
 	
 	public void renderAtPosition(double xPos, double yPos, int[] pixels)
 	{
-		if(image == null)
-			return;
-		
-		for(int i = (int) (yPos - height/2); i < (int)(yPos+height/2); i++) 
-		{
-			for(int j = (int) (xPos - width/2); j < (int)(xPos+width/2); j++) 
-			{
-				if(j > 0 && j < Game.WIDTH && i > 0 && i < Game.HEIGHT) 
-				{
-					
-					int color = image[(j-(int)(xPos - width/2))+(i-(int)(yPos - height/2))*width];
-					
-					if(color != 0)
-						pixels[j+i*Game.WIDTH] = color;
-				}
-			}
-		}
+		image.render(xPos, yPos, pixels);
 	}
 	
 	public void renderText(Graphics g) 
@@ -83,12 +67,12 @@ public abstract class GameObject
 		return height;
 	}
 	
-	public int[] getImage() 
+	public Texture getImage() 
 	{
 		return image;
 	}
 	
-	public void setImage(int[] image) 
+	public void setImage(Texture image) 
 	{
 		this.image = image;
 	}

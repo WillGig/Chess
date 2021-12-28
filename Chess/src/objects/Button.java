@@ -6,6 +6,7 @@ import java.awt.Graphics;
 
 import game.Game;
 import utils.InputHandler;
+import utils.Texture;
 
 public class Button extends GameObject
 {
@@ -25,10 +26,12 @@ public class Button extends GameObject
 		super(x, y, width, height);
 		this.text = text;
 
-		image = new int[width*height];
+		int[] pixels = new int[width*height];
 		
 		for(int i = 0; i < width * height; i++)
-			image[i] = color;
+			pixels[i] = color;
+		
+		image = new Texture(width, height, pixels);
 		
 		font = new Font("Times", 1, (int)(20*Game.SCALE));
 	}
@@ -79,7 +82,7 @@ public class Button extends GameObject
 		this.color = color;
 		
 		for(int i = 0; i < width * height; i++)
-			image[i] = color;
+			image.image[i] = color;
 	}
 	
 	public String getText()
