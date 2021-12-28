@@ -1,5 +1,7 @@
 TODO:
 
+change promotion buttons to piece images
+
 allow drag to move
 
 scrolling through move history
