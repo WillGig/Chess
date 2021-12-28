@@ -78,10 +78,14 @@ public class Chess extends Scene{
 		
 		String moveText = selectedPieceTile.GetPiece().getNotationName();
 		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);
-		selectedPieceTile = null;
 		
 		if(captured != null)
-			moveText += "X";
+		{
+			//Name column if pawn captures
+			if(moveText.length() == 0)
+				moveText += selectedPieceTile.GetSquareName().substring(0, 1);
+			moveText += "x";
+		}
 		moveText += t.GetSquareName();
 		
 		if(castling == 2)
@@ -105,6 +109,8 @@ public class Chess extends Scene{
 		}
 		else
 			bMoveHistory += moveText + "\n";
+		
+		selectedPieceTile = null;
 	}
 	
 	public void updateGameState()
@@ -176,7 +182,7 @@ public class Chess extends Scene{
 		
 		y = 100;
 		for (String line : bMoveHistory.split("\n"))
-            g.drawString(line, 100, y += h);
+            g.drawString(line, 120, y += h);
 	}
 
 	@Override
