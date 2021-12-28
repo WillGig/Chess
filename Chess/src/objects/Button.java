@@ -82,6 +82,11 @@ public class Button extends GameObject
 			image[i] = color;
 	}
 	
+	public String getText()
+	{
+		return text;
+	}
+	
 ;	public int getTextColor()
 	{
 		return textColor;

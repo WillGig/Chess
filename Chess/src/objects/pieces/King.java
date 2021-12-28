@@ -9,8 +9,12 @@ import objects.Tile;
 
 public class King extends Piece{
 
-	public King(Tile t, Color color) {
-		super(t, color);
+	public King(Color c) {
+		super(c);
+	}
+	
+	public King(Tile t, Color c) {
+		super(t, c);
 	}
 	
 	@Override

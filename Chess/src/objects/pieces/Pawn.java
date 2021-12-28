@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import objects.Button;
 import objects.Tile;
 
 public class Pawn extends Piece{
@@ -14,6 +15,23 @@ public class Pawn extends Piece{
 	public static int enPassantTile;
 	public static Pawn epPawn;
 	
+	Button[] promotionOptions;
+	
+	public Pawn(Color c) {
+		super(c);
+		
+		if(c == Color.WHITE) 
+			direction = -1;
+		else
+			direction = 1;
+		
+		promotionOptions = new Button[4];
+		promotionOptions[0] = new Button(0, 0, width, height, "N");
+		promotionOptions[1] = new Button(0, 0, width, height, "B");
+		promotionOptions[2] = new Button(0, 0, width, height, "R");
+		promotionOptions[3] = new Button(0, 0, width, height, "Q");
+	}
+	
 	public Pawn(Tile t, Color c) {
 		super(t, c);
 
@@ -21,6 +39,12 @@ public class Pawn extends Piece{
 			direction = -1;
 		else
 			direction = 1;
+		
+		promotionOptions = new Button[4];
+		promotionOptions[0] = new Button(0, 0, width, height, "N");
+		promotionOptions[1] = new Button(0, 0, width, height, "B");
+		promotionOptions[2] = new Button(0, 0, width, height, "R");
+		promotionOptions[3] = new Button(0, 0, width, height, "Q");
 	}
 
 	@Override
@@ -107,6 +131,23 @@ public class Pawn extends Piece{
 		}
 		
 		return moves;
+	}
+	
+	public Button[] GetPromotionOptions()
+	{
+		return promotionOptions;
+	}
+	
+	public void UpdatePromotionPosition(Tile t)
+	{
+		for(int i = 0; i < promotionOptions.length; i++)
+		{
+			if(t.getTileX() > 3)
+				promotionOptions[i].setX(t.getX() - t.getWidth() * (3-i));
+			else
+				promotionOptions[i].setX(t.getX() + t.getWidth() * i);
+			promotionOptions[i].setY(t.getY());
+		}
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import game.Game;
+import objects.Button;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.King;
@@ -20,11 +21,15 @@ public class Chess extends Scene{
 	
 	private Tile[] board;
 	
-	private Tile selectedPieceTile;
+	private Tile selectedPieceTile, promotionSquare;
 	
 	private ArrayList<Tile> moveOptions;
 	
 	private int turnNumber = 0;
+	
+	private Pawn promoting = null;
+	
+	private String promotionPiece;
 	
 	private enum GameState { ONGOING, CHECKMATE, STALEMATE};
 	
@@ -38,6 +43,21 @@ public class Chess extends Scene{
 		if(gameState != GameState.ONGOING)
 			return;
 		
+		//Check for pawn promotion options
+		if(promoting != null)
+		{
+			Button[] promotionOptions = promoting.GetPromotionOptions();
+			for(Button b : promotionOptions)
+			{
+				b.update();
+				if(b.IsClicked())
+				{
+					promotionPiece = b.getText();
+					move(promotionSquare);
+				}
+			}
+		}
+		
 		//Check for selected piece to be moved
 		if(selectedPieceTile != null)
 		{
@@ -45,7 +65,17 @@ public class Chess extends Scene{
 			{
 				t.update();
 				if(t.isClicked())
-					move(t);
+				{
+					//pawn promotion
+					if(selectedPieceTile.GetPiece() instanceof Pawn && t.getTileY() % 7 == 0)
+					{
+						promoting = (Pawn)selectedPieceTile.GetPiece();
+						promotionSquare = t;
+						promoting.UpdatePromotionPosition(promotionSquare);
+					}
+					else
+						move(t);
+				}
 			}
 		}
 		
@@ -92,6 +122,22 @@ public class Chess extends Scene{
 			moveText = "0-0";
 		else if(castling == -2)
 			moveText = "0-0-0";
+		
+		if(promotionPiece != null)
+		{
+			if(promotionPiece.equals("N"))
+				new Knight(t, promoting.getColor());
+			else if(promotionPiece.equals("B"))
+				new Bishop(t, promoting.getColor());
+			else if(promotionPiece.equals("R"))
+				new Rook(t, promoting.getColor());
+			else
+				new Queen(t, promoting.getColor());
+			
+			moveText += "=" + t.GetPiece().getNotationName();
+			promotionPiece = null;
+			promoting = null;
+		}
 		
 		updateGameState();
 		
@@ -153,7 +199,11 @@ public class Chess extends Scene{
 		
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
-				t.RenderHighLighted(pixels);				
+				t.RenderHighLighted(pixels);	
+		
+		if(promoting != null)
+			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)
+				promoting.GetPromotionOptions()[i].render(pixels);
 	}
 
 	@Override
@@ -183,6 +233,10 @@ public class Chess extends Scene{
 		y = 100;
 		for (String line : bMoveHistory.split("\n"))
             g.drawString(line, 120, y += h);
+		
+		if(promoting != null)
+			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)
+				promoting.GetPromotionOptions()[i].renderText(g);
 	}
 
 	@Override
@@ -233,6 +287,8 @@ public class Chess extends Scene{
 		new King(board[4 + 0*8], Color.BLACK);
 		
 		selectedPieceTile = null;
+		promoting = null;
+		promotionPiece = null;
 		
 		gameState = GameState.ONGOING;
 	}

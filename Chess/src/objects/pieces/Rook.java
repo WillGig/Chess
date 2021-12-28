@@ -9,8 +9,12 @@ import objects.Tile;
 
 public class Rook extends Piece{
 
-	public Rook(Tile t, Color color) {
-		super(t, color);
+	public Rook(Color c) {
+		super(c);
+	}
+	
+	public Rook(Tile t, Color c) {
+		super(t, c);
 	}
 	
 	@Override

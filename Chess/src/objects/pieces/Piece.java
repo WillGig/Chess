@@ -17,12 +17,19 @@ public abstract class Piece extends GameObject{
 	
 	private Color color;
 	
+	public Piece(Color color)
+	{
+		super(0, 0, 64, 64);
+		this.color = color;
+		moveCounter = 0;
+	}
+	
 	public Piece(Tile t, Color color) {
 		super(t.getX(), t.getY(), 64, 64);
 		t.SetPiece(this);
-		this.color = color;
 		tileX = t.getTileX();
 		tileY = t.getTileY();
+		this.color = color;
 		moveCounter = 0;
 	}
 	

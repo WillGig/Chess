@@ -9,9 +9,14 @@ import objects.Tile;
 
 public class Bishop extends Piece{
 
-	public Bishop(Tile t, Color color) {
-		super(t, color);
+	public Bishop(Color c) {
+		super(c);
 	}
+	
+	public Bishop(Tile t, Color c) {
+		super(t, c);
+	}
+	
 	@Override
 	public void renderText(Graphics g)
 	{
