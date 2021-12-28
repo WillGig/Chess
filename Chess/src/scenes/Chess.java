@@ -15,6 +15,7 @@ import objects.pieces.Pawn;
 import objects.pieces.Piece;
 import objects.pieces.Queen;
 import objects.pieces.Rook;
+import utils.InputHandler;
 import utils.Texture;
 
 public class Chess extends Scene{
@@ -24,6 +25,8 @@ public class Chess extends Scene{
 	private Tile[] board;
 	
 	private Tile selectedPieceTile, promotionSquare;
+	
+	private Piece draggingPiece;
 	
 	private ArrayList<Tile> moveOptions;
 	
@@ -61,6 +64,39 @@ public class Chess extends Scene{
 			return;
 		}
 		
+		//Check for dragging piece to be dropped
+		if(draggingPiece != null) 
+		{
+			if(!InputHandler.MouseClicked(1))
+			{
+				InputHandler.DRAGGING = false;
+				Tile dropSquare = Tile.getCursorTile(board);
+				if(dropSquare != null && moveOptions.contains(dropSquare))
+				{
+					if(draggingPiece instanceof Pawn && dropSquare.getTileY() % 7 == 0)
+					{
+						promoting = (Pawn)draggingPiece;
+						promotionSquare = dropSquare;
+						promoting.UpdatePromotionPosition(promotionSquare);
+					}
+					else
+						move(dropSquare);
+				}
+				else 
+				{
+					draggingPiece.setX(selectedPieceTile.getX());
+					draggingPiece.setY(selectedPieceTile.getY());
+					draggingPiece = null;
+				}
+			}
+			else
+			{
+				draggingPiece.setX(InputHandler.MOUSEX);
+				draggingPiece.setY(InputHandler.MOUSEY);
+			}
+			return;
+		}
+		
 		//Check for selected piece to be moved
 		if(selectedPieceTile != null)
 		{
@@ -91,12 +127,16 @@ public class Chess extends Scene{
 				Piece p = t.GetPiece();
 				if(p != null && p.getColor() == turn)
 				{
-					if(t == selectedPieceTile)
+//					//Unselect if the tile is the same
+					if(t == selectedPieceTile && draggingPiece == null)
 					{
 						selectedPieceTile = null;
 						moveOptions = null;
+						InputHandler.MouseClickedAndSetFalse(1);
 						return;
 					}
+					draggingPiece = p;
+					InputHandler.DRAGGING = true;
 					selectedPieceTile = t;
 					moveOptions = t.GetPiece().getLegalMoves(board);
 				}
@@ -122,10 +162,10 @@ public class Chess extends Scene{
 		{
 			//Name column if pawn captures
 			if(moveText.length() == 0)
-				moveText += selectedPieceTile.GetSquareName().substring(0, 1);
+				moveText += selectedPieceTile.getSquareName().substring(0, 1);
 			moveText += "x";
 		}
-		moveText += t.GetSquareName();
+		moveText += t.getSquareName();
 		
 		if(castling == 2)
 			moveText = "0-0";
@@ -166,6 +206,7 @@ public class Chess extends Scene{
 			bMoveHistory += moveText + "\n";
 		
 		selectedPieceTile = null;
+		draggingPiece = null;
 	}
 	
 	public void updateGameState()
@@ -209,6 +250,9 @@ public class Chess extends Scene{
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
 				t.RenderHighLighted(pixels);	
+		
+		if(draggingPiece != null)
+			draggingPiece.render(pixels);
 		
 		if(promoting != null)
 			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)

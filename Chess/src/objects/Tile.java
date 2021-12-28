@@ -40,7 +40,7 @@ public class Tile extends GameObject{
 	@Override
 	public void update() 
 	{
-		if(ContainsCursor() && InputHandler.MouseClickedAndSetFalse(1))
+		if(ContainsCursor() && InputHandler.MouseClicked(1))
 			clicked = true;
 		else
 			clicked = false;
@@ -86,9 +86,17 @@ public class Tile extends GameObject{
 		return clicked;
 	}
 
-	public String GetSquareName()
+	public String getSquareName()
 	{
 		return String.valueOf((char)(tileX + 97)) + (8 - tileY);
+	}
+	
+	public static Tile getCursorTile(Tile[] board)
+	{
+		for(int i = 0; i < board.length; i++)
+			if(board[i].ContainsCursor())
+				return board[i];
+		return null;
 	}
 	
 }

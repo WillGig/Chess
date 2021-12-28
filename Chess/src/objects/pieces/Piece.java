@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import objects.GameObject;
 import objects.Tile;
-import utils.InputHandler;
 import utils.Texture;
 
 public abstract class Piece extends GameObject{
@@ -39,10 +38,7 @@ public abstract class Piece extends GameObject{
 
 	@Override
 	public void update() {
-		if(ContainsCursor() && InputHandler.MouseClickedAndSetFalse(1))
-			clicked = true;
-		else
-			clicked = false;
+		
 	}
 	
 	//returns captured piece

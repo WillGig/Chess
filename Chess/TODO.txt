@@ -1,6 +1,6 @@
 TODO:
 
-allow drag to move
+Sharepen images
 
 scrolling through move history
 
