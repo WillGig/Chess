@@ -1,9 +1,15 @@
 TODO:
 
-main menu button (continue button on main menu?)
-
-menu with options to play again, return to menu after game
-
 Settings options
 	- show coords
 	- choose square colors
+
+click on move history
+
+Database functionality?
+	- save and load games
+	- multiple lines
+	- draw arrows on board
+	- comment on positions
+
+Engine

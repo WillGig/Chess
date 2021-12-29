@@ -112,6 +112,18 @@ public class Game implements Runnable
 		sceneFade = 1.0f;
 	}
 	
+	public void resetScene(int scene)
+	{
+		if(scene == 0)
+			scenes[0] = new MainMenu();
+		else if(scene == 1)
+			scenes[1] = new Chess();
+		else if(scene == 2)
+			scenes[2] = new Settings();
+		else
+			System.err.println("Error invalid scene: " + scene);
+	}
+	
 	@Override
 	public void run() 
 	{

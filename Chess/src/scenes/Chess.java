@@ -32,7 +32,7 @@ public class Chess extends Scene{
 	
 	private ArrayList<Tile> moveOptions;
 	
-	private int turnNumber = 0, historyScroll, fiftyMoves;
+	private int turnNumber, historyScroll, fiftyMoves;
 	
 	private Pawn promoting = null;
 	
@@ -42,15 +42,16 @@ public class Chess extends Scene{
 	
 	private GameState gameState;
 	
-	private String wMoveHistory = "", bMoveHistory = "";
+	private String wMoveHistory, bMoveHistory;
 	
-	private Button undo;
+	private Button undo, menu;
 	
 	private ArrayList<State> previousPositions;
 	
 	public Chess()
 	{
-		undo = new Button(100, 500, 100, 50, "UNDO");
+		undo = new Button(60, 500, 75, 50, "UNDO");
+		menu = new Button(150, 500, 75, 50, "MENU");
 	}
 	
 	@Override
@@ -74,6 +75,11 @@ public class Chess extends Scene{
 				previousPositions.remove(previousPositions.size()-1);
 			}
 		}
+		
+		//Menu Button
+		menu.update();
+		if(menu.IsClicked())
+			game.SetScene(0);
 		
 		if(gameState != GameState.ONGOING)
 			return;
@@ -335,6 +341,7 @@ public class Chess extends Scene{
 	public void render(int[] pixels) 
 	{
 		undo.render(pixels);
+		menu.render(pixels);
 		
 		for(int i = 0; i < board.length; i++)
 			board[i].render(pixels);
@@ -383,10 +390,17 @@ public class Chess extends Scene{
 		}
 		
 		undo.renderText(g);
+		menu.renderText(g);
 	}
 
 	@Override
 	public void start() 
+	{
+		if(board == null)
+			reset();
+	}
+	
+	public void reset()
 	{
 		turn = Color.WHITE;
 		
@@ -411,7 +425,11 @@ public class Chess extends Scene{
 			
 		//Setup pieces
 		for(int i = 0; i < 8; i++)
+		{
 			new Pawn(board[i + 6*8], Color.WHITE);
+			new Pawn(board[i + 8], Color.BLACK);
+		}
+			
 		new Rook(board[0 + 7*8], Color.WHITE);
 		new Rook(board[7 + 7*8], Color.WHITE);
 		new Knight(board[1 + 7*8], Color.WHITE);
@@ -421,8 +439,6 @@ public class Chess extends Scene{
 		new Queen(board[3 + 7*8], Color.WHITE);
 		new King(board[4 + 7*8], Color.WHITE);
 		
-		for(int i = 0; i < 8; i++)
-			new Pawn(board[i + 8], Color.BLACK);
 		new Rook(board[0 + 0*8], Color.BLACK);
 		new Rook(board[7 + 0*8], Color.BLACK);
 		new Knight(board[1 + 0*8], Color.BLACK);
@@ -442,6 +458,8 @@ public class Chess extends Scene{
 		turnNumber = 0;
 		fiftyMoves = 0;
 		historyScroll = 100;
+		wMoveHistory = "";
+		bMoveHistory = "";
 	}
 
 }

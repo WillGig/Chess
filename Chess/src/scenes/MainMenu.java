@@ -10,7 +10,7 @@ import objects.Button;
 public class MainMenu extends Scene
 {
 
-	private Button play, settings, exit;
+	private Button newGame, continueGame, settings, exit;
 	
 	public MainMenu()
 	{
@@ -20,8 +20,15 @@ public class MainMenu extends Scene
 	@Override
 	public void update(Game game) 
 	{
-		play.update();
-		if(play.IsClicked())
+		newGame.update();
+		if(newGame.IsClicked())
+		{
+			game.resetScene(1);
+			game.SetScene(1);
+		}
+		
+		continueGame.update();
+		if(continueGame.IsClicked())
 			game.SetScene(1);
 		
 		settings.update();
@@ -36,7 +43,8 @@ public class MainMenu extends Scene
 	@Override
 	public void render(int[] pixels) 
 	{	
-		play.render(pixels);
+		newGame.render(pixels);
+		continueGame.render(pixels);
 		settings.render(pixels);
 		exit.render(pixels);
 	}
@@ -44,7 +52,8 @@ public class MainMenu extends Scene
 	@Override
 	public void renderText(Graphics g) 
 	{
-		play.renderText(g);
+		newGame.renderText(g);
+		continueGame.renderText(g);
 		settings.renderText(g);
 		exit.renderText(g);
 		
@@ -58,9 +67,10 @@ public class MainMenu extends Scene
 	@Override
 	public void start()
 	{
-		play = new Button(Game.WIDTH/2, Game.HEIGHT/2 - 0, 150, 40, "PLAY");
-		settings = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 50, 150, 40, "SETTINGS");
-		exit = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 100, 150, 40, "EXIT");
+		newGame = new Button(Game.WIDTH/2, Game.HEIGHT/2 - 0, 150, 40, "NEW GAME");
+		continueGame = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 50, 150, 40, "CONTINUE");
+		settings = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 100, 150, 40, "SETTINGS");
+		exit = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 150, 150, 40, "EXIT");
 	}
 
 }
