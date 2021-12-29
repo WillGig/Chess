@@ -12,7 +12,7 @@ import objects.RGBSlider;
 public class Settings extends Scene{
 
 	private RGBSlider darkColor, lightColor;
-	private CheckBox showFPS, showCoords;
+	private CheckBox showFPS, capFPS, showCoords;
 	
 	private Button returnToMenu;
 	
@@ -22,6 +22,8 @@ public class Settings extends Scene{
 		lightColor.update();
 		showFPS.update();
 		Game.SHOWFPS = showFPS.isChecked();
+		capFPS.update();
+		Game.CAPFPS = capFPS.isChecked();
 		showCoords.update();
 		
 		returnToMenu.update();
@@ -37,6 +39,7 @@ public class Settings extends Scene{
 		darkColor.render(pixels);
 		lightColor.render(pixels);
 		showFPS.render(pixels);
+		capFPS.render(pixels);
 		showCoords.render(pixels);
 		returnToMenu.render(pixels);
 	}
@@ -46,6 +49,7 @@ public class Settings extends Scene{
 		darkColor.renderText(g);
 		lightColor.renderText(g);
 		showFPS.renderText(g);
+		capFPS.renderText(g);
 		showCoords.renderText(g);
 		returnToMenu.renderText(g);
 		
@@ -64,7 +68,9 @@ public class Settings extends Scene{
 		lightColor.setValue(Chess.LIGHTCOLOR);
 		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 10, "Show FPS");
 		showFPS.setChecked(Game.SHOWFPS);
-		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Show Coordinates");
+		capFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Cap FPS");
+		capFPS.setChecked(Game.CAPFPS);
+		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Show Coordinates");
 		showCoords.setChecked(Chess.SHOWCOORDS);
 		
 		returnToMenu = new Button(Game.WIDTH/2, Game.HEIGHT * .8, 150, 50, "RETURN");

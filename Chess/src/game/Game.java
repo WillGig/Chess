@@ -22,7 +22,7 @@ public class Game implements Runnable
 	
 	public static final float SCALE = 1.0f;
 
-	public static boolean SHOWFPS = false;
+	public static boolean SHOWFPS = false, CAPFPS = true;
 	
 	private boolean running = false;
 	
@@ -147,10 +147,19 @@ public class Game implements Runnable
 				update();
 				delta--;
 				updates++;
+				
+				if(CAPFPS)
+				{
+					render();
+					frames++;
+				}
 			}
 			
-			render();
-			frames++;
+			if(!CAPFPS)
+			{
+				render();
+				frames++;
+			}
 			
 			if(timeBank > 1000000000) {
 				fps = "FPS:" + frames + " | UPS:" + updates;
