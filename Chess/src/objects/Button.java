@@ -1,7 +1,6 @@
 package objects;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import game.Game;
@@ -16,8 +15,6 @@ public class Button extends GameObject
 	private int color = 0xffaaaaaa;
 	private int textColor = 0;
 	private Font font;
-	
-	private int textWidth = -1;
 	
 	private boolean selected, clicked;
 	
@@ -66,10 +63,7 @@ public class Button extends GameObject
 			g.setColor(new Color(textColor));
 		g.setFont(font);
 		
-		if(textWidth == -1)
-			setFont(font, g);
-		
-		g.drawString(text, (int)((x - textWidth/2) * Game.SCALE), (int)((y + 8)*Game.SCALE));
+		g.drawString(text, (int)((x - g.getFontMetrics().stringWidth(text)/2)), (int)((y + g.getFontMetrics().getHeight()/2 - 4)*Game.SCALE));
 	}
 	
 	public int getColor()
@@ -82,7 +76,7 @@ public class Button extends GameObject
 		this.color = color;
 		
 		for(int i = 0; i < width * height; i++)
-			image.image[i] = color;
+			image.data[i] = color;
 	}
 	
 	public String getText()
@@ -100,11 +94,9 @@ public class Button extends GameObject
 		textColor = color;
 	}
 	
-	public void setFont(Font f, Graphics g)
+	public void setFont(Font f)
 	{
 		font = f;
-		FontMetrics metrics = g.getFontMetrics(font);
-		textWidth = (int) (metrics.stringWidth(text)/Game.SCALE);
 	}
 	
 	public boolean IsClicked()

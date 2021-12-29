@@ -22,7 +22,7 @@ public class Game implements Runnable
 	
 	public static final float SCALE = 1.0f;
 
-	public static boolean SHOWFPS = true;
+	public static boolean SHOWFPS = false;
 	
 	private boolean running = false;
 	

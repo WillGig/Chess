@@ -67,7 +67,7 @@ public class ColorSlider extends Slider{
 			oldColor = colorValue;
 			
 			for(int i = 0; i < width * height; i++)
-				image.image[i] = 0xff000000 + colorValue;
+				image.data[i] = 0xff000000 + colorValue;
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class ColorSlider extends Slider{
 		ball.x = (position*width) + x - width/2;
 		
 		for(int i = 0; i < width * height; i++)
-			image.image[i] = 0xff000000 + colorValue;
+			image.data[i] = 0xff000000 + colorValue;
 	}
 	
 	@Override

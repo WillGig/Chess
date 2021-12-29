@@ -22,6 +22,10 @@ import utils.Texture;
 
 public class Chess extends Scene{
 
+	public static int DARKCOLOR = 0xff663400, LIGHTCOLOR = 0xffFFE7BC;
+	
+	public static boolean SHOWCOORDS = true;
+	
 	private Color turn;
 	
 	private Tile[] board;
@@ -373,14 +377,19 @@ public class Chess extends Scene{
 	@Override
 	public void renderText(Graphics g) 
 	{
-		//Coordinates
 		g.setFont(new Font("Arial", 1, 20));
 		g.setColor(Color.WHITE);
-		for(int i = 0; i < 8; i++)
+		
+		//Coordinates
+		if(SHOWCOORDS)
 		{
-			g.drawString("" + (8 - i), (int)(board[0].getX() - board[0].getWidth()), (int)board[i * 8].getY() + 8);
-			g.drawString(String.valueOf((char)(i + 65)), (int)board[i].getX() - 8, (int)(board[7*8].getY() + board[0].getHeight()));
+			for(int i = 0; i < 8; i++)
+			{
+				g.drawString("" + (8 - i), (int)(board[0].getX() - board[0].getWidth()), (int)board[i * 8].getY() + 8);
+				g.drawString(String.valueOf((char)(i + 65)), (int)board[i].getX() - 8, (int)(board[7*8].getY() + board[0].getHeight()));
+			}
 		}
+		
 		
 		//Move History
 		int h = g.getFontMetrics().getHeight();
@@ -409,7 +418,22 @@ public class Chess extends Scene{
 	public void start() 
 	{
 		if(board == null)
+		{
 			reset();
+			return;
+		}
+		
+		//Update board color
+		for(int y = 0; y < 8; y++)
+		{
+			for(int x = 0; x < 8; x++)
+			{
+				int color = LIGHTCOLOR;
+				if((x + y % 2 + 1) % 2 == 0)
+					color = DARKCOLOR;
+				board[x+y*8].setColor(color);
+			}
+		}
 	}
 	
 	public void reset()
@@ -417,8 +441,6 @@ public class Chess extends Scene{
 		turn = Color.WHITE;
 		
 		int size = 64;
-		int darkColor = 0xff663400;
-		int lightColor = 0xffFFE7BC;
 		
 		//Create board
 		board = new Tile[64];
@@ -426,9 +448,9 @@ public class Chess extends Scene{
 		{
 			for(int x = 0; x < 8; x++)
 			{
-				int color = lightColor;
+				int color = LIGHTCOLOR;
 				if((x + y % 2 + 1) % 2 == 0)
-					color = darkColor;
+					color = DARKCOLOR;
 				int xC = (x * size) + (Game.WIDTH - 7 * size) / 2 + 100;
 				int yC = (y * size) + (Game.HEIGHT - 7 * size) / 2 - 20;
 				board[x+y*8] = new Tile(xC, yC, size, size, x, y, color);
@@ -473,5 +495,4 @@ public class Chess extends Scene{
 		wMoveHistory = "";
 		bMoveHistory = "";
 	}
-
 }

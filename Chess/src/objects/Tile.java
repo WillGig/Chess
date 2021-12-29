@@ -91,6 +91,12 @@ public class Tile extends GameObject{
 		return String.valueOf((char)(tileX + 97)) + (8 - tileY);
 	}
 	
+	public void setColor(int color)
+	{
+		for(int i = 0; i < image.data.length; i++)
+			image.data[i] = color;
+	}
+	
 	public static Tile getCursorTile(Tile[] board)
 	{
 		for(int i = 0; i < board.length; i++)

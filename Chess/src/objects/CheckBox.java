@@ -71,6 +71,7 @@ public class CheckBox extends Button{
 			int[] pixels = new int[width*height];
 			for(int i = 0; i < width * height; i++)
 				pixels[i] = 0xffaaaaaa;
+			image = new Texture(width, height, pixels);
 		}
 		
 		@Override

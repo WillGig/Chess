@@ -77,6 +77,12 @@ public class Slider extends GameObject
 		this.label = label;
 	}
 	
+	public void setColor(int color)
+	{
+		for(int i = 0; i < image.data.length; i++)
+			image.data[i] = color;
+	}
+	
 	class SliderBall extends GameObject
 	{
 		private double minX, maxX;

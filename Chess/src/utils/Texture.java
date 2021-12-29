@@ -14,13 +14,13 @@ public class Texture {
 	private static HashMap<String, Texture> textures;
 	
 	public int width, height;
-	public int[] image;
+	public int[] data;
 	
 	public Texture(int w, int h, int[] p)
 	{
 		width = w;
 		height = h;
-		image = p;
+		data = p;
 	}
 	
 	public Texture(String fileName)
@@ -31,8 +31,8 @@ public class Texture {
 
 			width = bi.getWidth();
 			height = bi.getHeight();
-			image = new int[width * height];
-			bi.getRGB(0, 0, width, height, image, 0, width);
+			data = new int[width * height];
+			bi.getRGB(0, 0, width, height, data, 0, width);
 		} 
 		catch (Exception e) 
 		{
@@ -42,7 +42,7 @@ public class Texture {
 	
 	public void render(double xPos, double yPos, int[] pixels)
 	{
-		if(image == null)
+		if(data == null)
 			return;
 		
 		for(int i = (int) (yPos - height/2); i < (int)(yPos+height/2); i++) 
@@ -52,7 +52,7 @@ public class Texture {
 				if(j > 0 && j < Game.WIDTH && i > 0 && i < Game.HEIGHT) 
 				{
 					
-					int color = image[(j-(int)(xPos - width/2))+(i-(int)(yPos - height/2))*width];
+					int color = data[(j-(int)(xPos - width/2))+(i-(int)(yPos - height/2))*width];
 					
 					if(color != 0)
 						pixels[j+i*Game.WIDTH] = color;
