@@ -1,9 +1,5 @@
 TODO:
 
-Sharepen images
-
-scrolling through move history
-
 undo button
 
 claim draw button pops up after 3 repition or 50 king moves

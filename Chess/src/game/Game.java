@@ -65,6 +65,7 @@ public class Game implements Runnable
 		canvas.addKeyListener(input);
 		canvas.addMouseListener(input);
 		canvas.addMouseMotionListener(input);
+		canvas.addMouseWheelListener(input);
 		
 		//Link pixels in image to int[] pixels
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);

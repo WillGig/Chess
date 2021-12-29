@@ -30,7 +30,7 @@ public class Chess extends Scene{
 	
 	private ArrayList<Tile> moveOptions;
 	
-	private int turnNumber = 0;
+	private int turnNumber = 0, historyScroll;
 	
 	private Pawn promoting = null;
 	
@@ -45,6 +45,14 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
+		if(InputHandler.MOUSEX < 200)
+		{
+			historyScroll -= InputHandler.getMouseScroll() * 40;
+			if(historyScroll > 100)
+				historyScroll = 100;
+		}
+			
+		
 		if(gameState != GameState.ONGOING)
 			return;
 		
@@ -273,11 +281,11 @@ public class Chess extends Scene{
 		
 		//Move History
 		int h = g.getFontMetrics().getHeight();
-		int y = 100;
+		int y = historyScroll;
 		for (String line : wMoveHistory.split("\n"))
             g.drawString(line, 20, y += h);
 		
-		y = 100;
+		y = historyScroll;
 		for (String line : bMoveHistory.split("\n"))
             g.drawString(line, 120, y += h);
 		
@@ -338,6 +346,9 @@ public class Chess extends Scene{
 		promotionPiece = null;
 		
 		gameState = GameState.ONGOING;
+		
+		turnNumber = 0;
+		historyScroll = 100;
 	}
 
 }

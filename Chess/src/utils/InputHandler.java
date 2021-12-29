@@ -4,13 +4,16 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import game.Game;
 
-public class InputHandler implements KeyListener, MouseMotionListener, MouseListener 
+public class InputHandler implements KeyListener, MouseMotionListener, MouseListener, MouseWheelListener
 {
 
 	public static int MOUSEX, MOUSEY;
+	private static int MOUSESCROLL;
 	private static boolean[] key = new boolean[68836];
 	private static boolean MOUSE1CLICKED = false, MOUSE2CLICKED = false;
 	public static boolean DRAGGING = false;
@@ -100,5 +103,17 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 	}
 
 	public void keyTyped(KeyEvent e) {}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		MOUSESCROLL = e.getWheelRotation();
+	}
+	
+	public static int getMouseScroll()
+	{
+		int scroll = MOUSESCROLL;
+		MOUSESCROLL = 0;
+		return scroll;
+	}
 	
 }
