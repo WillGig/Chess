@@ -8,6 +8,7 @@ import game.Game;
 import objects.Button;
 import objects.CheckBox;
 import objects.RGBSlider;
+import utils.SaveLoadManager;
 
 public class Settings extends Scene{
 
@@ -81,6 +82,7 @@ public class Settings extends Scene{
 		Chess.DARKCOLOR = darkColor.getValue();
 		Chess.LIGHTCOLOR = lightColor.getValue();
 		Chess.SHOWCOORDS = showCoords.isChecked();
+		SaveLoadManager.saveSettings();
 	}
 
 }

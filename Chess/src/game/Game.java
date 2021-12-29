@@ -14,6 +14,7 @@ import scenes.Settings;
 import scenes.MainMenu;
 import scenes.Chess;
 import utils.InputHandler;
+import utils.SaveLoadManager;
 import utils.Texture;
 
 public class Game implements Runnable
@@ -83,6 +84,9 @@ public class Game implements Runnable
 		fadeSpeed = .05f;
 		
 		canvas.requestFocus();
+		
+		SaveLoadManager.loadSettings();
+		
 		start();
 	}
 	
