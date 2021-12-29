@@ -60,9 +60,20 @@ public class Chess extends Scene{
 		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
-			historyScroll -= InputHandler.getMouseScroll() * 40;
-			if(historyScroll > 100)
-				historyScroll = 100;
+			int scrollAmount = InputHandler.getMouseScroll() * 40;
+			if(turnNumber > 15)
+			{
+				historyScroll -= scrollAmount;
+				
+				int cap = 100 - (turnNumber-15)*24;
+				if(gameState != GameState.ONGOING)
+					cap -= 72;
+				
+				if(historyScroll > 100)
+					historyScroll = 100;
+				else if(historyScroll < cap)
+					historyScroll = cap;
+			}
 		}
 			
 		//Undo Button
@@ -242,13 +253,14 @@ public class Chess extends Scene{
 		if(turn == Color.BLACK)
 		{
 			turnNumber++;
-			if(turnNumber > 15 && historyScroll > 100 - (turnNumber-15)*24)
-				historyScroll = 100 - (turnNumber-15)*24;
-				
 			wMoveHistory += turnNumber + ". " + moveText + "\n";
 		}
 		else
 			bMoveHistory += moveText + "\n";
+		
+		//Automatically scroll to new move
+		if(turnNumber > 15 && historyScroll > 100 - (turnNumber-15)*24)
+			historyScroll = 100 - (turnNumber-15)*24;
 		
 		if(gameState == GameState.CHECKMATE)
 		{
