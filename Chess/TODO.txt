@@ -1,9 +1,5 @@
 TODO:
 
-fix bug where kings can move into eachother
-
-undo button
-
 claim draw button pops up after 3 repition or 50 king moves
 
 main menu button (continue button on main menu?)

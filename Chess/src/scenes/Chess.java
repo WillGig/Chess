@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import game.Game;
+import game.State;
 import objects.Button;
 import objects.ImageButton;
 import objects.Tile;
@@ -37,13 +38,15 @@ public class Chess extends Scene{
 	
 	private String promotionPiece;
 	
-	private enum GameState { ONGOING, CHECKMATE, STALEMATE};
+	public enum GameState { ONGOING, CHECKMATE, STALEMATE};
 	
 	private GameState gameState;
 	
 	private String wMoveHistory = "", bMoveHistory = "";
 	
 	private Button undo;
+	
+	private ArrayList<State> previousPositions;
 	
 	public Chess()
 	{
@@ -63,7 +66,11 @@ public class Chess extends Scene{
 		undo.update();
 		if(undo.IsClicked())
 		{
-			
+			if(previousPositions.size() > 0)
+			{
+				loadState(previousPositions.get(previousPositions.size()-1));
+				previousPositions.remove(previousPositions.size()-1);
+			}
 		}
 		
 		if(gameState != GameState.ONGOING)
@@ -148,7 +155,7 @@ public class Chess extends Scene{
 				Piece p = t.GetPiece();
 				if(p != null && p.getColor() == turn)
 				{
-//					//Unselect if the tile is the same
+					//Unselect if the tile is the same
 					if(t == selectedPieceTile && draggingPiece == null)
 					{
 						selectedPieceTile = null;
@@ -168,6 +175,8 @@ public class Chess extends Scene{
 	
 	public void move(Tile t)
 	{
+		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber));
+		
 		Pawn.enPassantTile = 0;
 		Pawn.epPawn = null;
 		
@@ -265,6 +274,16 @@ public class Chess extends Scene{
 			gameState = GameState.STALEMATE;
 	}
 
+	public void loadState(State s)
+	{
+		s.LoadState(board);
+		wMoveHistory = s.whiteMoves;
+		bMoveHistory = s.blackMoves;
+		gameState = s.gState;
+		turn = s.turn;
+		turnNumber = s.moveNumber;
+	}
+	
 	@Override
 	public void render(int[] pixels) 
 	{
@@ -371,6 +390,7 @@ public class Chess extends Scene{
 		promotionPiece = null;
 		
 		gameState = GameState.ONGOING;
+		previousPositions = new ArrayList<State>();
 		
 		turnNumber = 0;
 		historyScroll = 100;
