@@ -18,7 +18,8 @@ public class State {
 	public String whiteMoves, blackMoves;
 	public GameState gState;
 	public Color turn;
-	public int moveNumber;
+	public int moveNumber, epSquare;
+	public Pawn epPawn;
 	
 	public State(Tile[] board, String wMoves, String bMoves, GameState gs, Color turn, int move)
 	{
@@ -27,6 +28,9 @@ public class State {
 		gState = gs;
 		this.turn = turn;
 		moveNumber = move;
+		epPawn = Pawn.epPawn;
+		epSquare = Pawn.enPassantTile;
+		
 		for(int i = 0; i < board.length; i++)
 		{
 			Piece p = board[i].GetPiece();

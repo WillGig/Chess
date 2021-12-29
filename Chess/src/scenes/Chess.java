@@ -282,6 +282,11 @@ public class Chess extends Scene{
 		gameState = s.gState;
 		turn = s.turn;
 		turnNumber = s.moveNumber;
+		Pawn.enPassantTile = s.epSquare;
+		if(s.epPawn != null)
+			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
+		else
+			Pawn.epPawn = null;
 	}
 	
 	@Override
