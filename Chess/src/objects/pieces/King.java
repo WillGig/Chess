@@ -169,7 +169,7 @@ public class King extends Piece{
 		for(int i = 0; i < board.length; i++)
 		{
 			Piece p = board[i].GetPiece();
-			if(p == null || p.getColor() == getColor() || p instanceof King)
+			if(p == null || p.getColor() == getColor())
 				continue;
 			
 			if(p.getPossibleMoves(board).contains(currentTile))

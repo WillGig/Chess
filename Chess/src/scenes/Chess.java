@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import game.Game;
+import objects.Button;
 import objects.ImageButton;
 import objects.Tile;
 import objects.pieces.Bishop;
@@ -42,6 +43,13 @@ public class Chess extends Scene{
 	
 	private String wMoveHistory = "", bMoveHistory = "";
 	
+	private Button undo;
+	
+	public Chess()
+	{
+		undo = new Button(100, 500, 100, 50, "UNDO");
+	}
+	
 	@Override
 	public void update(Game game) 
 	{
@@ -52,6 +60,11 @@ public class Chess extends Scene{
 				historyScroll = 100;
 		}
 			
+		undo.update();
+		if(undo.IsClicked())
+		{
+			
+		}
 		
 		if(gameState != GameState.ONGOING)
 			return;
@@ -208,6 +221,9 @@ public class Chess extends Scene{
 		if(turn == Color.BLACK)
 		{
 			turnNumber++;
+			if(turnNumber > 15 && historyScroll > 100 - (turnNumber-15)*24)
+				historyScroll = 100 - (turnNumber-15)*24;
+				
 			wMoveHistory += turnNumber + ". " + moveText + "\n";
 		}
 		else
@@ -252,6 +268,8 @@ public class Chess extends Scene{
 	@Override
 	public void render(int[] pixels) 
 	{
+		undo.render(pixels);
+		
 		for(int i = 0; i < board.length; i++)
 			board[i].render(pixels);
 		
@@ -283,15 +301,22 @@ public class Chess extends Scene{
 		int h = g.getFontMetrics().getHeight();
 		int y = historyScroll;
 		for (String line : wMoveHistory.split("\n"))
-            g.drawString(line, 20, y += h);
+		{
+			if(y > 90 && y < 450)
+				g.drawString(line, 20, y);
+			y += h;
+		}
+			
 		
 		y = historyScroll;
 		for (String line : bMoveHistory.split("\n"))
-            g.drawString(line, 120, y += h);
+		{
+			if(y > 90 && y < 450)
+				g.drawString(line, 120, y);
+			y += h;
+		}
 		
-		if(promoting != null)
-			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)
-				promoting.GetPromotionOptions()[i].renderText(g);
+		undo.renderText(g);
 	}
 
 	@Override
