@@ -1,8 +1,6 @@
 TODO:
 
-Settings options
-	- show coords
-	- choose square colors
+Save settings options
 
 click on move history
 

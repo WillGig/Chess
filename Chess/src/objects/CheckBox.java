@@ -42,7 +42,7 @@ public class CheckBox extends Button{
 		g.setColor(Color.WHITE);
 		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
 		g.setFont(font);
-		g.drawString(label, (int) ((x - 340)*Game.SCALE), (int) ((y + 5)*Game.SCALE));
+		g.drawString(label, (int) ((x - 400)*Game.SCALE), (int) ((y + 5)*Game.SCALE));
 	}
 	
 	@Override

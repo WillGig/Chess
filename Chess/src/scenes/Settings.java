@@ -54,9 +54,9 @@ public class Settings extends Scene{
 		darkColor.setValue(Chess.DARKCOLOR);
 		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 20, 200, "Light Squares", 0xffFFE7BC);
 		lightColor.setValue(Chess.LIGHTCOLOR);
-		showFPS = new CheckBox(Game.WIDTH/2 + 90, Game.HEIGHT/2 + 10, "Show FPS");
+		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 10, "Show FPS");
 		showFPS.setChecked(Game.SHOWFPS);
-		showCoords = new CheckBox(Game.WIDTH/2 + 90, Game.HEIGHT/2 + 40, "Show Coordinates");
+		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Show Coordinates");
 		showCoords.setChecked(Chess.SHOWCOORDS);
 		
 		returnToMenu = new Button(Game.WIDTH/2, Game.HEIGHT * .8, 150, 50, "RETURN");
