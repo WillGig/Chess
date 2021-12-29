@@ -32,13 +32,13 @@ public class Chess extends Scene{
 	
 	private ArrayList<Tile> moveOptions;
 	
-	private int turnNumber = 0, historyScroll;
+	private int turnNumber = 0, historyScroll, fiftyMoves;
 	
 	private Pawn promoting = null;
 	
 	private String promotionPiece;
 	
-	public enum GameState { ONGOING, CHECKMATE, STALEMATE};
+	public enum GameState { ONGOING, CHECKMATE, STALEMATE, REPETITION, FIFTYMOVEDRAW};
 	
 	private GameState gameState;
 	
@@ -56,6 +56,7 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
+		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
 			historyScroll -= InputHandler.getMouseScroll() * 40;
@@ -63,6 +64,7 @@ public class Chess extends Scene{
 				historyScroll = 100;
 		}
 			
+		//Undo Button
 		undo.update();
 		if(undo.IsClicked())
 		{
@@ -175,7 +177,7 @@ public class Chess extends Scene{
 	
 	public void move(Tile t)
 	{
-		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber));
+		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber, fiftyMoves));
 		
 		Pawn.enPassantTile = 0;
 		Pawn.epPawn = null;
@@ -202,6 +204,12 @@ public class Chess extends Scene{
 		else if(castling == -2)
 			moveText = "0-0-0";
 		
+		//50 Move Rule
+		if(t.GetPiece() instanceof Pawn || captured != null)
+			fiftyMoves = 0;
+		else
+			fiftyMoves++;
+		
 		if(promotionPiece != null)
 		{
 			if(promotionPiece.equals("K"))
@@ -222,8 +230,6 @@ public class Chess extends Scene{
 		
 		if(gameState == GameState.CHECKMATE)
 			moveText += "#";
-		else if(gameState == GameState.STALEMATE)
-			moveText += "\nStaleMate";
 		else if(King.findKing(board, turn).inCheck(board))
 			moveText += "+";
 		
@@ -238,6 +244,27 @@ public class Chess extends Scene{
 		else
 			bMoveHistory += moveText + "\n";
 		
+		if(gameState == GameState.CHECKMATE)
+		{
+			if(turn == Color.WHITE)
+				wMoveHistory += "0-1\n";
+			else
+				wMoveHistory += "1-0\n";
+			wMoveHistory += "Checkmate";
+		}
+		else if(gameState != GameState.ONGOING)
+			wMoveHistory += "1/2-1/2\n";
+		
+		if(gameState == GameState.STALEMATE)
+			wMoveHistory += "Draw by StaleMate";
+		else if(gameState == GameState.REPETITION)
+			wMoveHistory += "Draw by Repetition";
+		else if(gameState == GameState.FIFTYMOVEDRAW)
+			wMoveHistory += "Draw by 50\nMove Rule";
+		
+		if(gameState != GameState.ONGOING && (turnNumber > 15 && historyScroll > 100 - (turnNumber-12)*24))
+			historyScroll = 100 - (turnNumber-12)*24;
+		
 		selectedPieceTile = null;
 		draggingPiece = null;
 	}
@@ -248,6 +275,20 @@ public class Chess extends Scene{
 			turn = Color.BLACK;
 		else
 			turn = Color.WHITE;
+		
+		//Check for 3 fold repetition
+		if(State.Repitition(previousPositions, board))
+		{
+			gameState = GameState.REPETITION;
+			return;
+		}
+		
+		//Check 50 Move rule
+		if(fiftyMoves == 100)
+		{
+			gameState = GameState.FIFTYMOVEDRAW;
+			return;
+		}
 		
 		//ensure the current side has legal moves
 		boolean canMove = false;
@@ -282,6 +323,7 @@ public class Chess extends Scene{
 		gameState = s.gState;
 		turn = s.turn;
 		turnNumber = s.moveNumber;
+		fiftyMoves = s.fiftyMoves;
 		Pawn.enPassantTile = s.epSquare;
 		if(s.epPawn != null)
 			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
@@ -398,6 +440,7 @@ public class Chess extends Scene{
 		previousPositions = new ArrayList<State>();
 		
 		turnNumber = 0;
+		fiftyMoves = 0;
 		historyScroll = 100;
 	}
 

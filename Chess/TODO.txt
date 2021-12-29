@@ -1,7 +1,5 @@
 TODO:
 
-claim draw button pops up after 3 repition or 50 king moves
-
 main menu button (continue button on main menu?)
 
 menu with options to play again, return to menu after game

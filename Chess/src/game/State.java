@@ -1,6 +1,7 @@
 package game;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import objects.Tile;
 import objects.pieces.Bishop;
@@ -14,20 +15,21 @@ import scenes.Chess.GameState;
 
 public class State {
 
-	private String state = "", colors = "", numMoves = "";
+	public String state = "", colors = "", numMoves = "";
 	public String whiteMoves, blackMoves;
 	public GameState gState;
 	public Color turn;
-	public int moveNumber, epSquare;
+	public int moveNumber, epSquare, fiftyMoves;
 	public Pawn epPawn;
 	
-	public State(Tile[] board, String wMoves, String bMoves, GameState gs, Color turn, int move)
+	public State(Tile[] board, String wMoves, String bMoves, GameState gs, Color turn, int move, int fiftyMoves)
 	{
 		whiteMoves = wMoves;
 		blackMoves = bMoves;
 		gState = gs;
 		this.turn = turn;
 		moveNumber = move;
+		this.fiftyMoves = fiftyMoves;
 		epPawn = Pawn.epPawn;
 		epSquare = Pawn.enPassantTile;
 		
@@ -100,6 +102,28 @@ public class State {
 				break;
 			}
 		}
+	}
+	
+	public static boolean Repitition(ArrayList<State> states, Tile[] board)
+	{
+		State currentState = new State(board, "", "", null, null, 0, 0);
+		
+		for(int i = 0; i < states.size(); i++)
+		{
+			int count = 0;
+			if(states.get(i).state.equals(currentState.state))
+				count++;
+			for(int j = i; j < states.size(); j++)
+			{
+				if(states.get(i).state.equals(states.get(j).state))
+				{
+					count++;
+					if(count == 3)
+						return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 }
