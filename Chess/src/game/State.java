@@ -14,7 +14,7 @@ import scenes.Chess.GameState;
 
 public class State {
 
-	private String state = "", colors = "";
+	private String state = "", colors = "", numMoves = "";
 	public String whiteMoves, blackMoves;
 	public GameState gState;
 	public Color turn;
@@ -38,6 +38,7 @@ public class State {
 			{
 				state += "0";
 				colors += "0";
+				numMoves += "0";
 			}
 			else
 			{
@@ -50,6 +51,11 @@ public class State {
 					state += "p";
 				else
 					state += p.getNotationName();
+				
+				if(p.hasMoved())
+					numMoves += "1";
+				else
+					numMoves += "0";
 			}
 		}
 	}
@@ -64,28 +70,31 @@ public class State {
 				c = Color.WHITE;
 			else
 				c = Color.BLACK;
+			
+			int nMoves = Character.getNumericValue(numMoves.charAt(i));
+			
 			switch(state.charAt(i))
 			{
 			case '0':
 				board[i].SetPiece(null);
 				break;
 			case 'p':
-				new Pawn(board[i], c);
+				new Pawn(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			case 'N':
-				new Knight(board[i], c);
+				new Knight(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			case 'B':
-				new Bishop(board[i], c);
+				new Bishop(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			case 'R':
-				new Rook(board[i], c);
+				new Rook(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			case 'Q':
-				new Queen(board[i], c);
+				new Queen(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			case 'K':
-				new King(board[i], c);
+				new King(board[i], c).setNumberOfMoves(nMoves);
 				break;
 			default:
 				break;

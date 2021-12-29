@@ -121,6 +121,11 @@ public abstract class Piece extends GameObject{
 		return moveCounter > 0;
 	}
 	
+	public void setNumberOfMoves(int num)
+	{
+		moveCounter = num;
+	}
+	
 	public int GetTileX()
 	{
 		return tileX;
