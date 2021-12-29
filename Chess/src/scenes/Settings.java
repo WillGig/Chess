@@ -1,5 +1,7 @@
 package scenes;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 import game.Game;
@@ -46,6 +48,12 @@ public class Settings extends Scene{
 		showFPS.renderText(g);
 		showCoords.renderText(g);
 		returnToMenu.renderText(g);
+		
+		Font font = new Font("Bell", 1, 60);
+		g.setFont(font);
+		g.setColor(Color.WHITE);
+		int textWidth = (int)(g.getFontMetrics(font).stringWidth("SETTINGS")/Game.SCALE);
+		g.drawString("SETTINGS", (int) ((Game.WIDTH/2 - textWidth/2)*Game.SCALE), (int) ((Game.HEIGHT/2 - 150)*Game.SCALE));
 	}
 
 	@Override

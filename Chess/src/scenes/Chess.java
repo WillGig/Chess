@@ -24,7 +24,7 @@ public class Chess extends Scene{
 
 	public static int DARKCOLOR = 0xff663400, LIGHTCOLOR = 0xffFFE7BC;
 	
-	public static boolean SHOWCOORDS = true;
+	public static boolean SHOWCOORDS = true, CANCONTINUE = false;
 	
 	private Color turn;
 	
@@ -417,6 +417,7 @@ public class Chess extends Scene{
 	@Override
 	public void start() 
 	{
+		CANCONTINUE = true;
 		if(board == null)
 		{
 			reset();
