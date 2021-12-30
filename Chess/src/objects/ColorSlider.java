@@ -117,10 +117,9 @@ public class ColorSlider extends Slider{
 	public void renderText(Graphics g)
 	{
 		g.setColor(Color.WHITE);
-		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
-		g.setFont(font);
-		g.drawString(label, (int) ((x - 250)*Game.SCALE), (int) ((y + 5)*Game.SCALE));
-		g.drawString(Integer.toHexString(colorValue), (int) ((x + width/2 + 20)*Game.SCALE), (int) ((y + 5)*Game.SCALE));
+		g.setFont(new Font("Times", 0, (int)(16*Game.SCALE)));
+		g.drawString(label, (int) ((x - 250)*Game.SCALE + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
+		g.drawString(Integer.toHexString(colorValue), (int) ((x + width/2 + 20)*Game.SCALE + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
 	}
 
 }

@@ -377,7 +377,7 @@ public class Chess extends Scene{
 	@Override
 	public void renderText(Graphics g) 
 	{
-		g.setFont(new Font("Arial", 1, 20));
+		g.setFont(new Font("Arial", 1, (int)(20*Game.SCALE)));
 		g.setColor(Color.WHITE);
 		
 		//Coordinates
@@ -385,8 +385,8 @@ public class Chess extends Scene{
 		{
 			for(int i = 0; i < 8; i++)
 			{
-				g.drawString("" + (8 - i), (int)(board[0].getX() - board[0].getWidth()), (int)board[i * 8].getY() + 8);
-				g.drawString(String.valueOf((char)(i + 65)), (int)board[i].getX() - 8, (int)(board[7*8].getY() + board[0].getHeight()));
+				g.drawString("" + (8 - i), (int)((board[0].getX() - board[0].getWidth())*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
+				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((board[7*8].getY() + board[0].getHeight()) * Game.SCALE) + Game.YOFF);
 			}
 		}
 		
@@ -397,7 +397,7 @@ public class Chess extends Scene{
 		for (String line : wMoveHistory.split("\n"))
 		{
 			if(y > 90 && y < 450)
-				g.drawString(line, 20, y);
+				g.drawString(line, (int)(20*Game.SCALE) + Game.XOFF, (int)(y*Game.SCALE) + Game.YOFF);
 			y += h;
 		}
 			
@@ -406,7 +406,7 @@ public class Chess extends Scene{
 		for (String line : bMoveHistory.split("\n"))
 		{
 			if(y > 90 && y < 450)
-				g.drawString(line, 120, y);
+				g.drawString(line, (int)(120*Game.SCALE) + Game.XOFF, (int)(y*Game.SCALE) + Game.YOFF);
 			y += h;
 		}
 		

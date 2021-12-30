@@ -1,8 +1,6 @@
 package objects.pieces;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Tile;
@@ -13,13 +11,6 @@ public class Bishop extends Piece{
 		super(t, c);
 	}
 	
-	@Override
-	public void renderText(Graphics g)
-	{
-		g.setFont(new Font("Arial", 1, 20));
-		g.drawString("B", (int)x - 10, (int)y + 10);
-	}
-
 	@Override
 	public String getName()
 	{

@@ -60,11 +60,10 @@ public class MainMenu extends Scene
 		settings.renderText(g);
 		exit.renderText(g);
 		
-		Font font = new Font("Bell", 1, 75);
-		g.setFont(font);
+		g.setFont(new Font("Bell", 1, (int)(75*Game.SCALE)));
 		g.setColor(Color.WHITE);
-		int textWidth = (int)(g.getFontMetrics(font).stringWidth("CHESS")/Game.SCALE);
-		g.drawString("CHESS", (int) ((Game.WIDTH/2 - textWidth/2)*Game.SCALE), (int) ((Game.HEIGHT/2 - 100)*Game.SCALE));
+		int textWidth = g.getFontMetrics().stringWidth("CHESS");
+		g.drawString("CHESS", (int) (Game.WIDTH*Game.SCALE/2) - textWidth/2 + Game.XOFF, (int) ((Game.HEIGHT/2 - 100)*Game.SCALE) + Game.YOFF);
 	}
 	
 	@Override

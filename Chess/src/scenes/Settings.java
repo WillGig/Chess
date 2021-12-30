@@ -54,11 +54,11 @@ public class Settings extends Scene{
 		showCoords.renderText(g);
 		returnToMenu.renderText(g);
 		
-		Font font = new Font("Bell", 1, 60);
+		Font font = new Font("Bell", 1, (int)(60*Game.SCALE));
 		g.setFont(font);
 		g.setColor(Color.WHITE);
-		int textWidth = (int)(g.getFontMetrics(font).stringWidth("SETTINGS")/Game.SCALE);
-		g.drawString("SETTINGS", (int) ((Game.WIDTH/2 - textWidth/2)*Game.SCALE), (int) ((Game.HEIGHT/2 - 150)*Game.SCALE));
+		int textWidth = g.getFontMetrics(font).stringWidth("SETTINGS");
+		g.drawString("SETTINGS", (int) (Game.WIDTH*Game.SCALE/2) - textWidth/2 + Game.XOFF, (int) ((Game.HEIGHT/2 - 150)*Game.SCALE) + Game.YOFF);
 	}
 
 	@Override

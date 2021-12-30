@@ -1,8 +1,6 @@
 package objects.pieces;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.ImageButton;
@@ -49,13 +47,6 @@ public class Pawn extends Piece{
 	public String getNotationName()
 	{
 		return "";
-	}
-	
-	@Override
-	public void renderText(Graphics g)
-	{
-		g.setFont(new Font("Arial", 1, 20));
-		g.drawString("P", (int)x - 10, (int)y + 10);
 	}
 	
 	@Override

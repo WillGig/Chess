@@ -1,4 +1,6 @@
 package utils;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -9,14 +11,14 @@ import java.awt.event.MouseWheelListener;
 
 import game.Game;
 
-public class InputHandler implements KeyListener, MouseMotionListener, MouseListener, MouseWheelListener
+public class InputHandler implements KeyListener, MouseMotionListener, MouseListener, MouseWheelListener, ComponentListener
 {
 
 	public static int MOUSEX, MOUSEY;
 	private static int MOUSESCROLL;
 	private static boolean[] key = new boolean[68836];
 	private static boolean MOUSE1CLICKED = false, MOUSE2CLICKED = false;
-	public static boolean DRAGGING = false;
+	public static boolean DRAGGING = false, RESIZED = false;
 
 	public static boolean KeyPressed(int k)
 	{
@@ -82,14 +84,14 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 
 	public void mouseDragged(MouseEvent e) 
 	{
-		MOUSEX = (int) (e.getX()/Game.SCALE);
-		MOUSEY = (int) (e.getY()/Game.SCALE);
+		MOUSEX = (int) ((e.getX() - Game.XOFF)/Game.SCALE);
+		MOUSEY = (int) ((e.getY() - Game.YOFF)/Game.SCALE);
 	}
 
 	public void mouseMoved(MouseEvent e) 
 	{
-		MOUSEX = (int) (e.getX()/Game.SCALE);
-		MOUSEY = (int) (e.getY()/Game.SCALE);
+		MOUSEX = (int) ((e.getX() - Game.XOFF)/Game.SCALE);
+		MOUSEY = (int) ((e.getY() - Game.YOFF)/Game.SCALE);
 	}
 
 	public void keyPressed(KeyEvent e) 
@@ -115,5 +117,37 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 		MOUSESCROLL = 0;
 		return scroll;
 	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		int w = e.getComponent().getWidth();
+		int h = e.getComponent().getHeight();
+		
+		float wRatio = w/800.0f;
+		float hRatio = h/632.0f;
+		
+		if(wRatio > hRatio)
+		{
+			Game.SCALE = hRatio;
+			Game.YOFF = 0;
+			Game.XOFF = (int)(w - Game.WIDTH*Game.SCALE - 16)/2;
+		}
+		else
+		{
+			Game.SCALE = wRatio;
+			Game.YOFF = (int)(h - Game.HEIGHT*Game.SCALE - 38)/2;
+			Game.XOFF = 0;
+		}
+		RESIZED = true;
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {}
 	
 }

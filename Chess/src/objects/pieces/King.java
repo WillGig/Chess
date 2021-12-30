@@ -1,8 +1,6 @@
 package objects.pieces;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import objects.Tile;
@@ -23,13 +21,6 @@ public class King extends Piece{
 	public String getNotationName()
 	{
 		return "K";
-	}
-	
-	@Override
-	public void renderText(Graphics g)
-	{
-		g.setFont(new Font("Arial", 1, 20));
-		g.drawString("K", (int)x - 10, (int)y + 10);
 	}
 
 	@Override

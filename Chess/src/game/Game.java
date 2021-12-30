@@ -19,9 +19,9 @@ import utils.Texture;
 
 public class Game implements Runnable
 {
-	public static final int WIDTH = 800, HEIGHT = 600;
+	public static int WIDTH = 800, HEIGHT = 600, XOFF = 0, YOFF = 0;
 	
-	public static final float SCALE = 1.0f;
+	public static float SCALE = 1.0f;
 
 	public static boolean SHOWFPS = false, CAPFPS = true;
 	
@@ -52,14 +52,14 @@ public class Game implements Runnable
 	public Game()
 	{
 		//Set up Window Properties
-		frame = new JFrame("Game");
+		frame = new JFrame("Chess");
 		//+32 compensates window border
 		frame.setSize((int)(WIDTH * SCALE), (int)(HEIGHT * SCALE)+32);
 		canvas = new Canvas();
 		frame.add(canvas);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
+		frame.setResizable(true);
 		frame.setVisible(true);
 		
 		input = new InputHandler();
@@ -67,6 +67,9 @@ public class Game implements Runnable
 		canvas.addMouseListener(input);
 		canvas.addMouseMotionListener(input);
 		canvas.addMouseWheelListener(input);
+		frame.addComponentListener(input);
+		
+		canvas.setBackground(Color.BLACK);
 		
 		//Link pixels in image to int[] pixels
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -202,7 +205,13 @@ public class Game implements Runnable
 		//Render pixel array and all text
 		Graphics g = bufferStrat.getDrawGraphics();
 		
-		g.drawImage(image, 0, 0, (int)(WIDTH*SCALE), (int)(HEIGHT*SCALE), null);
+		if(InputHandler.RESIZED)
+		{
+			g.clearRect(0, 0, (int)(WIDTH*SCALE) + XOFF*2, (int)(HEIGHT*SCALE) + YOFF*2);
+			InputHandler.RESIZED = false;
+		}
+		
+		g.drawImage(image, XOFF, YOFF, (int)(WIDTH*SCALE), (int)(HEIGHT*SCALE), null);
 		
 		scenes[currentScene].renderText(g);
 		
@@ -210,14 +219,14 @@ public class Game implements Runnable
 		{
 			g.setColor(Color.WHITE);
 			g.setFont(new Font("Courier", 1, (int)(20*SCALE)));
-			g.drawString(fps, (int) (10*SCALE), (int) (25*SCALE));
+			g.drawString(fps, (int) (10*SCALE)+XOFF, (int) (25*SCALE)+YOFF);
 		}
 		
 		//Scene Fade in
 		if(sceneFade > fadeSpeed)
 		{
 			g.setColor(new Color(0.0f, 0.0f, 0.0f, sceneFade));
-			g.fillRect(0, 0, (int)(WIDTH*SCALE), (int)(HEIGHT*SCALE));
+			g.fillRect(XOFF, YOFF, (int)(WIDTH*SCALE), (int)(HEIGHT*SCALE));
 		}
 
 		g.dispose();

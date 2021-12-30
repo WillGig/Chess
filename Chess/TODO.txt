@@ -1,9 +1,5 @@
 TODO:
 
-Save settings options
-
-Resizing window
-
 click on move history
 
 Database functionality?

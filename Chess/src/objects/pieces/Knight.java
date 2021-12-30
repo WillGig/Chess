@@ -1,8 +1,6 @@
 package objects.pieces;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -24,13 +22,6 @@ public class Knight extends Piece{
 	public String getNotationName()
 	{
 		return "N";
-	}
-	
-	@Override
-	public void renderText(Graphics g)
-	{
-		g.setFont(new Font("Arial", 1, 20));
-		g.drawString("N", (int)x - 10, (int)y + 10);
 	}
 	
 	static Point[] moveCoords = new Point[] {new Point(2, 1), new Point(2, -1), new Point(-2, 1), new Point(-2, -1),

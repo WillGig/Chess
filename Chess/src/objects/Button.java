@@ -14,7 +14,7 @@ public class Button extends GameObject
 	
 	private int color = 0xffaaaaaa;
 	private int textColor = 0;
-	private Font font;
+	private int fontSize;
 	
 	private boolean selected, clicked;
 	
@@ -30,7 +30,7 @@ public class Button extends GameObject
 		
 		image = new Texture(width, height, pixels);
 		
-		font = new Font("Times", 1, (int)(20*Game.SCALE));
+		fontSize = 20;
 	}
 
 	@Override
@@ -61,9 +61,9 @@ public class Button extends GameObject
 			g.setColor(new Color(0xffffff));
 		else
 			g.setColor(new Color(textColor));
-		g.setFont(font);
+		g.setFont(new Font("Times", 1, (int)(fontSize*Game.SCALE)));
 		
-		g.drawString(text, (int)((x - g.getFontMetrics().stringWidth(text)/2)), (int)((y + g.getFontMetrics().getHeight()/2 - 4)*Game.SCALE));
+		g.drawString(text, (int)((x*Game.SCALE + Game.XOFF - g.getFontMetrics().stringWidth(text)/2)), (int)(((y-4)*Game.SCALE + g.getFontMetrics().getHeight()/2 + Game.YOFF)));
 	}
 	
 	public int getColor()
@@ -94,9 +94,9 @@ public class Button extends GameObject
 		textColor = color;
 	}
 	
-	public void setFont(Font f)
+	public void setFontSize(int size)
 	{
-		font = f;
+		fontSize = size;
 	}
 	
 	public boolean IsClicked()

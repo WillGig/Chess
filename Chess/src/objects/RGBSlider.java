@@ -31,7 +31,7 @@ public class RGBSlider extends GameObject{
 		colorDemo = new Texture(25, 25, new int[25 * 25]);
 		
 		reset = new Button(Game.WIDTH/2 + 250, y, 80, 20, "Reset");
-		reset.setFont(new Font("Times", 1, (int)(12*Game.SCALE)));
+		reset.setFontSize(12);
 		
 		setValue(defaultValue);
 		
@@ -73,9 +73,8 @@ public class RGBSlider extends GameObject{
 	public void renderText(Graphics g)
 	{
 		g.setColor(Color.WHITE);
-		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
-		g.setFont(font);
-		g.drawString(label, (int) ((x - 250)*Game.SCALE), (int) ((y + 5)*Game.SCALE));
+		g.setFont(new Font("Times", 0, (int)(16*Game.SCALE)));
+		g.drawString(label, (int) ((x - 250)*Game.SCALE  + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
 		
 		reset.renderText(g);
 	}

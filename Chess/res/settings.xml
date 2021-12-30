@@ -2,9 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>res/settings.xml</comment>
-<entry key="lightColor">-6212</entry>
-<entry key="darkColor">-10079232</entry>
+<entry key="darkColor">-11390050</entry>
+<entry key="lightColor">-6160</entry>
 <entry key="showCoords">1</entry>
-<entry key="fpsCap">1</entry>
+<entry key="fpsCap">0</entry>
 <entry key="showFPS">0</entry>
 </properties>
