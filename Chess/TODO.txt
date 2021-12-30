@@ -1,7 +1,9 @@
 TODO:
 
-Allow clicking on move history to move 
-backward and forward (also arrow keys)
+Refactor move history into state buttons?
+Bold current move
+
+Sound
 
 Database functionality?
 	- save and load games

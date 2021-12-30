@@ -3,6 +3,7 @@ package scenes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import game.Game;
@@ -65,11 +66,11 @@ public class Chess extends Scene{
 		{
 			//Scroll through moves
 			int scrollAmount = InputHandler.getMouseScroll() * 40;
-			if(turnNumber > 15)
+			if(turnNumber > 30)
 			{
 				historyScroll -= scrollAmount;
 				
-				int cap = 100 - (turnNumber-15)*24;
+				int cap = 100 - (turnNumber-30)*12;
 				if(gameState != GameState.ONGOING)
 					cap -= 72;
 				
@@ -81,25 +82,34 @@ public class Chess extends Scene{
 			else
 				historyScroll = 100;
 			
-			//Check if move is clicked
+			//Check if a move in the move history is clicked
 			int selectedMove = getSelectedMove();
 			if(selectedMove != -1 && selectedMove < previousPositions.size())
-			{
 				loadState(previousPositions.get(selectedMove));
-				
-				while(previousPositions.size() > selectedMove)
-					previousPositions.remove(previousPositions.size() - 1);
-			}
-				
 		}
 			
+		//Check if arrow keys are pressed
+		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
+		{
+			if(turnNumber < previousPositions.size() - 1)
+				loadState(previousPositions.get(turnNumber + 1));
+		}
+		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT))
+		{
+			if(turnNumber - 1 > -1)
+				loadState(previousPositions.get(turnNumber-1));
+		}
+		
 		//Undo Button
 		undo.update();
 		if(undo.IsClicked())
 		{
-			if(previousPositions.size() > 0)
+			if(previousPositions.size() > 1)
 			{
-				loadState(previousPositions.get(previousPositions.size()-1));
+				State s = previousPositions.get(previousPositions.size()-2);
+				loadState(s);
+				wMoveHistory = s.whiteMoves;
+				bMoveHistory = s.blackMoves;
 				previousPositions.remove(previousPositions.size()-1);
 			}
 		}
@@ -211,8 +221,6 @@ public class Chess extends Scene{
 	
 	public void move(Tile t)
 	{
-		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber, fiftyMoves));
-		
 		Pawn.enPassantTile = 0;
 		Pawn.epPawn = null;
 		
@@ -267,17 +275,25 @@ public class Chess extends Scene{
 		else if(King.findKing(board, turn).inCheck(board))
 			moveText += "+";
 		
-		if(turn == Color.BLACK)
+		//Override later moves
+		if(turnNumber != previousPositions.size() - 1)
 		{
-			turnNumber++;
-			wMoveHistory += turnNumber + ". " + moveText + "\n";
+			State s = previousPositions.get(turnNumber);
+			wMoveHistory = s.whiteMoves;
+			bMoveHistory = s.blackMoves;
+			while(turnNumber != previousPositions.size() - 1)
+				previousPositions.remove(previousPositions.size()-1);
 		}
+		
+		if(turn == Color.BLACK)
+			wMoveHistory += (turnNumber/2 + 1) + ". " + moveText + "\n";
 		else
 			bMoveHistory += moveText + "\n";
+		turnNumber++;
 		
 		//Automatically scroll to new move
-		if(turnNumber > 15 && historyScroll > 100 - (turnNumber-15)*24)
-			historyScroll = 100 - (turnNumber-15)*24;
+		if(turnNumber > 30 && historyScroll > 100 - (turnNumber-30)*12)
+			historyScroll = 100 - (turnNumber-30)*12;
 		
 		if(gameState == GameState.CHECKMATE)
 		{
@@ -297,8 +313,10 @@ public class Chess extends Scene{
 		else if(gameState == GameState.FIFTYMOVEDRAW)
 			wMoveHistory += "Draw by 50\nMove Rule";
 		
-		if(gameState != GameState.ONGOING && (turnNumber > 15 && historyScroll > 100 - (turnNumber-12)*24))
-			historyScroll = 100 - (turnNumber-12)*24;
+		if(gameState != GameState.ONGOING && (turnNumber > 30 && historyScroll > 100 - (turnNumber-24)*12))
+			historyScroll = 100 - (turnNumber-24)*12;
+		
+		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber, fiftyMoves));
 		
 		selectedPieceTile = null;
 		draggingPiece = null;
@@ -353,8 +371,6 @@ public class Chess extends Scene{
 	public void loadState(State s)
 	{
 		s.LoadState(board);
-		wMoveHistory = s.whiteMoves;
-		bMoveHistory = s.blackMoves;
 		gameState = s.gState;
 		turn = s.turn;
 		turnNumber = s.moveNumber;
@@ -504,6 +520,7 @@ public class Chess extends Scene{
 		
 		gameState = GameState.ONGOING;
 		previousPositions = new ArrayList<State>();
+		previousPositions.add(new State(board, "", "", gameState, turn, 0, 0));
 		
 		turnNumber = 0;
 		fiftyMoves = 0;
@@ -528,7 +545,7 @@ public class Chess extends Scene{
 			int cY = InputHandler.MOUSEY;
 			if(cX > pX - w/2 && cX < pX + w/2 && cY > pY - h/2 && cY < pY + h/2)
 				if(InputHandler.MouseClickedAndSetFalse(1))
-					return i + 1;
+					return i+1;
 		}
 		
 		return -1;
