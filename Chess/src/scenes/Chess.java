@@ -377,7 +377,7 @@ public class Chess extends Scene{
 		
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
-				t.RenderHighLighted(pixels);	
+				t.RenderHighLighted(pixels);
 		
 		if(draggingPiece != null)
 			draggingPiece.render(pixels);

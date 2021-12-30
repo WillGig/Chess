@@ -9,7 +9,7 @@ public class ImageButton extends Button{
 	public ImageButton(double x, double y, int width, int height, String image) {
 		super(x, y, width, height, "");
 		
-		img = Texture.GetTexture(image);
+		img = Texture.getTexture(image);
 	}
 	
 	@Override

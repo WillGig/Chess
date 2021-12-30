@@ -23,7 +23,7 @@ public class Tile extends GameObject{
 		for(int i = 0; i < width*height; i++)
 		{
 			pixels[i] = color;
-			highlightedPixels[i] = 0x77ffffff;
+			highlightedPixels[i] = 0xaaffffff;
 		}
 		image = new Texture(width, height, pixels);
 		highlightedImage = new Texture(width, height, highlightedPixels);
@@ -31,10 +31,7 @@ public class Tile extends GameObject{
 
 	public void RenderHighLighted(int[] pixels)
 	{
-		Texture temp = image;
-		image = highlightedImage;
-		render(pixels);
-		image = temp;
+		highlightedImage.render(x, y, pixels);
 	}
 	
 	@Override
