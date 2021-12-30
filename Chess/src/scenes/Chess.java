@@ -19,6 +19,7 @@ import objects.pieces.Piece;
 import objects.pieces.Queen;
 import objects.pieces.Rook;
 import utils.InputHandler;
+import utils.Sound.SoundEffect;
 import utils.Texture;
 
 public class Chess extends Scene{
@@ -96,12 +97,20 @@ public class Chess extends Scene{
 		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
 		{
 			if(turnNumber < previousPositions.size() - 1)
+			{
+				int numP = getNumPieces();
 				loadState(previousPositions.get(turnNumber + 1));
+				if(numP == getNumPieces())
+					SoundEffect.MOVE.play();
+				else
+					SoundEffect.CAPTURE.play();
+			}
 		}
 		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT))
 		{
 			if(turnNumber - 1 > -1)
 				loadState(previousPositions.get(turnNumber-1));
+				
 		}
 		
 		//Undo Button
@@ -317,6 +326,11 @@ public class Chess extends Scene{
 		
 		selectedPieceTile = null;
 		draggingPiece = null;
+		
+		if(captured == null)
+			SoundEffect.MOVE.play();
+		else
+			SoundEffect.CAPTURE.play();
 	}
 	
 	public void updateGameState()
@@ -536,5 +550,14 @@ public class Chess extends Scene{
 				return i;
 		}
 		return -1;
+	}
+	
+	private int getNumPieces()
+	{
+		int num = 0;
+		for(int i = 0; i < board.length; i++)
+			if(board[i].GetPiece() != null)
+				num++;
+		return num;
 	}
 }

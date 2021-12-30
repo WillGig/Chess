@@ -8,12 +8,15 @@ import game.Game;
 import objects.Button;
 import objects.CheckBox;
 import objects.RGBSlider;
+import objects.Slider;
 import utils.SaveLoadManager;
+import utils.Sound;
 
 public class Settings extends Scene{
 
 	private RGBSlider darkColor, lightColor;
 	private CheckBox showFPS, capFPS, showCoords;
+	private Slider sound;
 	
 	private Button returnToMenu;
 	
@@ -26,6 +29,7 @@ public class Settings extends Scene{
 		capFPS.update();
 		Game.CAPFPS = capFPS.isChecked();
 		showCoords.update();
+		sound.update();
 		
 		returnToMenu.update();
 		if(returnToMenu.IsClicked())
@@ -42,6 +46,7 @@ public class Settings extends Scene{
 		showFPS.render(pixels);
 		capFPS.render(pixels);
 		showCoords.render(pixels);
+		sound.render(pixels);
 		returnToMenu.render(pixels);
 	}
 
@@ -52,6 +57,7 @@ public class Settings extends Scene{
 		showFPS.renderText(g);
 		capFPS.renderText(g);
 		showCoords.renderText(g);
+		sound.renderText(g);
 		returnToMenu.renderText(g);
 		
 		Font font = new Font("Bell", 1, (int)(60*Game.SCALE));
@@ -73,6 +79,8 @@ public class Settings extends Scene{
 		capFPS.setChecked(Game.CAPFPS);
 		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Show Coordinates");
 		showCoords.setChecked(Chess.SHOWCOORDS);
+		sound = new Slider(Game.WIDTH/2, Game.HEIGHT/2 + 100, 200, "Sound", 0.0f, 1.0f);
+		sound.setValue(Sound.VOLUME);
 		
 		returnToMenu = new Button(Game.WIDTH/2, Game.HEIGHT * .8, 150, 50, "RETURN");
 	}
@@ -82,6 +90,7 @@ public class Settings extends Scene{
 		Chess.DARKCOLOR = darkColor.getValue();
 		Chess.LIGHTCOLOR = lightColor.getValue();
 		Chess.SHOWCOORDS = showCoords.isChecked();
+		Sound.VOLUME = sound.getValue();
 		SaveLoadManager.saveSettings();
 	}
 

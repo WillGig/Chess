@@ -58,7 +58,7 @@ public class Slider extends GameObject
 		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
 		g.setFont(font);
 		g.drawString(label, (int) ((x - 250)*Game.SCALE) + Game.XOFF, (int) ((y + 5)*Game.SCALE) + Game.YOFF);
-		g.drawString(String.format("%.3g%n", value), (int) ((x + width/2 + 20)*Game.SCALE + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
+		g.drawString(String.format("%.3g%n", value), (int) ((x + width/2 + 35)*Game.SCALE + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
 	}
 	
 	public float getValue()

@@ -52,7 +52,8 @@ public class Sound {
 	
 	public enum SoundEffect{
 		
-		BEEP("/bip.wav");
+		MOVE("/move.wav"),
+		CAPTURE("/capture.wav");
 		
 		public static float EFFECTVOLUME = 1.0f;
 		

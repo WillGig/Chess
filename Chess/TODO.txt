@@ -1,7 +1,5 @@
 TODO:
 
-Sound
-
 Database functionality?
 	- save and load games
 	- multiple lines
