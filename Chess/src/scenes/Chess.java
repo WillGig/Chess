@@ -91,7 +91,7 @@ public class Chess extends Scene{
 		
 		//Update move history positions
 		for(int i = 1; i < previousPositions.size(); i++)
-			previousPositions.get(i).setY(historyScroll + ((i-1)/2) * 24.0f*Game.SCALE + Game.YOFF);
+			previousPositions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f) + Game.YOFF);
 			
 		//Check if arrow keys are pressed
 		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
@@ -391,6 +391,10 @@ public class Chess extends Scene{
 			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
 		else
 			Pawn.epPawn = null;
+		promoting = null;
+		moveOptions = null;
+		selectedPieceTile = null;
+		draggingPiece = null;
 		
 		for(State state : previousPositions)
 			state.setTextColor(0xffaaaaaa);
@@ -445,11 +449,11 @@ public class Chess extends Scene{
 		
 		if(gameState != GameState.ONGOING)
 		{
-			int y = (int) (historyScroll + ((previousPositions.size())/2 + 0.5f) * 24.0f*Game.SCALE + Game.YOFF);
-			if(y > 90 && y < 450)
+			int y = (int) ((historyScroll + (previousPositions.size()/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
+			if(y > 90*Game.SCALE && y < 450*Game.SCALE)
 				g.drawString(score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
-			if(y > 90 && y < 450)
+			if(y > 90*Game.SCALE && y < 450*Game.SCALE)
 				g.drawString(result, (int) (20*Game.SCALE + Game.XOFF), y);
 		}
 			

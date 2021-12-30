@@ -1,5 +1,7 @@
 TODO:
 
+flip board option
+
 Database functionality?
 	- save and load games
 	- multiple lines
