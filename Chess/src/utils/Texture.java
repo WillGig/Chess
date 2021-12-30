@@ -94,7 +94,7 @@ public class Texture {
 		return null;
 	}
 	
-	public static String GetTextureName(Texture tex)
+	public static String getTextureName(Texture tex)
 	{
 		if(textures.containsValue(tex))
 		{
@@ -107,7 +107,7 @@ public class Texture {
 		return null;
 	}
 	
-	public static void LoadAllTextures()
+	public static void loadAllTextures()
 	{
 		textures = new HashMap<String, Texture>();
 		

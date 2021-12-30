@@ -75,7 +75,7 @@ public class Game implements Runnable
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		pixels = ((DataBufferInt)(image.getRaster().getDataBuffer())).getData();
 		
-		Texture.LoadAllTextures();
+		Texture.loadAllTextures();
 		
 		scenes = new Scene[3];
 		scenes[0] = new MainMenu();

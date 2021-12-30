@@ -121,7 +121,7 @@ public class Chess extends Scene{
 				b.update();
 				if(b.IsClicked())
 				{
-					promotionPiece = Texture.GetTextureName(b.GetButtonImage()).substring(0, 1);
+					promotionPiece = Texture.getTextureName(b.GetButtonImage()).substring(0, 1);
 					move(promotionSquare);
 				}
 			}
@@ -499,6 +499,8 @@ public class Chess extends Scene{
 		selectedPieceTile = null;
 		promoting = null;
 		promotionPiece = null;
+		Pawn.enPassantTile = -1;
+		Pawn.epPawn = null;
 		
 		gameState = GameState.ONGOING;
 		previousPositions = new ArrayList<State>();
