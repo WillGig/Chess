@@ -1,6 +1,7 @@
 TODO:
 
-click on move history
+Allow clicking on move history to move 
+backward and forward (also arrow keys)
 
 Database functionality?
 	- save and load games

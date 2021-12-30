@@ -61,9 +61,9 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
-		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
+			//Scroll through moves
 			int scrollAmount = InputHandler.getMouseScroll() * 40;
 			if(turnNumber > 15)
 			{
@@ -78,6 +78,19 @@ public class Chess extends Scene{
 				else if(historyScroll < cap)
 					historyScroll = cap;
 			}
+			else
+				historyScroll = 100;
+			
+			//Check if move is clicked
+			int selectedMove = getSelectedMove();
+			if(selectedMove != -1 && selectedMove < previousPositions.size())
+			{
+				loadState(previousPositions.get(selectedMove));
+				
+				while(previousPositions.size() > selectedMove)
+					previousPositions.remove(previousPositions.size() - 1);
+			}
+				
 		}
 			
 		//Undo Button
@@ -495,5 +508,27 @@ public class Chess extends Scene{
 		historyScroll = 100;
 		wMoveHistory = "";
 		bMoveHistory = "";
+	}
+	
+	private int getSelectedMove()
+	{
+		if(!InputHandler.MouseClicked(1))
+			return -1;
+		
+		for(int i = 0; i < previousPositions.size(); i++)
+		{
+			int pX = (int)(50*Game.SCALE) + (i%2) * 100;
+			int pY = historyScroll - 10 + (int)(24*Game.SCALE)*(i/2);
+			int w = 70;
+			int h = 20;
+			
+			int cX = InputHandler.MOUSEX;
+			int cY = InputHandler.MOUSEY;
+			if(cX > pX - w/2 && cX < pX + w/2 && cY > pY - h/2 && cY < pY + h/2)
+				if(InputHandler.MouseClickedAndSetFalse(1))
+					return i + 1;
+		}
+		
+		return -1;
 	}
 }
