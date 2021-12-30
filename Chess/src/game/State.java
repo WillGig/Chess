@@ -3,6 +3,7 @@ package game;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import objects.Button;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.King;
@@ -13,19 +14,19 @@ import objects.pieces.Queen;
 import objects.pieces.Rook;
 import scenes.Chess.GameState;
 
-public class State {
+public class State extends Button{
 
 	public String state = "", colors = "", numMoves = "";
-	public String whiteMoves, blackMoves;
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, fiftyMoves;
 	public Pawn epPawn;
 	
-	public State(Tile[] board, String wMoves, String bMoves, GameState gs, Color turn, int move, int fiftyMoves)
+	public State(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
 	{
-		whiteMoves = wMoves;
-		blackMoves = bMoves;
+		super(turn == Color.BLACK ? 50 : 150, 0, 70, 20, moveText);
+		setTextColor(0xffffffff);
+		setTextCentered(false);
 		gState = gs;
 		this.turn = turn;
 		moveNumber = move;
@@ -106,7 +107,7 @@ public class State {
 	
 	public static boolean Repitition(ArrayList<State> states, Tile[] board)
 	{
-		State currentState = new State(board, "", "", null, null, 0, 0);
+		State currentState = new State(board, "", null, null, 0, 0);
 		
 		for(int i = 0; i < states.size(); i++)
 		{

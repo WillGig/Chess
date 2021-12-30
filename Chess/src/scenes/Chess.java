@@ -47,7 +47,7 @@ public class Chess extends Scene{
 	
 	private GameState gameState;
 	
-	private String wMoveHistory, bMoveHistory;
+	private String score, result;
 	
 	private Button undo, menu;
 	
@@ -62,15 +62,15 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
+		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
-			//Scroll through moves
 			int scrollAmount = InputHandler.getMouseScroll() * 40;
-			if(turnNumber > 30)
+			if(previousPositions.size() > 30)
 			{
 				historyScroll -= scrollAmount;
 				
-				int cap = 100 - (turnNumber-30)*12;
+				int cap = 100 - (previousPositions.size()-30)*12;
 				if(gameState != GameState.ONGOING)
 					cap -= 72;
 				
@@ -81,12 +81,16 @@ public class Chess extends Scene{
 			}
 			else
 				historyScroll = 100;
-			
-			//Check if a move in the move history is clicked
-			int selectedMove = getSelectedMove();
-			if(selectedMove != -1 && selectedMove < previousPositions.size())
-				loadState(previousPositions.get(selectedMove));
 		}
+		
+		//Check if a move in the move history is clicked
+		int selectedMove = getSelectedMove();
+		if(selectedMove != -1 && selectedMove < previousPositions.size())
+			loadState(previousPositions.get(selectedMove));
+		
+		//Update move history positions
+		for(int i = 1; i < previousPositions.size(); i++)
+			previousPositions.get(i).setY(historyScroll + ((i-1)/2) * 24.0f*Game.SCALE + Game.YOFF);
 			
 		//Check if arrow keys are pressed
 		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
@@ -108,8 +112,6 @@ public class Chess extends Scene{
 			{
 				State s = previousPositions.get(previousPositions.size()-2);
 				loadState(s);
-				wMoveHistory = s.whiteMoves;
-				bMoveHistory = s.blackMoves;
 				previousPositions.remove(previousPositions.size()-1);
 			}
 		}
@@ -277,18 +279,11 @@ public class Chess extends Scene{
 		
 		//Override later moves
 		if(turnNumber != previousPositions.size() - 1)
-		{
-			State s = previousPositions.get(turnNumber);
-			wMoveHistory = s.whiteMoves;
-			bMoveHistory = s.blackMoves;
 			while(turnNumber != previousPositions.size() - 1)
 				previousPositions.remove(previousPositions.size()-1);
-		}
 		
 		if(turn == Color.BLACK)
-			wMoveHistory += (turnNumber/2 + 1) + ". " + moveText + "\n";
-		else
-			bMoveHistory += moveText + "\n";
+			moveText = (turnNumber/2 + 1) + ". " + moveText;
 		turnNumber++;
 		
 		//Automatically scroll to new move
@@ -298,25 +293,27 @@ public class Chess extends Scene{
 		if(gameState == GameState.CHECKMATE)
 		{
 			if(turn == Color.WHITE)
-				wMoveHistory += "0-1\n";
+				score = "0-1";
 			else
-				wMoveHistory += "1-0\n";
-			wMoveHistory += "Checkmate";
+				score = "1-0";
+			result = "Checkmate";
 		}
 		else if(gameState != GameState.ONGOING)
-			wMoveHistory += "1/2-1/2\n";
+			score = "1/2-1/2";
 		
 		if(gameState == GameState.STALEMATE)
-			wMoveHistory += "Draw by StaleMate";
+			result = "Draw - StaleMate";
 		else if(gameState == GameState.REPETITION)
-			wMoveHistory += "Draw by Repetition";
+			result = "Draw - Repetition";
 		else if(gameState == GameState.FIFTYMOVEDRAW)
-			wMoveHistory += "Draw by 50\nMove Rule";
+			result = "Draw - 50 Moves";
 		
 		if(gameState != GameState.ONGOING && (turnNumber > 30 && historyScroll > 100 - (turnNumber-24)*12))
 			historyScroll = 100 - (turnNumber-24)*12;
 		
-		previousPositions.add(new State(board, wMoveHistory, bMoveHistory, gameState, turn, turnNumber, fiftyMoves));
+		for(State state : previousPositions)
+			state.setTextColor(0xffaaaaaa);
+		previousPositions.add(new State(board, moveText, gameState, turn, turnNumber, fiftyMoves));
 		
 		selectedPieceTile = null;
 		draggingPiece = null;
@@ -380,6 +377,10 @@ public class Chess extends Scene{
 			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
 		else
 			Pawn.epPawn = null;
+		
+		for(State state : previousPositions)
+			state.setTextColor(0xffaaaaaa);
+		s.setTextColor(0xffffffff);
 	}
 	
 	@Override
@@ -421,24 +422,23 @@ public class Chess extends Scene{
 		
 		
 		//Move History
-		int h = g.getFontMetrics().getHeight();
-		int y = historyScroll;
-		for (String line : wMoveHistory.split("\n"))
+		for(int i = 1; i < previousPositions.size(); i++)
 		{
+			double y = previousPositions.get(i).getY();
 			if(y > 90 && y < 450)
-				g.drawString(line, (int)(20*Game.SCALE) + Game.XOFF, (int)(y*Game.SCALE) + Game.YOFF);
-			y += h;
+				previousPositions.get(i).renderText(g);
+		}
+		
+		if(gameState != GameState.ONGOING)
+		{
+			int y = (int) (historyScroll + ((previousPositions.size())/2 + 0.5f) * 24.0f*Game.SCALE + Game.YOFF);
+			if(y > 90 && y < 450)
+				g.drawString(score, (int) (20*Game.SCALE + Game.XOFF), y);
+			y += 24.0f*Game.SCALE;
+			if(y > 90 && y < 450)
+				g.drawString(result, (int) (20*Game.SCALE + Game.XOFF), y);
 		}
 			
-		
-		y = historyScroll;
-		for (String line : bMoveHistory.split("\n"))
-		{
-			if(y > 90 && y < 450)
-				g.drawString(line, (int)(120*Game.SCALE) + Game.XOFF, (int)(y*Game.SCALE) + Game.YOFF);
-			y += h;
-		}
-		
 		undo.renderText(g);
 		menu.renderText(g);
 	}
@@ -520,34 +520,21 @@ public class Chess extends Scene{
 		
 		gameState = GameState.ONGOING;
 		previousPositions = new ArrayList<State>();
-		previousPositions.add(new State(board, "", "", gameState, turn, 0, 0));
+		previousPositions.add(new State(board, "", gameState, turn, 0, 0));
 		
 		turnNumber = 0;
 		fiftyMoves = 0;
 		historyScroll = 100;
-		wMoveHistory = "";
-		bMoveHistory = "";
 	}
 	
 	private int getSelectedMove()
 	{
-		if(!InputHandler.MouseClicked(1))
-			return -1;
-		
-		for(int i = 0; i < previousPositions.size(); i++)
+		for(int i = 1; i < previousPositions.size(); i++)
 		{
-			int pX = (int)(50*Game.SCALE) + (i%2) * 100;
-			int pY = historyScroll - 10 + (int)(24*Game.SCALE)*(i/2);
-			int w = 70;
-			int h = 20;
-			
-			int cX = InputHandler.MOUSEX;
-			int cY = InputHandler.MOUSEY;
-			if(cX > pX - w/2 && cX < pX + w/2 && cY > pY - h/2 && cY < pY + h/2)
-				if(InputHandler.MouseClickedAndSetFalse(1))
-					return i+1;
+			previousPositions.get(i).update();
+			if(previousPositions.get(i).IsClicked())
+				return i;
 		}
-		
 		return -1;
 	}
 }

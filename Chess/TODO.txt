@@ -1,8 +1,5 @@
 TODO:
 
-Refactor move history into state buttons?
-Bold current move
-
 Sound
 
 Database functionality?

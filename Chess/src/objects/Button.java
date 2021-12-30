@@ -16,7 +16,7 @@ public class Button extends GameObject
 	private int textColor = 0;
 	private int fontSize;
 	
-	private boolean selected, clicked;
+	private boolean selected, clicked, textCentered;
 	
 	public Button(double x, double y, int width, int height, String text) 
 	{
@@ -31,6 +31,7 @@ public class Button extends GameObject
 		image = new Texture(width, height, pixels);
 		
 		fontSize = 20;
+		textCentered = true;
 	}
 
 	@Override
@@ -63,7 +64,13 @@ public class Button extends GameObject
 			g.setColor(new Color(textColor));
 		g.setFont(new Font("Times", 1, (int)(fontSize*Game.SCALE)));
 		
-		g.drawString(text, (int)((x*Game.SCALE + Game.XOFF - g.getFontMetrics().stringWidth(text)/2)), (int)(((y-4)*Game.SCALE + g.getFontMetrics().getHeight()/2 + Game.YOFF)));
+		int xPos = (int)(x*Game.SCALE) + Game.XOFF;
+		if(textCentered)
+			xPos -= g.getFontMetrics().stringWidth(text)/2;
+		else
+			xPos -= width/2;
+		
+		g.drawString(text, xPos, (int)(((y-4)*Game.SCALE + g.getFontMetrics().getHeight()/2 + Game.YOFF)));
 	}
 	
 	public int getColor()
@@ -97,6 +104,11 @@ public class Button extends GameObject
 	public void setFontSize(int size)
 	{
 		fontSize = size;
+	}
+	
+	public void setTextCentered(boolean centered)
+	{
+		textCentered = centered;
 	}
 	
 	public boolean IsClicked()
