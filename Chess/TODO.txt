@@ -1,6 +1,7 @@
 TODO:
 
 Add tags to PGN reading and writing
+Add result to PGN reading
 
 Database functionality?
 	- save and load games

@@ -60,10 +60,10 @@ public class SaveLoadManager {
 			
 			states.add(new State(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
 			
+			int counter = -1;
 			while(reader.hasNextLine())
 			{
 				String data = reader.nextLine();
-				int counter = -1;
 				for(String s : data.split(" "))
 				{
 					counter++;
@@ -119,7 +119,7 @@ public class SaveLoadManager {
 		Pawn.epPawn = -1;
 		
 		//Castling
-		if(move.equals("0-0"))
+		if(move.equals("O-O"))
 		{
 			if(turn == Color.WHITE)
 			{
@@ -135,7 +135,7 @@ public class SaveLoadManager {
 			}
 			return;
 		}
-		else if(move.equals("0-0-0"))
+		else if(move.equals("O-O-O"))
 		{
 			if(turn == Color.WHITE)
 			{

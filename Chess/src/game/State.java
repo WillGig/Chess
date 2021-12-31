@@ -25,6 +25,7 @@ public class State extends Button{
 	{
 		super(turn == Color.BLACK ? 50 : 150, 0, 70, 20, moveText);
 		setTextColor(0xffffffff);
+		setFontSize(16);
 		setTextCentered(false);
 		gState = gs;
 		this.turn = turn;

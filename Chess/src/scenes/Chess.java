@@ -307,9 +307,9 @@ public class Chess extends Scene{
 		moveText += t.getSquareName();
 		
 		if(castling == 2)
-			moveText = "0-0";
+			moveText = "O-O";
 		else if(castling == -2)
-			moveText = "0-0-0";
+			moveText = "O-O-O";
 		
 		//50 Move Rule
 		if(t.GetPiece() instanceof Pawn || captured != null)
