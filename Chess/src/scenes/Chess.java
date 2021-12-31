@@ -555,9 +555,13 @@ public class Chess extends Scene{
 	{
 		for(int i = 1; i < previousPositions.size(); i++)
 		{
-			previousPositions.get(i).update();
-			if(previousPositions.get(i).IsClicked())
-				return i;
+			double y = previousPositions.get(i).getY();
+			if(y > 90 && y < 450)
+			{
+				previousPositions.get(i).update();
+				if(previousPositions.get(i).IsClicked())
+					return i;
+			}
 		}
 		return -1;
 	}
