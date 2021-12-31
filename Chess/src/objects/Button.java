@@ -68,7 +68,7 @@ public class Button extends GameObject
 		if(textCentered)
 			xPos -= g.getFontMetrics().stringWidth(text)/2;
 		else
-			xPos -= width/2;
+			xPos -= width*Game.SCALE/2;
 		
 		g.drawString(text, xPos, (int)(((y-4)*Game.SCALE + g.getFontMetrics().getHeight()/2 + Game.YOFF)));
 	}
