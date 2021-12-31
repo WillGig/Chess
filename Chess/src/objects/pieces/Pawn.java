@@ -10,8 +10,7 @@ public class Pawn extends Piece{
 
 	private int direction;
 	
-	public static int enPassantTile;
-	public static Pawn epPawn;
+	public static int enPassantTile, epPawn;
 	
 	private ImageButton[] promotionOptions;
 	
@@ -55,7 +54,7 @@ public class Pawn extends Piece{
 		//Set en passant tile if moved forward twice
 		if(Math.abs(end.getTileY() - start.getTileY()) == 2)
 		{
-			epPawn = this;
+			epPawn = end.getTileX() + end.getTileY() * 8;
 			enPassantTile = tileX + (tileY + direction)*8;
 		}
 			
@@ -107,7 +106,7 @@ public class Pawn extends Piece{
 		if(p != null && p.getColor() != getColor())
 			moves.add(board[tileX + 1 + (tileY + direction) * 8]);
 		
-		if(epPawn != null && board[enPassantTile].getTileY() == tileY + direction)
+		if(epPawn != -1 && board[enPassantTile].getTileY() == tileY + direction)
 		{
 			if(Math.abs(board[enPassantTile].getTileX() - tileX) < 2)
 				moves.add(board[enPassantTile]);

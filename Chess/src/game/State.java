@@ -19,8 +19,7 @@ public class State extends Button{
 	public String state = "", colors = "", numMoves = "", score = "", result = "";
 	public GameState gState;
 	public Color turn;
-	public int moveNumber, epSquare, fiftyMoves;
-	public Pawn epPawn;
+	public int moveNumber, epSquare, epPawn, fiftyMoves;
 	
 	public State(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
 	{

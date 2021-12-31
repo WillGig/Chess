@@ -256,8 +256,8 @@ public class Chess extends Scene{
 	
 	public void move(Tile t)
 	{
-		Pawn.enPassantTile = 0;
-		Pawn.epPawn = null;
+		Pawn.enPassantTile = -1;
+		Pawn.epPawn = -1;
 		
 		//Check for castling
 		int castling = 0;
@@ -427,10 +427,7 @@ public class Chess extends Scene{
 		score = s.score;
 		result = s.result;
 		Pawn.enPassantTile = s.epSquare;
-		if(s.epPawn != null)
-			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
-		else
-			Pawn.epPawn = null;
+		Pawn.epPawn = s.epPawn;
 		promoting = null;
 		moveOptions = null;
 		selectedPieceTile = null;
@@ -540,7 +537,7 @@ public class Chess extends Scene{
 		promoting = null;
 		promotionPiece = ' ';
 		Pawn.enPassantTile = -1;
-		Pawn.epPawn = null;
+		Pawn.epPawn = -1;
 		
 		gameState = GameState.ONGOING;
 		previousPositions = new ArrayList<State>();

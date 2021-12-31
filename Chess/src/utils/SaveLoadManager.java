@@ -55,6 +55,9 @@ public class SaveLoadManager {
 			Scanner reader = new Scanner(new File(path));
 			
 			Tile[] board = Tile.getDefaultBoard();
+			Pawn.enPassantTile = -1;
+			Pawn.epPawn = -1;
+			
 			states.add(new State(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
 			
 			while(reader.hasNextLine())
@@ -113,7 +116,7 @@ public class SaveLoadManager {
 	public static void makeMove(Tile[] board, String move, Color turn)
 	{
 		Pawn.enPassantTile = 0;
-		Pawn.epPawn = null;
+		Pawn.epPawn = -1;
 		
 		//Castling
 		if(move.equals("0-0"))
@@ -163,6 +166,8 @@ public class SaveLoadManager {
 		{
 			char firstChar = move.charAt(1);
 			char secondChar = move.charAt(2);
+			if(capture)
+				secondChar = move.charAt(3);
 			
 			//First Character is a file and second character is a file
 			if(isFile(firstChar) && isFile(secondChar))
@@ -171,12 +176,20 @@ public class SaveLoadManager {
 			else if(isRank(firstChar))
 				startRank = 8 - Character.getNumericValue(firstChar);
 			//file then rank then file
-			else if(move.length() > 4 && isFile(firstChar) && isRank(secondChar) && isFile(Character.valueOf(move.charAt(3))))
+			else if(move.length() > 4 && isFile(firstChar) && isRank(secondChar))
 			{
-				startFile = Character.valueOf(firstChar) - 97;
-				startRank = 8 - Character.getNumericValue(secondChar);
+				char thirdChar = move.charAt(3);
+				if(capture)
+					thirdChar = move.charAt(4);
+				if(isFile(thirdChar))
+				{
+					startFile = Character.valueOf(firstChar) - 97;
+					startRank = 8 - Character.getNumericValue(secondChar);
+				}
 			}
 		}
+		
+		System.out.println(move + " " + startFile + " " + startRank);
 		
 		//Find end square
 		int squareIndex = piece.length();

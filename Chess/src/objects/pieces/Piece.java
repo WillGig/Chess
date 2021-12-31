@@ -77,7 +77,7 @@ public abstract class Piece extends GameObject{
 		
 		//Store en passant data
 		int ept = Pawn.enPassantTile;
-		Pawn ep = Pawn.epPawn;
+		int ep = Pawn.epPawn;
 		
 		King king = King.findKing(board, getColor());
 		Tile currentTile = board[tileX + tileY * 8];
