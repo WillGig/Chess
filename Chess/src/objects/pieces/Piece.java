@@ -135,4 +135,30 @@ public abstract class Piece extends GameObject{
 	{
 		return tileY;
 	}
+	
+	//Returns a list of pieces of the same type and color as the piece moving from start to end that could also move to the end tile
+	public static ArrayList<Piece> confusingPieces(String notationName, Tile start, Tile end, Tile[] board)
+	{
+		ArrayList<Piece> cPieces = new ArrayList<Piece>();
+		
+		Color c = start.GetPiece().getColor();
+		
+		for(int i = 0; i < board.length; i++)
+		{
+			//Moving piece is not counted
+			if(i == start.getTileX() + start.getTileY()*8)
+				continue;
+			
+			Piece p = board[i].GetPiece();
+			if(p == null)
+				continue;
+			
+			//Piece must be of the same type and color
+			if(p.getColor() == c && p.getNotationName().equals(notationName))
+				if(p.getLegalMoves(board).contains(end))
+					cPieces.add(p);
+		}
+		
+		return cPieces;
+	}
 }

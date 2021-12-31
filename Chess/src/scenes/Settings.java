@@ -82,7 +82,7 @@ public class Settings extends Scene{
 		capFPS.setChecked(Game.CAPFPS);
 		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Show Coordinates");
 		showCoords.setChecked(Chess.SHOWCOORDS);
-		swapOnMove = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Swap Board After Moving");
+		swapOnMove = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Flip Board After Moving");
 		swapOnMove.setChecked(Chess.FLIPONMOVE);
 		sound = new Slider(Game.WIDTH/2, Game.HEIGHT/2 + 100, 200, "Sound", 0.0f, 1.0f);
 		sound.setValue(Sound.VOLUME);

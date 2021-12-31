@@ -16,7 +16,7 @@ import scenes.Chess.GameState;
 
 public class State extends Button{
 
-	public String state = "", colors = "", numMoves = "";
+	public String state = "", colors = "", numMoves = "", score = "", result = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, fiftyMoves;
@@ -33,6 +33,24 @@ public class State extends Button{
 		this.fiftyMoves = fiftyMoves;
 		epPawn = Pawn.epPawn;
 		epSquare = Pawn.enPassantTile;
+		
+		if(gs == GameState.CHECKMATE)
+		{
+			if(turn == Color.WHITE)
+				score = "0-1";
+			else
+				score = "1-0";
+			result = "Checkmate";
+		}
+		else if(gs != GameState.ONGOING)
+			score = "1/2-1/2";
+		
+		if(gs == GameState.STALEMATE)
+			result = "Draw - StaleMate";
+		else if(gs == GameState.REPETITION)
+			result = "Draw - Repetition";
+		else if(gs == GameState.FIFTYMOVEDRAW)
+			result = "Draw - 50 Moves";
 		
 		for(int i = 0; i < board.length; i++)
 		{
@@ -127,4 +145,30 @@ public class State extends Button{
 		return false;
 	}
 	
+	//Determines if the current positions is checkmate, Stalemate, or neither
+	public static GameState EvaluateState (Tile[] board, Color turn)
+	{
+		boolean canMove = false;
+		for(int i = 0; i < board.length; i++)
+		{
+			Piece p = board[i].GetPiece();
+			
+			if(p == null || p.getColor() != turn)
+				continue;
+			
+			if(!p.getLegalMoves(board).isEmpty())
+			{
+				canMove = true;
+				break;
+			}
+		}
+		
+		if(canMove)
+			return GameState.ONGOING;
+		
+		if(King.findKing(board, turn).inCheck(board))
+			return GameState.CHECKMATE;
+		else
+			return GameState.STALEMATE;
+	}
 }

@@ -19,6 +19,7 @@ import objects.pieces.Piece;
 import objects.pieces.Queen;
 import objects.pieces.Rook;
 import utils.InputHandler;
+import utils.SaveLoadManager;
 import utils.Sound.SoundEffect;
 import utils.Texture;
 
@@ -42,7 +43,7 @@ public class Chess extends Scene{
 	
 	private Pawn promoting = null;
 	
-	private String promotionPiece;
+	private char promotionPiece;
 	
 	public enum GameState { ONGOING, CHECKMATE, STALEMATE, REPETITION, FIFTYMOVEDRAW};
 	
@@ -66,6 +67,19 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
+		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_1))
+			SaveLoadManager.saveGame(previousPositions, "res/save.pgn");
+		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_2))
+		{
+			ArrayList<State> loadedFile = SaveLoadManager.loadGame("res/save.pgn");
+			if(loadedFile != null && loadedFile.size() > 0)
+			{
+				previousPositions = loadedFile;
+				loadState(previousPositions.get(0));
+			}
+			return;
+		}
+		
 		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
@@ -152,7 +166,7 @@ public class Chess extends Scene{
 				b.update();
 				if(b.IsClicked())
 				{
-					promotionPiece = Texture.getTextureName(b.GetButtonImage()).substring(0, 1);
+					promotionPiece = Texture.getTextureName(b.GetButtonImage()).charAt(0);
 					move(promotionSquare);
 				}
 			}
@@ -250,9 +264,38 @@ public class Chess extends Scene{
 		if(selectedPieceTile.GetPiece() instanceof King)
 			castling = t.getTileX() - selectedPieceTile.getTileX();
 		
+		//Piece name
 		String moveText = selectedPieceTile.GetPiece().getNotationName();
-		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);
 		
+		
+		//Disambiguation text
+		ArrayList<Piece> confusingPieces = Piece.confusingPieces(moveText, selectedPieceTile, t, board);
+		if(confusingPieces.size() > 0)
+		{
+			//If specifying the file is sufficient to disambiguate
+			boolean fileChange = true;
+			//If specifying the rank is sufficient to disambiguate
+			boolean rankChange = true;
+			for(Piece p : confusingPieces)
+			{
+				if(p.GetTileX() == selectedPieceTile.getTileX())
+					fileChange = false;
+				if(p.GetTileY() == selectedPieceTile.getTileY())
+					rankChange = false;
+			}
+			
+			String tileName = selectedPieceTile.getSquareName();
+			
+			if(fileChange)
+				moveText += tileName.charAt(0);
+			else if(rankChange)
+				moveText += tileName.charAt(1);
+			else
+				moveText += tileName;
+		}
+		
+		//Captured text
+		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);	
 		if(captured != null)
 		{
 			//Name column if pawn captures
@@ -260,6 +303,7 @@ public class Chess extends Scene{
 				moveText += selectedPieceTile.getSquareName().substring(0, 1);
 			moveText += "x";
 		}
+		
 		moveText += t.getSquareName();
 		
 		if(castling == 2)
@@ -273,19 +317,19 @@ public class Chess extends Scene{
 		else
 			fiftyMoves++;
 		
-		if(promotionPiece != null)
+		if(promotionPiece != ' ')
 		{
-			if(promotionPiece.equals("K"))
+			if(promotionPiece == 'K')
 				new Knight(t, promoting.getColor());
-			else if(promotionPiece.equals("B"))
+			else if(promotionPiece == 'B')
 				new Bishop(t, promoting.getColor());
-			else if(promotionPiece.equals("R"))
+			else if(promotionPiece == 'R')
 				new Rook(t, promoting.getColor());
 			else
 				new Queen(t, promoting.getColor());
 			
 			moveText += "=" + t.GetPiece().getNotationName();
-			promotionPiece = null;
+			promotionPiece = ' ';
 			promoting = null;
 		}
 		
@@ -367,29 +411,8 @@ public class Chess extends Scene{
 			return;
 		}
 		
-		//ensure the current side has legal moves
-		boolean canMove = false;
-		for(int i = 0; i < board.length; i++)
-		{
-			Piece p = board[i].GetPiece();
-			
-			if(p == null || p.getColor() != turn)
-				continue;
-			
-			if(!p.getLegalMoves(board).isEmpty())
-			{
-				canMove = true;
-				break;
-			}
-		}
-		
-		if(canMove)
-			return;
-		
-		if(King.findKing(board, turn).inCheck(board))
-			gameState = GameState.CHECKMATE;
-		else
-			gameState = GameState.STALEMATE;
+		//Checkmate, stalemate
+		gameState = State.EvaluateState(board, turn);
 	}
 
 	public void loadState(State s)
@@ -401,6 +424,8 @@ public class Chess extends Scene{
 		turn = s.turn;
 		turnNumber = s.moveNumber;
 		fiftyMoves = s.fiftyMoves;
+		score = s.score;
+		result = s.result;
 		Pawn.enPassantTile = s.epSquare;
 		if(s.epPawn != null)
 			Pawn.epPawn = (Pawn)board[s.epPawn.GetTileX() + s.epPawn.GetTileY() * 8].GetPiece();
@@ -509,51 +534,11 @@ public class Chess extends Scene{
 	{
 		turn = Color.WHITE;
 		
-		int size = 64;
-		
-		//Create board
-		board = new Tile[64];
-		for(int y = 0; y < 8; y++)
-		{
-			for(int x = 0; x < 8; x++)
-			{
-				int color = LIGHTCOLOR;
-				if((x + y % 2 + 1) % 2 == 0)
-					color = DARKCOLOR;
-				int xC = (x * size) + (Game.WIDTH - 7 * size) / 2 + 100;
-				int yC = (y * size) + (Game.HEIGHT - 7 * size) / 2 - 20;
-				board[x+y*8] = new Tile(xC, yC, size, size, x, y, color);
-			}
-		}
-			
-		//Setup pieces
-		for(int i = 0; i < 8; i++)
-		{
-			new Pawn(board[i + 6*8], Color.WHITE);
-			new Pawn(board[i + 8], Color.BLACK);
-		}
-			
-		new Rook(board[0 + 7*8], Color.WHITE);
-		new Rook(board[7 + 7*8], Color.WHITE);
-		new Knight(board[1 + 7*8], Color.WHITE);
-		new Knight(board[6 + 7*8], Color.WHITE);
-		new Bishop(board[2 + 7*8], Color.WHITE);
-		new Bishop(board[5 + 7*8], Color.WHITE);
-		new Queen(board[3 + 7*8], Color.WHITE);
-		new King(board[4 + 7*8], Color.WHITE);
-		
-		new Rook(board[0 + 0*8], Color.BLACK);
-		new Rook(board[7 + 0*8], Color.BLACK);
-		new Knight(board[1 + 0*8], Color.BLACK);
-		new Knight(board[6 + 0*8], Color.BLACK);
-		new Bishop(board[2 + 0*8], Color.BLACK);
-		new Bishop(board[5 + 0*8], Color.BLACK);
-		new Queen(board[3 + 0*8], Color.BLACK);
-		new King(board[4 + 0*8], Color.BLACK);
+		board = Tile.getDefaultBoard();
 		
 		selectedPieceTile = null;
 		promoting = null;
-		promotionPiece = null;
+		promotionPiece = ' ';
 		Pawn.enPassantTile = -1;
 		Pawn.epPawn = null;
 		

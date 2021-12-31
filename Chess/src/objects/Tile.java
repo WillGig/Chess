@@ -1,6 +1,16 @@
 package objects;
 
+import java.awt.Color;
+
+import game.Game;
+import objects.pieces.Bishop;
+import objects.pieces.King;
+import objects.pieces.Knight;
+import objects.pieces.Pawn;
 import objects.pieces.Piece;
+import objects.pieces.Queen;
+import objects.pieces.Rook;
+import scenes.Chess;
 import utils.InputHandler;
 import utils.Texture;
 
@@ -108,6 +118,52 @@ public class Tile extends GameObject{
 			if(board[i].ContainsCursor())
 				return board[i];
 		return null;
+	}
+	
+
+	public static Tile[] getDefaultBoard()
+	{
+		//Create board
+		Tile[] board = new Tile[64];
+		for(int y = 0; y < 8; y++)
+		{
+			for(int x = 0; x < 8; x++)
+			{
+				int color = Chess.LIGHTCOLOR;
+				if((x + y % 2 + 1) % 2 == 0)
+					color = Chess.DARKCOLOR;
+				int xC = (x * 64) + (Game.WIDTH - 7 * 64) / 2 + 100;
+				int yC = (y * 64) + (Game.HEIGHT - 7 * 64) / 2 - 20;
+				board[x+y*8] = new Tile(xC, yC, 64, 64, x, y, color);
+			}
+		}
+					
+		//Setup pieces
+		for(int i = 0; i < 8; i++)
+		{
+			new Pawn(board[i + 6*8], Color.WHITE);
+			new Pawn(board[i + 8], Color.BLACK);
+		}
+			
+		new Rook(board[0 + 7*8], Color.WHITE);
+		new Rook(board[7 + 7*8], Color.WHITE);
+		new Knight(board[1 + 7*8], Color.WHITE);
+		new Knight(board[6 + 7*8], Color.WHITE);
+		new Bishop(board[2 + 7*8], Color.WHITE);
+		new Bishop(board[5 + 7*8], Color.WHITE);
+		new Queen(board[3 + 7*8], Color.WHITE);
+		new King(board[4 + 7*8], Color.WHITE);
+		
+		new Rook(board[0 + 0*8], Color.BLACK);
+		new Rook(board[7 + 0*8], Color.BLACK);
+		new Knight(board[1 + 0*8], Color.BLACK);
+		new Knight(board[6 + 0*8], Color.BLACK);
+		new Bishop(board[2 + 0*8], Color.BLACK);
+		new Bishop(board[5 + 0*8], Color.BLACK);
+		new Queen(board[3 + 0*8], Color.BLACK);
+		new King(board[4 + 0*8], Color.BLACK);
+		
+		return board;
 	}
 	
 }

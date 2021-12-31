@@ -1,5 +1,7 @@
 TODO:
 
+Add tags to PGN reading and writing
+
 Database functionality?
 	- save and load games
 	- multiple lines
