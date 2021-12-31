@@ -51,6 +51,14 @@ public class Tile extends GameObject{
 			containedPiece.render(pixels);
 	}
 	
+	@Override
+	public void renderAtPosition(double x, double y, int[] pixels)
+	{
+		super.renderAtPosition(x, y, pixels);
+		if(containedPiece != null)
+			containedPiece.renderAtPosition(x, y, pixels);
+	}
+	
 	public int getTileX()
 	{
 		return tileX;

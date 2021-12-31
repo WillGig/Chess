@@ -52,6 +52,8 @@ public class SaveLoadManager {
 		saveVariable("darkColor", Chess.DARKCOLOR, path);
 		saveVariable("lightColor", Chess.LIGHTCOLOR, path);
 		saveVariable("showCoords", Chess.SHOWCOORDS, path);
+		saveVariable("flipOnMove", Chess.FLIPONMOVE, path);
+		saveVariable("volume", (int)(Sound.VOLUME*100), path);
 	}
 	
 	public static void loadSettings()
@@ -66,6 +68,8 @@ public class SaveLoadManager {
 			Chess.DARKCOLOR = Integer.parseInt(settings.getProperty("darkColor"));
 			Chess.LIGHTCOLOR =  Integer.parseInt(settings.getProperty("lightColor"));
 			Chess.SHOWCOORDS = Integer.parseInt(settings.getProperty("showCoords")) == 1;
+			Chess.FLIPONMOVE = Integer.parseInt(settings.getProperty("flipOnMove")) == 1;
+			Sound.VOLUME = Integer.parseInt(settings.getProperty("volume"))/100.0f;
 			
 			read.close();
 		}

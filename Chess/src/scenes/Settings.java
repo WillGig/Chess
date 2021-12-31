@@ -15,7 +15,7 @@ import utils.Sound;
 public class Settings extends Scene{
 
 	private RGBSlider darkColor, lightColor;
-	private CheckBox showFPS, capFPS, showCoords;
+	private CheckBox showFPS, capFPS, showCoords, swapOnMove;
 	private Slider sound;
 	
 	private Button returnToMenu;
@@ -29,6 +29,7 @@ public class Settings extends Scene{
 		capFPS.update();
 		Game.CAPFPS = capFPS.isChecked();
 		showCoords.update();
+		swapOnMove.update();
 		sound.update();
 		
 		returnToMenu.update();
@@ -46,6 +47,7 @@ public class Settings extends Scene{
 		showFPS.render(pixels);
 		capFPS.render(pixels);
 		showCoords.render(pixels);
+		swapOnMove.render(pixels);
 		sound.render(pixels);
 		returnToMenu.render(pixels);
 	}
@@ -57,6 +59,7 @@ public class Settings extends Scene{
 		showFPS.renderText(g);
 		capFPS.renderText(g);
 		showCoords.renderText(g);
+		swapOnMove.renderText(g);
 		sound.renderText(g);
 		returnToMenu.renderText(g);
 		
@@ -69,16 +72,18 @@ public class Settings extends Scene{
 
 	@Override
 	public void start() {
-		darkColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Dark Squares", 0xff663400);
+		darkColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 80, 200, "Dark Squares", 0xff663400);
 		darkColor.setValue(Chess.DARKCOLOR);
-		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 20, 200, "Light Squares", 0xffFFE7BC);
+		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Light Squares", 0xffFFE7BC);
 		lightColor.setValue(Chess.LIGHTCOLOR);
-		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 10, "Show FPS");
+		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 - 20, "Show FPS");
 		showFPS.setChecked(Game.SHOWFPS);
-		capFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Cap FPS");
+		capFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 10, "Cap FPS");
 		capFPS.setChecked(Game.CAPFPS);
-		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Show Coordinates");
+		showCoords = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 40, "Show Coordinates");
 		showCoords.setChecked(Chess.SHOWCOORDS);
+		swapOnMove = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Swap Board After Moving");
+		swapOnMove.setChecked(Chess.FLIPONMOVE);
 		sound = new Slider(Game.WIDTH/2, Game.HEIGHT/2 + 100, 200, "Sound", 0.0f, 1.0f);
 		sound.setValue(Sound.VOLUME);
 		
@@ -90,6 +95,7 @@ public class Settings extends Scene{
 		Chess.DARKCOLOR = darkColor.getValue();
 		Chess.LIGHTCOLOR = lightColor.getValue();
 		Chess.SHOWCOORDS = showCoords.isChecked();
+		Chess.FLIPONMOVE = swapOnMove.isChecked();
 		Sound.VOLUME = sound.getValue();
 		SaveLoadManager.saveSettings();
 	}

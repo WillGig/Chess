@@ -26,7 +26,7 @@ public class Chess extends Scene{
 
 	public static int DARKCOLOR = 0xff663400, LIGHTCOLOR = 0xffFFE7BC;
 	
-	public static boolean SHOWCOORDS = true, CANCONTINUE = false;
+	public static boolean SHOWCOORDS = true, CANCONTINUE = false, FLIPONMOVE = false;
 	
 	private Color turn;
 	
@@ -50,7 +50,7 @@ public class Chess extends Scene{
 	
 	private String score, result;
 	
-	private Button undo, menu;
+	private Button undo, menu, forward, back, swap;
 	
 	private ArrayList<State> previousPositions;
 	
@@ -58,6 +58,9 @@ public class Chess extends Scene{
 	{
 		undo = new Button(60, 500, 75, 50, "UNDO");
 		menu = new Button(150, 500, 75, 50, "MENU");
+		forward = new Button(180, 560, 50, 30, "->");
+		back = new Button(40, 560, 50, 30, "<-");
+		swap = new Button(110, 560, 70, 30, "^v");
 	}
 	
 	@Override
@@ -93,8 +96,10 @@ public class Chess extends Scene{
 		for(int i = 1; i < previousPositions.size(); i++)
 			previousPositions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f) + Game.YOFF);
 			
-		//Check if arrow keys are pressed
-		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
+		//Check if arrow keys or forward and back buttons are pressed
+		forward.update();
+		back.update();
+		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT) || forward.IsClicked())
 		{
 			if(turnNumber < previousPositions.size() - 1)
 			{
@@ -106,12 +111,17 @@ public class Chess extends Scene{
 					SoundEffect.CAPTURE.play();
 			}
 		}
-		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT))
+		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
 		{
 			if(turnNumber - 1 > -1)
 				loadState(previousPositions.get(turnNumber-1));
 				
 		}
+		
+		//Swap Button
+		swap.update();
+		if(swap.IsClicked())
+			flip();
 		
 		//Undo Button
 		undo.update();
@@ -324,6 +334,9 @@ public class Chess extends Scene{
 			state.setTextColor(0xffaaaaaa);
 		previousPositions.add(new State(board, moveText, gameState, turn, turnNumber, fiftyMoves));
 		
+		if(FLIPONMOVE)
+			flip();
+		
 		selectedPieceTile = null;
 		draggingPiece = null;
 		
@@ -383,6 +396,8 @@ public class Chess extends Scene{
 	{
 		s.LoadState(board);
 		gameState = s.gState;
+		if(turn != s.turn && FLIPONMOVE)
+			flip();
 		turn = s.turn;
 		turnNumber = s.moveNumber;
 		fiftyMoves = s.fiftyMoves;
@@ -406,6 +421,9 @@ public class Chess extends Scene{
 	{
 		undo.render(pixels);
 		menu.render(pixels);
+		forward.render(pixels);
+		back.render(pixels);
+		swap.render(pixels);
 		
 		for(int i = 0; i < board.length; i++)
 			board[i].render(pixels);
@@ -433,8 +451,8 @@ public class Chess extends Scene{
 		{
 			for(int i = 0; i < 8; i++)
 			{
-				g.drawString("" + (8 - i), (int)((board[0].getX() - board[0].getWidth())*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
-				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((board[7*8].getY() + board[0].getHeight()) * Game.SCALE) + Game.YOFF);
+				g.drawString("" + (8 - i), (int)((Game.WIDTH/2 - 190)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
+				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 270) * Game.SCALE) + Game.YOFF);
 			}
 		}
 		
@@ -459,6 +477,9 @@ public class Chess extends Scene{
 			
 		undo.renderText(g);
 		menu.renderText(g);
+		forward.renderText(g);
+		back.renderText(g);
+		swap.renderText(g);
 	}
 
 	@Override
@@ -563,5 +584,35 @@ public class Chess extends Scene{
 			if(board[i].GetPiece() != null)
 				num++;
 		return num;
+	}
+	
+	private void flip()
+	{
+		for(int i = 0; i < board.length/2; i++)
+		{
+			Tile t1 = board[i];
+			Tile t2 = board[board.length-i-1];
+			
+			double x1 = t1.getX();
+			double y1 = t1.getY();
+			double x2 = t2.getX();
+			double y2 = t2.getY();
+			
+			t1.setX(x2);
+			t1.setY(y2);
+			if(t1.GetPiece() != null)
+			{
+				t1.GetPiece().setX(x2);
+				t1.GetPiece().setY(y2);
+			}
+			
+			t2.setX(x1);
+			t2.setY(y1);
+			if(t2.GetPiece() != null)
+			{
+				t2.GetPiece().setX(x1);
+				t2.GetPiece().setY(y1);
+			}
+		}
 	}
 }
