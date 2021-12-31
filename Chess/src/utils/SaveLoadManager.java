@@ -189,8 +189,6 @@ public class SaveLoadManager {
 			}
 		}
 		
-		System.out.println(move + " " + startFile + " " + startRank);
-		
 		//Find end square
 		int squareIndex = piece.length();
 		if(capture)
@@ -230,7 +228,7 @@ public class SaveLoadManager {
 		if(move.contains("="))
 		{
 			char promotionPiece = move.charAt(squareIndex+3);
-			if(promotionPiece == 'K')
+			if(promotionPiece == 'N')
 				new Knight(end, turn);
 			else if(promotionPiece == 'B')
 				new Bishop(end, turn);

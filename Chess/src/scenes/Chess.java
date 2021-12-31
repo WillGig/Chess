@@ -319,7 +319,7 @@ public class Chess extends Scene{
 		
 		if(promotionPiece != ' ')
 		{
-			if(promotionPiece == 'K')
+			if(promotionPiece == 'N')
 				new Knight(t, promoting.getColor());
 			else if(promotionPiece == 'B')
 				new Bishop(t, promoting.getColor());
