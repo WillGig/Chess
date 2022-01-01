@@ -32,6 +32,9 @@ public class SaveLoadManager {
 	{
 		try
 		{
+			if(!path.contains(".pgn"))
+				path += ".pgn";
+			
 			File file = new File(path);
 			if (!file.exists()) {
 				file.createNewFile();
@@ -61,11 +64,66 @@ public class SaveLoadManager {
 			states.add(new State(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
 			
 			int counter = -1;
+			boolean readingComment = false;
+			String comment = "";
+			String result = "";
 			while(reader.hasNextLine())
 			{
 				String data = reader.nextLine();
+				if(data.length() < 1)
+					continue;
+				
+				if(data.charAt(0) == '[')
+				{
+					System.out.println("Game Data: " + data);
+					if(data.length() > 6 && data.substring(1, 7).equals("Result"))
+					{
+						result = data.substring(8);
+						result = result.substring(1, result.length()-2);
+					}
+					continue;
+				}
+				
 				for(String s : data.split(" "))
 				{
+					if(s.charAt(0) == '{')
+						readingComment = true;
+					
+					if(readingComment)
+					{
+						comment += s + " ";
+						if(s.charAt(s.length()-1) == '}')
+						{
+							readingComment = false;
+							System.out.println("Comment: " + comment);
+							comment = "";
+						}
+						continue;
+					}
+					
+					if(s.equals(result))
+					{
+						State finalState = states.get(states.size()-1);
+						finalState.score = result;
+						if(result.equals("1/2-1/2"))
+						{
+							finalState.gState = GameState.DRAW;
+							finalState.result = "Draw by agreement";
+						}
+						else if(result.equals("1-0"))
+						{
+							finalState.gState = GameState.CHECKMATE;
+							finalState.result = "White wins by resignation";
+						}
+						else if(result.equals("0-1"))
+						{
+							finalState.gState = GameState.CHECKMATE;
+							finalState.result = "Black wins by resignation";
+						}
+						reader.close();
+						return states;
+					}
+						
 					counter++;
 					//Move number
 					if(counter%3 == 0)

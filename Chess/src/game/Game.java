@@ -175,8 +175,8 @@ public class Game implements Runnable
 				updates = 0;
 			}
 		}
-		
 		frame.dispose();
+		System.exit(0);
 	}
 	
 	private void update()
