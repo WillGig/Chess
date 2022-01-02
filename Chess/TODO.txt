@@ -4,8 +4,7 @@ add scroll bar
 
 change result to dropdown menu
 
-allow moving cursor by clicking/arrow keys
-
+improve clicking accuracy with scale
 allow highlighting text?
 
 Database functionality?

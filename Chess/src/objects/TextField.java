@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
 
 import game.Game;
 import utils.InputHandler;
@@ -11,7 +12,8 @@ import utils.Texture;
 
 public class TextField extends GameObject{
 
-	private int fontSize, borderColor, fillColor, borderWidth, numLines, maxChars, maxCharsPerLine, blinkTimer;
+	private int fontSize, borderColor, fillColor, borderWidth, 
+	numLines, maxChars, maxCharsPerLine, blinkTimer, cursorIndex;
 	
 	private boolean selected;
 	public boolean nextField;
@@ -89,12 +91,19 @@ public class TextField extends GameObject{
 		maxCharsPerLine = (int)(width / ((float)fontSize * .5));
 		maxChars = (height/fontSize) * maxCharsPerLine;
 		
-		if(InputHandler.MouseClicked(1))
-			setSelected(false);
-		
 		if(containsCursor() && InputHandler.MouseClicked(1))
-			setSelected(true);
-		
+		{
+			if(selected)
+				setCursorPosition(getPositionAtClick());
+			else
+			{
+				setSelected(true);
+				cursorIndex = text.length();
+			}
+		}
+		else if(InputHandler.MouseClicked(1))
+			setSelected(false);
+			
 		if(selected)
 		{
 			blinkTimer++;
@@ -103,19 +112,22 @@ public class TextField extends GameObject{
 			{
 				if(InputHandler.KEYPRESSED == KeyEvent.VK_BACK_SPACE)
 				{
-					if(text.length() > 0)
+					if(cursorIndex > 0)
 					{
-						if(text.charAt(text.length()-1) == '\n')
+						if(text.charAt(cursorIndex-1) == '\n')
 							numLines--;
-						text = text.substring(0, text.length()-1);
+							
+						text = text.substring(0, cursorIndex-1) + text.substring(cursorIndex);
+						cursorIndex--;
 					}
 				}
 				else if(InputHandler.KEYPRESSED == KeyEvent.VK_ENTER)
 				{
 					if(height > (numLines + 1)*fontSize)
 					{
-						text += "\n";
+						text = text.substring(0, cursorIndex) + "\n" + text.substring(cursorIndex);
 						numLines++;
+						cursorIndex++;
 					}
 					else
 					{
@@ -124,9 +136,35 @@ public class TextField extends GameObject{
 					}
 				}
 				else if(text.length() < maxChars)
-					text += InputHandler.KEYPRESSED;
+				{
+					text = text.substring(0, cursorIndex) + InputHandler.KEYPRESSED + text.substring(cursorIndex);
+					cursorIndex++;
+				}
 					
 				InputHandler.KEYPRESSED = null;
+			}
+			
+			if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT))
+			{
+				if(cursorIndex < text.length())
+					cursorIndex++;
+			}
+			else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT))
+			{
+				if(cursorIndex > 0)
+					cursorIndex--;
+			}
+			else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_UP))
+			{
+				CursorPosition pos = getCursorPosition();
+				if(pos.lineNumber > 1)
+					setCursorPosition(new CursorPosition(pos.x, pos.lineNumber-1));
+			}
+			else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_DOWN))
+			{
+				CursorPosition pos = getCursorPosition();
+				if(pos.lineNumber < numLines)
+					setCursorPosition(new CursorPosition(pos.x, pos.lineNumber+1));
 			}
 		}
 	}
@@ -144,6 +182,9 @@ public class TextField extends GameObject{
 		g.setColor(Color.BLACK);
 		
 		String line = text;
+		int cursorXPos = -1;
+		int cursorYPos = yPos;
+		int cursorXIndex = cursorIndex;
 		while(line.length() > maxCharsPerLine || line.contains("\n"))
 		{
 			String splitLine = line;
@@ -161,12 +202,27 @@ public class TextField extends GameObject{
 				
 			splitLine = splitLine.substring(0, endIndex);
             g.drawString(splitLine, xPos, yPos);
+            
+            if(cursorXPos == -1)
+            {
+            	if(splitLine.length() < cursorXIndex)
+            	{
+            		cursorXIndex -= splitLine.length()+1;
+            		cursorYPos += fontSize*Game.SCALE;
+            	}
+                else
+                	cursorXPos = g.getFontMetrics().stringWidth(splitLine.substring(0, cursorXIndex));
+            }
+            
             line = line.substring(endIndex+1);
             yPos += fontSize*Game.SCALE;
 		}
 		g.drawString(line, xPos, yPos);
+		if(cursorXPos == -1)
+			cursorXPos = g.getFontMetrics().stringWidth(line.substring(0, cursorXIndex));
+		
 		if(selected && blinkTimer % 60 < 30)
-			g.drawString("|", xPos + g.getFontMetrics().stringWidth(line), yPos);
+			g.drawString("|", xPos + cursorXPos, cursorYPos);
 	}
 	
 	private void setBorderColor(int color)
@@ -230,5 +286,150 @@ public class TextField extends GameObject{
 		}
 		else
 			setBorderColor(0xff555555);
+	}
+	
+	public class CursorPosition
+	{
+		public int x, lineNumber;
+		
+		public CursorPosition(int x, int lineNumber)
+		{
+			this.x = x;
+			this.lineNumber = lineNumber;
+		}
+	}
+	
+	private CursorPosition getCursorPosition()
+	{
+		String line = text;
+		int cursorPosition = cursorIndex;
+		int lineNumber = 1;
+		while(line.length() > maxCharsPerLine || line.contains("\n"))
+		{
+			String splitLine = line;
+			if(line.length() > maxCharsPerLine)
+				splitLine = line.substring(0,maxCharsPerLine);
+			
+			int endIndex;
+			
+			if(splitLine.contains("\n"))
+				endIndex = splitLine.indexOf('\n');
+			else if(splitLine.contains(" "))
+				endIndex = splitLine.lastIndexOf(' ');
+			else
+				endIndex = maxCharsPerLine;
+				
+			splitLine = splitLine.substring(0, endIndex);
+            
+        	if(splitLine.length() < cursorPosition)
+        		cursorPosition -= splitLine.length()+1;
+            else
+            	return new CursorPosition(cursorPosition, lineNumber);
+            
+        	lineNumber++;
+            line = line.substring(endIndex+1);
+		}
+		return new CursorPosition(cursorPosition, lineNumber);
+	}
+	
+	private CursorPosition getPositionAtClick()
+	{
+		int mX = InputHandler.MOUSEX;
+		int mY = InputHandler.MOUSEY;
+		
+		int lineNumber = (int) ((mY - (y-height/2+5))/fontSize)+1;
+		
+		if(lineNumber < 1)
+			lineNumber = 1;
+		if(lineNumber > numLines)
+			lineNumber = numLines;
+	
+		String text = getLine(lineNumber);
+		
+		Font f = new Font("Arial", 1, (int)(fontSize*Game.SCALE));
+		FontRenderContext frc = new FontRenderContext(f.getTransform(), false, true);
+		
+		for(int i = 0; i < text.length(); i++)
+		{
+			int xPos = (int) (f.getStringBounds(text.substring(0, i), frc).getWidth() + (x - width/2 + 10));
+			if(mX < xPos)
+				return new CursorPosition(i, lineNumber);
+		}
+		
+		return new CursorPosition(text.length(), lineNumber);
+	}
+	
+	private String getLine(int ln)
+	{
+		String line = text;
+		int lineNumber = 1;
+		while(line.length() > maxCharsPerLine || line.contains("\n"))
+		{
+			String splitLine = line;
+			if(line.length() > maxCharsPerLine)
+				splitLine = line.substring(0,maxCharsPerLine);
+			
+			int endIndex;
+			
+			if(splitLine.contains("\n"))
+				endIndex = splitLine.indexOf('\n');
+			else if(splitLine.contains(" "))
+				endIndex = splitLine.lastIndexOf(' ');
+			else
+				endIndex = maxCharsPerLine;
+				
+			splitLine = splitLine.substring(0, endIndex);
+            
+        	if(lineNumber == ln)
+        		return splitLine;
+            
+        	lineNumber++;
+            line = line.substring(endIndex+1);
+		}
+		if(lineNumber == ln)
+			return line;
+		return "";
+	}
+	
+	private void setCursorPosition(CursorPosition cp)
+	{
+		String line = text;
+		int index = 0;
+		int lineNumber = 1;
+		while(line.length() > maxCharsPerLine || line.contains("\n"))
+		{
+			String splitLine = line;
+			if(line.length() > maxCharsPerLine)
+				splitLine = line.substring(0,maxCharsPerLine);
+			
+			int endIndex;
+			
+			if(splitLine.contains("\n"))
+				endIndex = splitLine.indexOf('\n');
+			else if(splitLine.contains(" "))
+				endIndex = splitLine.lastIndexOf(' ');
+			else
+				endIndex = maxCharsPerLine;
+				
+			splitLine = splitLine.substring(0, endIndex);
+            
+			if(lineNumber == cp.lineNumber)
+			{
+				if(cp.x > splitLine.length())
+					cursorIndex = splitLine.length() + index;
+				else
+					cursorIndex = cp.x + index;
+				return;
+			}
+			else
+				index += splitLine.length()+1;
+			
+        	lineNumber++;
+            line = line.substring(endIndex+1);
+		}
+		if(cp.x > line.length())
+			cursorIndex = line.length() + index;
+		else
+			cursorIndex = cp.x + index;
 	}
 }
