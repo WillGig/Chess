@@ -123,7 +123,7 @@ public class Slider extends GameObject
 						x = maxX;
 				}
 			}
-			else if(ContainsCursor())
+			else if(containsCursor())
 			{
 				if(InputHandler.MouseClicked(1) && ! InputHandler.DRAGGING)
 				{

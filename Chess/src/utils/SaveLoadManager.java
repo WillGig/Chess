@@ -13,7 +13,8 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import game.Game;
-import game.State;
+import game.GameData;
+import game.Position;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.Knight;
@@ -28,7 +29,7 @@ public class SaveLoadManager {
 	
 	private static Properties settings = new Properties();
 	
-	public static void saveGame(ArrayList<State> states, String path)
+	public static void saveGame(GameData gd, String path)
 	{
 		try
 		{
@@ -41,17 +42,38 @@ public class SaveLoadManager {
 			}
 			FileWriter writer = new FileWriter(path);
 			
-			for(int i = 1; i < states.size(); i++)
-				writer.write(states.get(i).getText() + " ");
+			if(gd.event.length() > 0)
+				writer.write("[Event \"" + gd.event + "\"]\n");
+			if(gd.site.length() > 0)
+				writer.write("[Site \"" + gd.site + "\"]\n");
+			if(gd.date.length() > 0)
+				writer.write("[Date \"" + gd.date + "\"]\n");
+			if(gd.round.length() > 0)
+				writer.write("[Round \"" + gd.round + "\"]\n");
+			if(gd.white.length() > 0)
+				writer.write("[White \"" + gd.white + "\"]\n");
+			if(gd.black.length() > 0)
+				writer.write("[Black \"" + gd.black + "\"]\n");
+			if(gd.result.length() > 0)
+				writer.write("[Result \"" + gd.result + "\"]\n");
+			
+			for(int i = 1; i < gd.positions.size(); i++)
+			{
+				writer.write(gd.positions.get(i).getText() + " ");
+				String moveComments = gd.positions.get(i).comments;
+				if(moveComments.length() > 0)
+					writer.write("{" + moveComments + "} ");
+			}
 			
 			writer.close();
 		}
 		catch(Exception ex) {}
 	}
 	
-	public static ArrayList<State> loadGame(String path)
+	public static GameData loadGame(String path)
 	{
-		ArrayList<State> states = new ArrayList<State>();
+		String event = "", site = "", date = "", round = "", white = "", black = "", result = "";
+		ArrayList<Position> states = new ArrayList<Position>();
 		
 		try
 		{
@@ -61,12 +83,11 @@ public class SaveLoadManager {
 			Pawn.enPassantTile = -1;
 			Pawn.epPawn = -1;
 			
-			states.add(new State(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
+			states.add(new Position(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
 			
 			int counter = -1;
 			boolean readingComment = false;
 			String comment = "";
-			String result = "";
 			while(reader.hasNextLine())
 			{
 				String data = reader.nextLine();
@@ -75,11 +96,50 @@ public class SaveLoadManager {
 				
 				if(data.charAt(0) == '[')
 				{
-					System.out.println("Game Data: " + data);
-					if(data.length() > 6 && data.substring(1, 7).equals("Result"))
+					if(data.length() > 6)
 					{
-						result = data.substring(8);
-						result = result.substring(1, result.length()-2);
+						String attribute = data.substring(1, 6);
+						if(attribute.equals("Event"))
+						{
+							event = data.substring(8);
+							event = event.substring(0, event.length()-2);
+						}
+						attribute = data.substring(1, 5);
+						if(attribute.equals("Site"))
+						{
+							site = data.substring(7);
+							site = site.substring(0, site.length()-2);
+						}
+						attribute = data.substring(1, 5);
+						if(attribute.equals("Date"))
+						{
+							date = data.substring(7);
+							date = date.substring(0, date.length()-2);
+						}
+						attribute = data.substring(1, 6);
+						if(attribute.equals("Round"))
+						{
+							round = data.substring(8);
+							round = round.substring(0, round.length()-2);
+						}
+						attribute = data.substring(1, 6);
+						if(attribute.equals("White"))
+						{
+							white = data.substring(8);
+							white = white.substring(0, white.length()-2);
+						}
+						attribute = data.substring(1, 6);
+						if(attribute.equals("Black"))
+						{
+							black = data.substring(8);
+							black = black.substring(0, black.length()-2);
+						}
+						attribute = data.substring(1, 7);
+						if(attribute.equals("Result"))
+						{
+							result = data.substring(9);
+							result = result.substring(0, result.length()-2);
+						}
 					}
 					continue;
 				}
@@ -95,7 +155,8 @@ public class SaveLoadManager {
 						if(s.charAt(s.length()-1) == '}')
 						{
 							readingComment = false;
-							System.out.println("Comment: " + comment);
+							comment = comment.substring(1, comment.length()-2);
+							states.get(states.size()-1).comments = comment;
 							comment = "";
 						}
 						continue;
@@ -103,7 +164,7 @@ public class SaveLoadManager {
 					
 					if(s.equals(result))
 					{
-						State finalState = states.get(states.size()-1);
+						Position finalState = states.get(states.size()-1);
 						finalState.score = result;
 						if(result.equals("1/2-1/2"))
 						{
@@ -121,7 +182,7 @@ public class SaveLoadManager {
 							finalState.result = "Black wins by resignation";
 						}
 						reader.close();
-						return states;
+						return new GameData(states, event, site, date, round, white, black, result);
 					}
 						
 					counter++;
@@ -137,12 +198,12 @@ public class SaveLoadManager {
 			reader.close();
 		}
 		catch(Exception ex) { ex.printStackTrace(); }
-		return states;
+		return new GameData(states, event, site, date, round, white, black, result);
 	}
 	
-	public static State generateStateFromPGN(ArrayList<State> states, Tile[] board, String move)
+	public static Position generateStateFromPGN(ArrayList<Position> states, Tile[] board, String move)
 	{
-		State previousState = states.get(states.size()-1);
+		Position previousState = states.get(states.size()-1);
 		
 		makeMove(board, move, previousState.turn);
 		
@@ -160,15 +221,15 @@ public class SaveLoadManager {
 			gs = GameState.CHECKMATE;
 		else if(fiftyMoves == 100)
 			gs = GameState.FIFTYMOVEDRAW;
-		else if(State.Repitition(states, board))
+		else if(Position.Repitition(states, board))
 			gs = GameState.REPETITION;
 		else
-			gs = State.EvaluateState(board, c);
+			gs = Position.EvaluateState(board, c);
 			
 		if(c == Color.BLACK)
 			move = ((previousState.moveNumber+1)/2+1) + ". " + move;
 		
-		return new State(board, move, gs, c, previousState.moveNumber+1, fiftyMoves);
+		return new Position(board, move, gs, c, previousState.moveNumber+1, fiftyMoves);
 	}
 	
 	public static void makeMove(Tile[] board, String move, Color turn)

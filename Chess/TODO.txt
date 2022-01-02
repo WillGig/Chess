@@ -1,14 +1,12 @@
 TODO:
 
-Add tags to PGN reading and writing
+Make pressing enter go to next textbox unless there is room
+for another line
+
 Add result to PGN writing
-Add ability to write and read comments on positions
-and save them to state
 
 Database functionality?
-	- save and load games
 	- multiple lines
 	- draw arrows on board
-	- comment on positions
 
 Engine

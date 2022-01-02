@@ -9,9 +9,11 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import game.Game;
-import game.State;
+import game.GameData;
+import game.Position;
 import objects.Button;
 import objects.ImageButton;
+import objects.TextField;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.King;
@@ -53,7 +55,9 @@ public class Chess extends Scene{
 	
 	private Button save, load, menu, reset, forward, back, swap;
 	
-	private ArrayList<State> previousPositions;
+	private TextField event, site, date, round, white, black, result, comments;
+	
+	private ArrayList<Position> positions;
 	
 	public Chess()
 	{
@@ -71,6 +75,15 @@ public class Chess extends Scene{
 		back.setFontSize(16);
 		swap = new Button(110, 560, 70, 30, "FLIP");
 		swap.setFontSize(16);
+		
+		event = new TextField(950, 50, 220, 30, "Event");
+		site = new TextField(950, 90, 220, 30, "Site");
+		date = new TextField(950, 130, 220, 30, "Date");
+		round = new TextField(950, 170, 220, 30, "Round");
+		white = new TextField(950, 210, 220, 30, "White");
+		black = new TextField(950, 250, 220, 30, "Black");
+		result = new TextField(950, 290, 220, 30, "Result");
+		comments = new TextField(920, 450, 280, 240, "");
 	}
 	
 	@Override
@@ -85,7 +98,7 @@ public class Chess extends Scene{
 		    dialog.setVisible(true);
 		    String path = dialog.getDirectory() + dialog.getFile();
 		    if(dialog.getDirectory() != null && dialog.getFile() != null)
-		    	SaveLoadManager.saveGame(previousPositions, path);
+		    	SaveLoadManager.saveGame(new GameData(positions, event.getText(), site.getText(), date.getText(), round.getText(), white.getText(), black.getText(), result.getText()), path);
 		    return;
 		}
 		
@@ -99,11 +112,18 @@ public class Chess extends Scene{
 		    String file = dialog.getDirectory() + dialog.getFile();
 		    if(dialog.getDirectory() != null && dialog.getFile() != null)
 		    {
-		    	ArrayList<State> loadedFile = SaveLoadManager.loadGame(file);
-				if(loadedFile != null && loadedFile.size() > 0)
+		    	GameData loadedFile = SaveLoadManager.loadGame(file);
+				if(loadedFile != null && loadedFile.positions.size() > 0)
 				{
-					previousPositions = loadedFile;
-					loadState(previousPositions.get(0));
+					positions = loadedFile.positions;
+					loadPosition(positions.get(0));
+					event.setText(loadedFile.event);
+					site.setText(loadedFile.site);
+					date.setText(loadedFile.date);
+					round.setText(loadedFile.round);
+					white.setText(loadedFile.white);
+					black.setText(loadedFile.black);
+					result.setText(loadedFile.result);
 				}
 		    }
 		    return;
@@ -122,47 +142,58 @@ public class Chess extends Scene{
 		//Swap Button
 		swap.update();
 		if(swap.IsClicked())
-			flip();
+			Tile.flip(board);
+		
+		//Text Fields
+		event.update();
+		site.update();
+		date.update();
+		round.update();
+		white.update();
+		black.update();
+		result.update();
+		comments.update();
+		positions.get(turnNumber).comments = comments.getText();
 		
 		//Scroll through moves
 		if(InputHandler.MOUSEX < 200)
 		{
 			int scrollAmount = InputHandler.getMouseScroll() * 40;
-			if(previousPositions.size() > 30)
+			if(positions.size() > 30)
 			{
 				historyScroll -= scrollAmount;
 				
-				int cap = 100 - (previousPositions.size()-30)*12;
-				if(previousPositions.get(previousPositions.size()-1).gState != GameState.ONGOING)
+				int cap = 100 - (positions.size()-30)*12;
+				if(positions.get(positions.size()-1).gState != GameState.ONGOING)
 					cap -= 72;
 				
-				if(historyScroll > 100)
-					historyScroll = 100;
+				if(historyScroll > 40)
+					historyScroll = 40;
 				else if(historyScroll < cap)
 					historyScroll = cap;
 			}
 			else
-				historyScroll = 100;
+				historyScroll = 40;
 		}
 		
 		//Check if a move in the move history is clicked
 		int selectedMove = getSelectedMove();
-		if(selectedMove != -1 && selectedMove < previousPositions.size())
-			loadState(previousPositions.get(selectedMove));
+		if(selectedMove != -1 && selectedMove < positions.size())
+			loadPosition(positions.get(selectedMove));
 		
 		//Update move history positions
-		for(int i = 1; i < previousPositions.size(); i++)
-			previousPositions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f) + Game.YOFF);
+		for(int i = 1; i < positions.size(); i++)
+			positions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f));
 			
 		//Check if arrow keys or forward and back buttons are pressed
 		forward.update();
 		back.update();
 		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT) || forward.IsClicked())
 		{
-			if(turnNumber < previousPositions.size() - 1)
+			if(turnNumber < positions.size() - 1)
 			{
 				int numP = getNumPieces();
-				loadState(previousPositions.get(turnNumber + 1));
+				loadPosition(positions.get(turnNumber + 1));
 				if(numP == getNumPieces())
 					SoundEffect.MOVE.play();
 				else
@@ -170,11 +201,8 @@ public class Chess extends Scene{
 			}
 		}
 		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
-		{
 			if(turnNumber - 1 > -1)
-				loadState(previousPositions.get(turnNumber-1));
-				
-		}
+				loadPosition(positions.get(turnNumber-1));
 		
 		if(gameState != GameState.ONGOING)
 			return;
@@ -367,9 +395,9 @@ public class Chess extends Scene{
 		turnNumber++;
 		
 		//Override later moves
-		if(turnNumber-1 != previousPositions.size() - 1)
-			while(turnNumber-1 != previousPositions.size() - 1)
-				previousPositions.remove(previousPositions.size()-1);
+		if(turnNumber-1 != positions.size() - 1)
+			while(turnNumber-1 != positions.size() - 1)
+				positions.remove(positions.size()-1);
 		
 		//Automatically scroll to new move
 		if(turnNumber > 30 && historyScroll > 100 - (turnNumber-30)*12)
@@ -378,12 +406,13 @@ public class Chess extends Scene{
 		if(gameState != GameState.ONGOING && (turnNumber > 30 && historyScroll > 100 - (turnNumber-24)*12))
 			historyScroll = 100 - (turnNumber-24)*12;
 		
-		for(State state : previousPositions)
+		for(Position state : positions)
 			state.setTextColor(0xffaaaaaa);
-		previousPositions.add(new State(board, moveText, gameState, turn, turnNumber, fiftyMoves));
+		positions.add(new Position(board, moveText, gameState, turn, turnNumber, fiftyMoves));
+		comments.setText("");
 		
 		if(FLIPONMOVE)
-			flip();
+			Tile.flip(board);
 		
 		selectedPieceTile = null;
 		draggingPiece = null;
@@ -402,7 +431,7 @@ public class Chess extends Scene{
 			turn = Color.WHITE;
 		
 		//Check for 3 fold repetition
-		if(State.Repitition(previousPositions, board))
+		if(Position.Repitition(positions, board))
 		{
 			gameState = GameState.REPETITION;
 			return;
@@ -416,28 +445,29 @@ public class Chess extends Scene{
 		}
 		
 		//Checkmate, stalemate
-		gameState = State.EvaluateState(board, turn);
+		gameState = Position.EvaluateState(board, turn);
 	}
 
-	public void loadState(State s)
+	public void loadPosition(Position p)
 	{
-		s.LoadState(board);
-		gameState = s.gState;
-		if(turn != s.turn && FLIPONMOVE)
-			flip();
-		turn = s.turn;
-		turnNumber = s.moveNumber;
-		fiftyMoves = s.fiftyMoves;
-		Pawn.enPassantTile = s.epSquare;
-		Pawn.epPawn = s.epPawn;
+		p.LoadState(board);
+		gameState = p.gState;
+		if(turn != p.turn && FLIPONMOVE)
+			Tile.flip(board);
+		turn = p.turn;
+		turnNumber = p.moveNumber;
+		fiftyMoves = p.fiftyMoves;
+		Pawn.enPassantTile = p.epSquare;
+		Pawn.epPawn = p.epPawn;
 		promoting = null;
 		moveOptions = null;
 		selectedPieceTile = null;
 		draggingPiece = null;
+		comments.setText(p.comments);
 		
-		for(State state : previousPositions)
+		for(Position state : positions)
 			state.setTextColor(0xffaaaaaa);
-		s.setTextColor(0xffffffff);
+		p.setTextColor(0xffffffff);
 	}
 	
 	@Override
@@ -450,6 +480,15 @@ public class Chess extends Scene{
 		forward.render(pixels);
 		back.render(pixels);
 		swap.render(pixels);
+		
+		event.render(pixels);
+		site.render(pixels);
+		date.render(pixels);
+		round.render(pixels);
+		white.render(pixels);
+		black.render(pixels);
+		result.render(pixels);
+		comments.render(pixels);
 		
 		for(int i = 0; i < board.length; i++)
 			board[i].render(pixels);
@@ -477,26 +516,26 @@ public class Chess extends Scene{
 		{
 			for(int i = 0; i < 8; i++)
 			{
-				g.drawString("" + (8 - i), (int)((Game.WIDTH/2 - 190)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
+				g.drawString("" + (8 - i), (int)((210)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
 				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 270) * Game.SCALE) + Game.YOFF);
 			}
 		}
 		
 		
 		//Move History
-		for(int i = 1; i < previousPositions.size(); i++)
+		for(int i = 1; i < positions.size(); i++)
 		{
-			double y = previousPositions.get(i).getY();
-			if(y > 90 && y < 450)
-				previousPositions.get(i).renderText(g);
+			double y = positions.get(i).getY();
+			if(y > 30 && y < 450)
+				positions.get(i).renderText(g);
 		}
 		
-		State lastMove = previousPositions.get(previousPositions.size()-1);
+		Position lastMove = positions.get(positions.size()-1);
 		if(lastMove.gState != GameState.ONGOING)
 		{
 			g.setColor(Color.WHITE);
 			
-			int y = (int) ((historyScroll + (previousPositions.size()/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
+			int y = (int) ((historyScroll + (positions.size()/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
 			if(y > 90*Game.SCALE && y < 450*Game.SCALE)
 				g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
@@ -511,6 +550,15 @@ public class Chess extends Scene{
 		forward.renderText(g);
 		back.renderText(g);
 		swap.renderText(g);
+		
+		event.renderText(g);
+		site.renderText(g);
+		date.renderText(g);
+		round.renderText(g);
+		white.renderText(g);
+		black.renderText(g);
+		result.renderText(g);
+		comments.renderText(g);
 	}
 
 	@Override
@@ -549,23 +597,32 @@ public class Chess extends Scene{
 		Pawn.epPawn = -1;
 		
 		gameState = GameState.ONGOING;
-		previousPositions = new ArrayList<State>();
-		previousPositions.add(new State(board, "", gameState, turn, 0, 0));
+		positions = new ArrayList<Position>();
+		positions.add(new Position(board, "", gameState, turn, 0, 0));
+		
+		event.setText("");
+		site.setText("");
+		date.setText("");
+		round.setText("");
+		white.setText("");
+		black.setText("");
+		result.setText("");
+		comments.setText("");
 		
 		turnNumber = 0;
 		fiftyMoves = 0;
-		historyScroll = 100;
+		historyScroll = 40;
 	}
 	
 	private int getSelectedMove()
 	{
-		for(int i = 1; i < previousPositions.size(); i++)
+		for(int i = 1; i < positions.size(); i++)
 		{
-			double y = previousPositions.get(i).getY();
-			if(y > 90 && y < 450)
+			double y = positions.get(i).getY();
+			if(y > 30 && y < 450)
 			{
-				previousPositions.get(i).update();
-				if(previousPositions.get(i).IsClicked())
+				positions.get(i).update();
+				if(positions.get(i).IsClicked())
 					return i;
 			}
 		}
@@ -581,33 +638,4 @@ public class Chess extends Scene{
 		return num;
 	}
 	
-	private void flip()
-	{
-		for(int i = 0; i < board.length/2; i++)
-		{
-			Tile t1 = board[i];
-			Tile t2 = board[board.length-i-1];
-			
-			double x1 = t1.getX();
-			double y1 = t1.getY();
-			double x2 = t2.getX();
-			double y2 = t2.getY();
-			
-			t1.setX(x2);
-			t1.setY(y2);
-			if(t1.GetPiece() != null)
-			{
-				t1.GetPiece().setX(x2);
-				t1.GetPiece().setY(y2);
-			}
-			
-			t2.setX(x1);
-			t2.setY(y1);
-			if(t2.GetPiece() != null)
-			{
-				t2.GetPiece().setX(x1);
-				t2.GetPiece().setY(y1);
-			}
-		}
-	}
 }

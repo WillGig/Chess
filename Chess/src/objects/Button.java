@@ -37,7 +37,7 @@ public class Button extends GameObject
 	@Override
 	public void update() 
 	{
-		if(!InputHandler.DRAGGING && ContainsCursor())
+		if(!InputHandler.DRAGGING && containsCursor())
 		{
 			selected = true;
 			if(InputHandler.MouseClickedAndSetFalse(1))

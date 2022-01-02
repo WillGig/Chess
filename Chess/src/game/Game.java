@@ -19,7 +19,7 @@ import utils.Texture;
 
 public class Game implements Runnable
 {
-	public static int WIDTH = 800, HEIGHT = 600, XOFF = 0, YOFF = 0;
+	public static int WIDTH = 1100, HEIGHT = 600, XOFF = 0, YOFF = 0;
 	
 	public static float SCALE = 1.0f;
 

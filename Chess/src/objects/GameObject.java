@@ -91,7 +91,7 @@ public abstract class GameObject
 		return !(x + width/2 < oX - oW/2 || x - width/2 > oX+oW/2 || y + height/2 < oY - oH/2 || y - height/2 > oY + oH/2);
 	}
 	
-	public boolean ContainsCursor()
+	public boolean containsCursor()
 	{
 		int cX = InputHandler.MOUSEX;
 		int cY = InputHandler.MOUSEY;

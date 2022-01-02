@@ -14,16 +14,16 @@ import objects.pieces.Queen;
 import objects.pieces.Rook;
 import scenes.Chess.GameState;
 
-public class State extends Button{
+public class Position extends Button{
 
-	public String state = "", colors = "", numMoves = "", score = "", result = "";
+	public String state = "", colors = "", numMoves = "", score = "", result = "", comments = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, epPawn, fiftyMoves;
 	
-	public State(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
+	public Position(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
 	{
-		super(turn == Color.BLACK ? 50 : 150, 0, 70, 20, moveText);
+		super(turn == Color.BLACK ? 60 : 160, 0, 70, 20, moveText);
 		setTextColor(0xffffffff);
 		setFontSize(16);
 		setTextCentered(false);
@@ -123,9 +123,9 @@ public class State extends Button{
 		}
 	}
 	
-	public static boolean Repitition(ArrayList<State> states, Tile[] board)
+	public static boolean Repitition(ArrayList<Position> states, Tile[] board)
 	{
-		State currentState = new State(board, "", null, null, 0, 0);
+		Position currentState = new Position(board, "", null, null, 0, 0);
 		
 		for(int i = 0; i < states.size(); i++)
 		{

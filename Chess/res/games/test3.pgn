@@ -1,0 +1,8 @@
+[Event "Test Event"]
+[Site "Test Site"]
+[Date "1/1/2022"]
+[Round "2"]
+[White "Me"]
+[Black "Me again"]
+[Result "1-0"]
+1. e4 e5 2. Bc4 a6 3. Qf3 b5 4. Qxf7# 

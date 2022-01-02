@@ -47,7 +47,7 @@ public class Tile extends GameObject{
 	@Override
 	public void update() 
 	{
-		if(ContainsCursor() && InputHandler.MouseClicked(1))
+		if(containsCursor() && InputHandler.MouseClicked(1))
 			clicked = true;
 		else
 			clicked = false;
@@ -115,7 +115,7 @@ public class Tile extends GameObject{
 	public static Tile getCursorTile(Tile[] board)
 	{
 		for(int i = 0; i < board.length; i++)
-			if(board[i].ContainsCursor())
+			if(board[i].containsCursor())
 				return board[i];
 		return null;
 	}
@@ -132,7 +132,7 @@ public class Tile extends GameObject{
 				int color = Chess.LIGHTCOLOR;
 				if((x + y % 2 + 1) % 2 == 0)
 					color = Chess.DARKCOLOR;
-				int xC = (x * 64) + (Game.WIDTH - 7 * 64) / 2 + 100;
+				int xC = (x * 64) + (800 - 7 * 64) / 2 + 100;
 				int yC = (y * 64) + (Game.HEIGHT - 7 * 64) / 2 - 20;
 				board[x+y*8] = new Tile(xC, yC, 64, 64, x, y, color);
 			}
@@ -164,6 +164,36 @@ public class Tile extends GameObject{
 		new King(board[4 + 0*8], Color.BLACK);
 		
 		return board;
+	}
+	
+	public static void flip(Tile[] board)
+	{
+		for(int i = 0; i < board.length/2; i++)
+		{
+			Tile t1 = board[i];
+			Tile t2 = board[board.length-i-1];
+			
+			double x1 = t1.getX();
+			double y1 = t1.getY();
+			double x2 = t2.getX();
+			double y2 = t2.getY();
+			
+			t1.setX(x2);
+			t1.setY(y2);
+			if(t1.GetPiece() != null)
+			{
+				t1.GetPiece().setX(x2);
+				t1.GetPiece().setY(y2);
+			}
+			
+			t2.setX(x1);
+			t2.setY(y1);
+			if(t2.GetPiece() != null)
+			{
+				t2.GetPiece().setX(x1);
+				t2.GetPiece().setY(y1);
+			}
+		}
 	}
 	
 }

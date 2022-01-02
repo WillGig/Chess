@@ -17,6 +17,7 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 	public static int MOUSEX, MOUSEY;
 	private static int MOUSESCROLL;
 	private static boolean[] key = new boolean[68836];
+	public static Character KEYPRESSED = null;
 	private static boolean MOUSE1CLICKED = false, MOUSE2CLICKED = false;
 	public static boolean DRAGGING = false, RESIZED = false;
 
@@ -104,7 +105,10 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 		key[e.getExtendedKeyCode()] = false;
 	}
 
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) 
+	{
+		KEYPRESSED = new Character(e.getKeyChar());
+	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
@@ -129,8 +133,8 @@ public class InputHandler implements KeyListener, MouseMotionListener, MouseList
 		int w = e.getComponent().getWidth();
 		int h = e.getComponent().getHeight();
 		
-		float wRatio = w/800.0f;
-		float hRatio = h/632.0f;
+		float wRatio = w/(float)(Game.WIDTH);
+		float hRatio = h/((float)Game.HEIGHT+32.0f);
 		
 		if(wRatio > hRatio)
 		{
