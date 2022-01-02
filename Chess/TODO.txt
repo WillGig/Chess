@@ -1,6 +1,8 @@
 TODO:
 
-History should scroll to move when using arrow keys
+add scroll bar
+
+hex code option for rgb sliders?
 
 allow highlighting text?
 

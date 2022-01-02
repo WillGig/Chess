@@ -227,7 +227,7 @@ public class Game implements Runnable
 		//Scene Fade in
 		if(sceneFade > fadeSpeed)
 		{
-			g.setColor(new Color(0.0f, 0.0f, 0.0f, sceneFade));
+			g.setColor(DARKMODE ? new Color(0.0f, 0.0f, 0.0f, sceneFade) : new Color(1.0f, 1.0f, 1.0f, sceneFade));
 			g.fillRect(XOFF, YOFF, (int)(WIDTH*SCALE), (int)(HEIGHT*SCALE));
 		}
 

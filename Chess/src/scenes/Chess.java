@@ -232,6 +232,7 @@ public class Chess extends Scene{
 			{
 				int numP = getNumPieces();
 				loadPosition(positions.get(turnNumber + 1));
+				scrollToMove();
 				if(numP == getNumPieces())
 					SoundEffect.MOVE.play();
 				else
@@ -239,8 +240,13 @@ public class Chess extends Scene{
 			}
 		}
 		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
+		{
 			if(turnNumber - 1 > -1)
+			{
 				loadPosition(positions.get(turnNumber-1));
+				scrollToMove();
+			}
+		}
 		
 		if(gameState != GameState.ONGOING)
 			return;
@@ -438,11 +444,7 @@ public class Chess extends Scene{
 				positions.remove(positions.size()-1);
 		
 		//Automatically scroll to new move
-		if(turnNumber > 30 && historyScroll > 100 - (turnNumber-30)*12)
-			historyScroll = 100 - (turnNumber-30)*12;
-		
-		if(gameState != GameState.ONGOING && (turnNumber > 30 && historyScroll > 100 - (turnNumber-24)*12))
-			historyScroll = 100 - (turnNumber-24)*12;
+		scrollToMove();
 		
 		for(Position position : positions)
 			position.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
@@ -701,6 +703,22 @@ public class Chess extends Scene{
 			if(board[i].GetPiece() != null)
 				num++;
 		return num;
+	}
+	
+	private void scrollToMove()
+	{
+		//Check if scroll is too high
+		if(historyScroll < 40 - ((turnNumber-1)/2) * 24)
+		{
+			historyScroll = 40 - ((turnNumber-1)/2) * 24;
+			return;
+		}
+			
+		//Check if need space for result text
+		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > 100 - (turnNumber-24)*12))
+			historyScroll = 100 - ((turnNumber-23)/2)*24;
+		else if(turnNumber > 29 && historyScroll > 100 - (turnNumber-29)*12)
+			historyScroll = 100 - ((turnNumber-29)/2)*24;
 	}
 	
 }
