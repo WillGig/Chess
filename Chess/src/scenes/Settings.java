@@ -15,7 +15,7 @@ import utils.Sound;
 public class Settings extends Scene{
 
 	private RGBSlider darkColor, lightColor;
-	private CheckBox showFPS, capFPS, showCoords, swapOnMove;
+	private CheckBox showFPS, capFPS, showCoords, swapOnMove, darkMode;
 	private Slider sound;
 	
 	private Button returnToMenu;
@@ -31,6 +31,13 @@ public class Settings extends Scene{
 		showCoords.update();
 		swapOnMove.update();
 		sound.update();
+		
+		darkMode.update();
+		if(darkMode.IsClicked())
+		{
+			game.setDarkMode(darkMode.isChecked());
+			updateColor();
+		}
 		
 		returnToMenu.update();
 		if(returnToMenu.IsClicked())
@@ -48,6 +55,7 @@ public class Settings extends Scene{
 		capFPS.render(pixels);
 		showCoords.render(pixels);
 		swapOnMove.render(pixels);
+		darkMode.render(pixels);
 		sound.render(pixels);
 		returnToMenu.render(pixels);
 	}
@@ -60,12 +68,13 @@ public class Settings extends Scene{
 		capFPS.renderText(g);
 		showCoords.renderText(g);
 		swapOnMove.renderText(g);
+		darkMode.renderText(g);
 		sound.renderText(g);
 		returnToMenu.renderText(g);
 		
 		Font font = new Font("Bell", 1, (int)(60*Game.SCALE));
 		g.setFont(font);
-		g.setColor(Color.WHITE);
+		g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		int textWidth = g.getFontMetrics(font).stringWidth("SETTINGS");
 		g.drawString("SETTINGS", (int) (Game.WIDTH*Game.SCALE/2) - textWidth/2 + Game.XOFF, (int) ((Game.HEIGHT/2 - 150)*Game.SCALE) + Game.YOFF);
 	}
@@ -84,10 +93,14 @@ public class Settings extends Scene{
 		showCoords.setChecked(Chess.SHOWCOORDS);
 		swapOnMove = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 70, "Flip Board After Moving");
 		swapOnMove.setChecked(Chess.FLIPONMOVE);
-		sound = new Slider(Game.WIDTH/2, Game.HEIGHT/2 + 100, 200, "Sound", 0.0f, 1.0f);
+		darkMode = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 100, "Dark Mode");
+		darkMode.setChecked(Game.DARKMODE);
+		sound = new Slider(Game.WIDTH/2, Game.HEIGHT/2 + 130, 200, "Sound", 0.0f, 1.0f);
 		sound.setValue(Sound.VOLUME);
 		
 		returnToMenu = new Button(Game.WIDTH/2, Game.HEIGHT * .8, 150, 50, "RETURN");
+		
+		updateColor();
 	}
 	
 	private void saveSettings()
@@ -98,6 +111,18 @@ public class Settings extends Scene{
 		Chess.FLIPONMOVE = swapOnMove.isChecked();
 		Sound.VOLUME = sound.getValue();
 		SaveLoadManager.saveSettings();
+	}
+	
+	private void updateColor()
+	{
+		darkColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		lightColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		showFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		capFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		showCoords.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		swapOnMove.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		darkMode.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		sound.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 	}
 
 }

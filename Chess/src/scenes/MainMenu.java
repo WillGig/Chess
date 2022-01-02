@@ -61,7 +61,7 @@ public class MainMenu extends Scene
 		exit.renderText(g);
 		
 		g.setFont(new Font("Bell", 1, (int)(75*Game.SCALE)));
-		g.setColor(Color.WHITE);
+		g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		int textWidth = g.getFontMetrics().stringWidth("CHESS");
 		g.drawString("CHESS", (int) (Game.WIDTH*Game.SCALE/2) - textWidth/2 + Game.XOFF, (int) ((Game.HEIGHT/2 - 100)*Game.SCALE) + Game.YOFF);
 	}

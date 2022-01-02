@@ -13,7 +13,7 @@ public class Button extends GameObject
 	private String text;
 	
 	private int color = 0xffaaaaaa;
-	private int textColor = 0;
+	protected Color textColor, highlightColor;
 	private int fontSize;
 	
 	private boolean selected, clicked, textCentered;
@@ -30,6 +30,8 @@ public class Button extends GameObject
 		
 		image = new Texture(width, height, pixels);
 		
+		textColor = Color.BLACK;
+		highlightColor = Color.WHITE;
 		fontSize = 20;
 		textCentered = true;
 	}
@@ -59,9 +61,9 @@ public class Button extends GameObject
 			return;
 		
 		if(selected)
-			g.setColor(new Color(0xffffff));
+			g.setColor(highlightColor);
 		else
-			g.setColor(new Color(textColor));
+			g.setColor(textColor);
 		g.setFont(new Font("Times", 1, (int)(fontSize*Game.SCALE)));
 		
 		int xPos = (int)(x*Game.SCALE) + Game.XOFF;
@@ -91,14 +93,19 @@ public class Button extends GameObject
 		return text;
 	}
 	
-;	public int getTextColor()
+;	public Color getTextColor()
 	{
 		return textColor;
 	}
 	
-	public void setTextColor(int color)
+	public void setTextColor(Color c)
 	{
-		textColor = color;
+		textColor = c;
+	}
+	
+	public void setHighlightColor(Color c)
+	{
+		highlightColor = c;
 	}
 	
 	public void setFontSize(int size)

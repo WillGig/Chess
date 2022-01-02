@@ -444,8 +444,8 @@ public class Chess extends Scene{
 		if(gameState != GameState.ONGOING && (turnNumber > 30 && historyScroll > 100 - (turnNumber-24)*12))
 			historyScroll = 100 - (turnNumber-24)*12;
 		
-		for(Position state : positions)
-			state.setTextColor(0xffaaaaaa);
+		for(Position position : positions)
+			position.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
 		positions.add(new Position(board, moveText, gameState, turn, turnNumber, fiftyMoves));
 		comments.setText("");
 		
@@ -504,8 +504,8 @@ public class Chess extends Scene{
 		comments.setText(p.comments);
 		
 		for(Position state : positions)
-			state.setTextColor(0xffaaaaaa);
-		p.setTextColor(0xffffffff);
+			state.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
+		p.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 	}
 	
 	@Override
@@ -603,11 +603,38 @@ public class Chess extends Scene{
 	public void start() 
 	{
 		CANCONTINUE = true;
+		
+		event.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		site.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		date.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		round.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		white.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		black.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		result.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		
+		event.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		site.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		date.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		round.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		white.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		black.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		
 		if(board == null)
 		{
 			reset();
 			return;
 		}
+		
+		for(Position p : positions)
+		{
+			p.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
+			p.setHighlightColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		}
+		
+		positions.get(turnNumber).setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+			
 		
 		//Update board color
 		for(int y = 0; y < 8; y++)

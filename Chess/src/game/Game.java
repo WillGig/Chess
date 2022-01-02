@@ -23,7 +23,7 @@ public class Game implements Runnable
 	
 	public static float SCALE = 1.0f;
 
-	public static boolean SHOWFPS = false, CAPFPS = true;
+	public static boolean SHOWFPS = false, CAPFPS = true, DARKMODE = true;
 	
 	private boolean running = false;
 	
@@ -45,7 +45,7 @@ public class Game implements Runnable
 	
 	private Scene[] scenes;
 	
-	private int currentScene;
+	private int currentScene, clearColor;
 	
 	private float sceneFade, fadeSpeed;
 	
@@ -70,6 +70,7 @@ public class Game implements Runnable
 		frame.addComponentListener(input);
 		
 		canvas.setBackground(Color.BLACK);
+		clearColor = 0xff000000;
 		
 		//Link pixels in image to int[] pixels
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
@@ -89,6 +90,7 @@ public class Game implements Runnable
 		canvas.requestFocus();
 		
 		SaveLoadManager.loadSettings();
+		setDarkMode(DARKMODE);
 		
 		start();
 	}
@@ -198,7 +200,7 @@ public class Game implements Runnable
 		
 		//Draw all images to pixel array
 		for(int i = 0; i < pixels.length; i++)
-			pixels[i] = 0xff000000;
+			pixels[i] = clearColor;
 		
 		scenes[currentScene].render(pixels);
 		
@@ -217,7 +219,7 @@ public class Game implements Runnable
 		
 		if(SHOWFPS)
 		{
-			g.setColor(Color.WHITE);
+			g.setColor(DARKMODE ? Color.WHITE : Color.BLACK);
 			g.setFont(new Font("Courier", 1, (int)(20*SCALE)));
 			g.drawString(fps, (int) (10*SCALE)+XOFF, (int) (25*SCALE)+YOFF);
 		}
@@ -231,6 +233,21 @@ public class Game implements Runnable
 
 		g.dispose();
 		bufferStrat.show();
+	}
+	
+	public void setDarkMode(boolean dMode)
+	{
+		Game.DARKMODE = dMode;
+		if(dMode)
+		{
+			clearColor = 0xff000000;
+			canvas.setBackground(Color.BLACK);
+		}
+		else
+		{
+			clearColor = 0xffffffff;
+			canvas.setBackground(Color.WHITE);
+		}
 	}
 	
 	public static void main(String args[])

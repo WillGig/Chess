@@ -1,5 +1,7 @@
 TODO:
 
+History should scroll to move when using arrow keys
+
 allow highlighting text?
 
 Database functionality?

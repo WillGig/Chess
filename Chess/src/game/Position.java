@@ -24,7 +24,9 @@ public class Position extends Button{
 	public Position(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
 	{
 		super(turn == Color.BLACK ? 60 : 160, 0, 70, 20, moveText);
-		setTextColor(0xffffffff);
+		setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		if(!Game.DARKMODE)
+			setHighlightColor(Color.BLACK);
 		setFontSize(16);
 		setTextCentered(false);
 		gState = gs;

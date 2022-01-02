@@ -11,13 +11,13 @@ import utils.Texture;
 
 public class TextField extends GameObject{
 
-	private int fontSize, borderColor, fillColor, borderWidth;
+	private int fontSize, borderColor, fillColor, borderWidth, numLines, maxChars, maxCharsPerLine, blinkTimer;
 	
 	private boolean selected;
 	public boolean nextField;
 	private String text, label;
 	
-	private int numLines, maxChars, maxCharsPerLine, blinkTimer;
+	private Color labelColor;
 	
 	public TextField(double x, double y, int width, int height, String label) 
 	{
@@ -25,6 +25,7 @@ public class TextField extends GameObject{
 		
 		text = "";
 		this.label = label;
+		labelColor = Color.WHITE;
 		fontSize = 16;
 		numLines = 1;
 		maxCharsPerLine = (int)(width / ((float)fontSize * .5));
@@ -56,6 +57,7 @@ public class TextField extends GameObject{
 		
 		this.text = text;
 		this.label = label;
+		labelColor = Color.WHITE;
 		fontSize = 16;
 		numLines = 1;
 		maxCharsPerLine = width / (fontSize/2);
@@ -140,7 +142,7 @@ public class TextField extends GameObject{
 		int xPos = (int)((x - width/2 + 10) * Game.SCALE) + Game.XOFF;
 		
 		g.setFont(new Font("Arial", 1, (int)(fontSize*Game.SCALE)));
-		g.setColor(Color.WHITE);
+		g.setColor(labelColor);
 		g.drawString(label, xPos - 80, yPos);
 		
 		g.setFont(new Font("Arial", 0, (int)(fontSize*Game.SCALE)));
@@ -198,6 +200,11 @@ public class TextField extends GameObject{
 					image.data[xPix + yPix*width] = fillColor;
 			}
 		}
+	}
+	
+	public void setLabelColor(Color c)
+	{
+		labelColor = c;
 	}
 	
 	public void setText(String text)

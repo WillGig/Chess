@@ -39,7 +39,7 @@ public class CheckBox extends Button{
 	@Override
 	public void renderText(Graphics g)
 	{
-		g.setColor(Color.WHITE);
+		g.setColor(textColor);
 		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
 		g.setFont(font);
 		g.drawString(label, (int) ((x - 400)*Game.SCALE) + Game.XOFF, (int) ((y + 5)*Game.SCALE) + Game.YOFF);
@@ -62,6 +62,14 @@ public class CheckBox extends Button{
 	public void setChecked(boolean checked)
 	{
 		this.checked = checked;
+	}
+	
+	@Override
+	public void setTextColor(Color c)
+	{
+		super.setTextColor(c);
+		for(int i = 0; i < width * height; i++)
+			image.data[i] = c.getRGB();
 	}
 	
 	private class Fill extends GameObject {

@@ -4,6 +4,7 @@
 <comment>res/settings.xml</comment>
 <entry key="darkColor">-10079232</entry>
 <entry key="lightColor">-6212</entry>
+<entry key="darkMode">1</entry>
 <entry key="showCoords">1</entry>
 <entry key="volume">0</entry>
 <entry key="fpsCap">0</entry>

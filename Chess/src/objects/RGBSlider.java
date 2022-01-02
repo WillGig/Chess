@@ -17,6 +17,8 @@ public class RGBSlider extends GameObject{
 	
 	private int defaultValue;
 	
+	private Color textColor;
+	
 	private Button reset;
 	
 	public RGBSlider(double x, double y, int width, String label, int defaultValue)
@@ -35,6 +37,7 @@ public class RGBSlider extends GameObject{
 		
 		setValue(defaultValue);
 		
+		textColor = Color.WHITE;
 	}
 
 	@Override
@@ -72,7 +75,7 @@ public class RGBSlider extends GameObject{
 	@Override
 	public void renderText(Graphics g)
 	{
-		g.setColor(Color.WHITE);
+		g.setColor(textColor);
 		g.setFont(new Font("Times", 0, (int)(16*Game.SCALE)));
 		g.drawString(label, (int) ((x - 250)*Game.SCALE  + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
 		
@@ -89,6 +92,11 @@ public class RGBSlider extends GameObject{
 		r.setValue(((value & 0xff0000) >> 16)/255.0f);
 		g.setValue(((value & 0xff00) >> 8)/255.0f);
 		b.setValue((value & 0xff)/255.0f);
+	}
+	
+	public void setTextColor(Color c)
+	{
+		textColor = c;
 	}
 	
 	public void setLabel(String label)

@@ -21,6 +21,8 @@ public class Slider extends GameObject
 	
 	protected String label;
 	
+	private Color textColor;
+	
 	public Slider(double x, double y, int width, String label, float minValue, float maxValue)
 	{
 		super(x, y, width, 10);
@@ -28,6 +30,7 @@ public class Slider extends GameObject
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.label = label;
+		textColor = Color.WHITE;
 		ball = new SliderBall(x - width/2, y, width);
 		
 		int[] pixels = new int[width*height];
@@ -54,7 +57,7 @@ public class Slider extends GameObject
 	@Override
 	public void renderText(Graphics g)
 	{
-		g.setColor(Color.WHITE);
+		g.setColor(textColor);
 		Font font = new Font("Times", 0, (int)(16*Game.SCALE));
 		g.setFont(font);
 		g.drawString(label, (int) ((x - 250)*Game.SCALE) + Game.XOFF, (int) ((y + 5)*Game.SCALE) + Game.YOFF);
@@ -133,6 +136,11 @@ public class Slider extends GameObject
 					
 			}
 		}
+	}
+	
+	public void setTextColor(Color c)
+	{
+		textColor = c;
 	}
 
 }

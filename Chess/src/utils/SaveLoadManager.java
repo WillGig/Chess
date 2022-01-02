@@ -410,6 +410,7 @@ public class SaveLoadManager {
 		
 		saveVariable("showFPS", Game.SHOWFPS, path);
 		saveVariable("fpsCap", Game.CAPFPS, path);
+		saveVariable("darkMode", Game.DARKMODE, path);
 		saveVariable("darkColor", Chess.DARKCOLOR, path);
 		saveVariable("lightColor", Chess.LIGHTCOLOR, path);
 		saveVariable("showCoords", Chess.SHOWCOORDS, path);
@@ -426,6 +427,7 @@ public class SaveLoadManager {
 			
 			Game.SHOWFPS = Integer.parseInt(settings.getProperty("showFPS")) == 1;
 			Game.CAPFPS = Integer.parseInt(settings.getProperty("fpsCap")) == 1;
+			Game.DARKMODE = Integer.parseInt(settings.getProperty("darkMode")) == 1;
 			Chess.DARKCOLOR = Integer.parseInt(settings.getProperty("darkColor"));
 			Chess.LIGHTCOLOR =  Integer.parseInt(settings.getProperty("lightColor"));
 			Chess.SHOWCOORDS = Integer.parseInt(settings.getProperty("showCoords")) == 1;
