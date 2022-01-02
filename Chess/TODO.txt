@@ -1,7 +1,5 @@
 TODO:
 
-Make too much in a textbox overflow to the next line
-show cursor position in textbox
 allow highlighting text?
 
 Database functionality?

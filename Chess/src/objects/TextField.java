@@ -17,7 +17,7 @@ public class TextField extends GameObject{
 	public boolean nextField;
 	private String text, label;
 	
-	private int numLines;
+	private int numLines, maxChars, maxCharsPerLine, blinkTimer;
 	
 	public TextField(double x, double y, int width, int height, String label) 
 	{
@@ -27,6 +27,9 @@ public class TextField extends GameObject{
 		this.label = label;
 		fontSize = 16;
 		numLines = 1;
+		maxCharsPerLine = (int)(width / ((float)fontSize * .5));
+		maxChars = (height/fontSize) * maxCharsPerLine;
+		blinkTimer = 0;
 		
 		borderWidth = 3;
 		borderColor = 0xff555555;
@@ -55,6 +58,9 @@ public class TextField extends GameObject{
 		this.label = label;
 		fontSize = 16;
 		numLines = 1;
+		maxCharsPerLine = width / (fontSize/2);
+		maxChars = (height/fontSize) * maxCharsPerLine;
+		blinkTimer = 0;
 		
 		borderWidth = 3;
 		borderColor = 0xff555555;
@@ -78,6 +84,9 @@ public class TextField extends GameObject{
 	@Override
 	public void update() 
 	{
+		maxCharsPerLine = (int)(width / ((float)fontSize * .5));
+		maxChars = (height/fontSize) * maxCharsPerLine;
+		
 		if(InputHandler.MouseClicked(1))
 			setSelected(false);
 		
@@ -86,6 +95,8 @@ public class TextField extends GameObject{
 		
 		if(selected)
 		{
+			blinkTimer++;
+			
 			if(InputHandler.KEYPRESSED != null)
 			{
 				if(InputHandler.KEYPRESSED == KeyEvent.VK_BACK_SPACE)
@@ -110,8 +121,14 @@ public class TextField extends GameObject{
 						nextField = true;
 					}
 				}
-				else
+				else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_TAB))
+				{
+					setSelected(false);
+					nextField = true;
+				}
+				else if(text.length() < maxChars)
 					text += InputHandler.KEYPRESSED;
+					
 				InputHandler.KEYPRESSED = null;
 			}
 		}
@@ -128,11 +145,29 @@ public class TextField extends GameObject{
 		
 		g.setFont(new Font("Arial", 0, (int)(fontSize*Game.SCALE)));
 		g.setColor(Color.BLACK);
-		for(String line : text.split("\n"))
+		
+		String line = text;
+		while(line.length() > maxCharsPerLine)
 		{
-			g.drawString(line, xPos, yPos);
-			yPos += fontSize*Game.SCALE;
+			String splitLine = line.substring(0,maxCharsPerLine);
+			
+			int endIndex;
+			
+			if(splitLine.contains("\n"))
+				endIndex = splitLine.indexOf('\n');
+			else if(splitLine.contains(" "))
+				endIndex = splitLine.lastIndexOf(' ');
+			else
+				endIndex = maxCharsPerLine;
+				
+			splitLine = splitLine.substring(0, endIndex);
+            g.drawString(splitLine, xPos, yPos);
+            line = line.substring(endIndex).trim();
+            yPos += fontSize*Game.SCALE;
 		}
+		g.drawString(line, xPos, yPos);
+		if(selected && blinkTimer % 60 < 30)
+			g.drawString("|", xPos + g.getFontMetrics().stringWidth(line), yPos);
 	}
 	
 	private void setBorderColor(int color)
