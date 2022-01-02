@@ -4,8 +4,6 @@ Make too much in a textbox overflow to the next line
 show cursor position in textbox
 allow highlighting text?
 
-Add result to PGN writing
-
 Database functionality?
 	- multiple lines
 	- draw arrows on board

@@ -65,6 +65,9 @@ public class SaveLoadManager {
 					writer.write("{" + moveComments + "} ");
 			}
 			
+			if(gd.result.length() > 0)
+				writer.write(gd.result);
+			
 			writer.close();
 		}
 		catch(Exception ex) {}
