@@ -341,8 +341,6 @@ public class TextField extends GameObject{
 		
 		if(lineNumber < 1)
 			lineNumber = 1;
-		if(lineNumber > numLines)
-			lineNumber = numLines;
 	
 		String text = getLine(lineNumber);
 		
