@@ -116,7 +116,9 @@ public class Settings extends Scene{
 	private void updateColor()
 	{
 		darkColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		darkColor.getHexField().setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		lightColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		lightColor.getHexField().setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		showFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		capFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		showCoords.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);

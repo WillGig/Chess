@@ -123,11 +123,6 @@ public class TextField extends GameObject{
 						nextField = true;
 					}
 				}
-				else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_TAB))
-				{
-					setSelected(false);
-					nextField = true;
-				}
 				else if(text.length() < maxChars)
 					text += InputHandler.KEYPRESSED;
 					
@@ -143,15 +138,17 @@ public class TextField extends GameObject{
 		
 		g.setFont(new Font("Arial", 1, (int)(fontSize*Game.SCALE)));
 		g.setColor(labelColor);
-		g.drawString(label, xPos - 80, yPos);
+		g.drawString(label, xPos - (int)(80*Game.SCALE), yPos);
 		
 		g.setFont(new Font("Arial", 0, (int)(fontSize*Game.SCALE)));
 		g.setColor(Color.BLACK);
 		
 		String line = text;
-		while(line.length() > maxCharsPerLine)
+		while(line.length() > maxCharsPerLine || line.contains("\n"))
 		{
-			String splitLine = line.substring(0,maxCharsPerLine);
+			String splitLine = line;
+			if(line.length() > maxCharsPerLine)
+				splitLine = line.substring(0,maxCharsPerLine);
 			
 			int endIndex;
 			
@@ -164,7 +161,7 @@ public class TextField extends GameObject{
 				
 			splitLine = splitLine.substring(0, endIndex);
             g.drawString(splitLine, xPos, yPos);
-            line = line.substring(endIndex).trim();
+            line = line.substring(endIndex+1);
             yPos += fontSize*Game.SCALE;
 		}
 		g.drawString(line, xPos, yPos);

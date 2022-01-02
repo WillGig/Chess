@@ -136,6 +136,35 @@ public abstract class Piece extends GameObject{
 		return tileY;
 	}
 	
+	//Finds disambiguation text for a move from tile start to end
+	//Checks if multiple pieces of the same type can move to the chosen square
+	public static String getDisambiguationText(String moveText, Tile start, Tile end, Tile[] board)
+	{
+		ArrayList<Piece> confusingPieces = Piece.confusingPieces(moveText, start, end, board);
+		if(confusingPieces.size() == 0)
+			return "";
+			
+		//If specifying the file is sufficient to disambiguate
+		boolean fileChange = true;
+		//If specifying the rank is sufficient to disambiguate
+		boolean rankChange = true;
+		for(Piece p : confusingPieces)
+		{
+			if(p.GetTileX() == start.getTileX())
+				fileChange = false;
+			if(p.GetTileY() == start.getTileY())
+				rankChange = false;
+		}
+		
+		String tileName = start.getSquareName();
+		
+		if(fileChange)
+			return tileName.charAt(0) + "";
+		else if(rankChange)
+			return tileName.charAt(1) + "";
+		return tileName;
+	}
+	
 	//Returns a list of pieces of the same type and color as the piece moving from start to end that could also move to the end tile
 	public static ArrayList<Piece> confusingPieces(String notationName, Tile start, Tile end, Tile[] board)
 	{

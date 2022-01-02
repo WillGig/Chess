@@ -2,7 +2,9 @@ TODO:
 
 add scroll bar
 
-hex code option for rgb sliders?
+change result to dropdown menu
+
+allow moving cursor by clicking/arrow keys
 
 allow highlighting text?
 

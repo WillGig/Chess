@@ -230,10 +230,10 @@ public class Chess extends Scene{
 		{
 			if(turnNumber < positions.size() - 1)
 			{
-				int numP = getNumPieces();
+				int numP = Tile.getNumPieces(board);
 				loadPosition(positions.get(turnNumber + 1));
 				scrollToMove();
-				if(numP == getNumPieces())
+				if(numP == Tile.getNumPieces(board))
 					SoundEffect.MOVE.play();
 				else
 					SoundEffect.CAPTURE.play();
@@ -350,6 +350,7 @@ public class Chess extends Scene{
 	
 	public void move(Tile t)
 	{
+		//Reset en passant data. Will be updated if a pawn moves
 		Pawn.enPassantTile = -1;
 		Pawn.epPawn = -1;
 		
@@ -361,32 +362,8 @@ public class Chess extends Scene{
 		//Piece name
 		String moveText = selectedPieceTile.GetPiece().getNotationName();
 		
-		
 		//Disambiguation text
-		ArrayList<Piece> confusingPieces = Piece.confusingPieces(moveText, selectedPieceTile, t, board);
-		if(confusingPieces.size() > 0)
-		{
-			//If specifying the file is sufficient to disambiguate
-			boolean fileChange = true;
-			//If specifying the rank is sufficient to disambiguate
-			boolean rankChange = true;
-			for(Piece p : confusingPieces)
-			{
-				if(p.GetTileX() == selectedPieceTile.getTileX())
-					fileChange = false;
-				if(p.GetTileY() == selectedPieceTile.getTileY())
-					rankChange = false;
-			}
-			
-			String tileName = selectedPieceTile.getSquareName();
-			
-			if(fileChange)
-				moveText += tileName.charAt(0);
-			else if(rankChange)
-				moveText += tileName.charAt(1);
-			else
-				moveText += tileName;
-		}
+		moveText += Piece.getDisambiguationText(moveText, selectedPieceTile, t, board);
 		
 		//Captured text
 		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);	
@@ -488,6 +465,7 @@ public class Chess extends Scene{
 		gameState = Position.EvaluateState(board, turn);
 	}
 
+	//Sets board to position from move history
 	public void loadPosition(Position p)
 	{
 		p.LoadState(board);
@@ -513,6 +491,7 @@ public class Chess extends Scene{
 	@Override
 	public void render(int[] pixels) 
 	{
+		//Buttons
 		save.render(pixels);
 		load.render(pixels);
 		menu.render(pixels);
@@ -521,6 +500,7 @@ public class Chess extends Scene{
 		back.render(pixels);
 		swap.render(pixels);
 		
+		//Text Fields
 		event.render(pixels);
 		site.render(pixels);
 		date.render(pixels);
@@ -530,16 +510,20 @@ public class Chess extends Scene{
 		result.render(pixels);
 		comments.render(pixels);
 		
+		//Board
 		for(int i = 0; i < board.length; i++)
 			board[i].render(pixels);
 		
+		//Highlighted Squares
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
 				t.RenderHighLighted(pixels);
 		
+		//Piece dragging over board
 		if(draggingPiece != null)
 			draggingPiece.render(pixels);
 		
+		//Promotion Options
 		if(promoting != null)
 			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)
 				promoting.GetPromotionOptions()[i].render(pixels);
@@ -548,19 +532,17 @@ public class Chess extends Scene{
 	@Override
 	public void renderText(Graphics g) 
 	{
-		g.setFont(new Font("Arial", 1, (int)(20*Game.SCALE)));
-		g.setColor(Color.WHITE);
-		
 		//Coordinates
 		if(SHOWCOORDS)
 		{
+			g.setFont(new Font("Arial", 1, (int)(20*Game.SCALE)));
+			g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 			for(int i = 0; i < 8; i++)
 			{
 				g.drawString("" + (8 - i), (int)((210)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
 				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 270) * Game.SCALE) + Game.YOFF);
 			}
 		}
-		
 		
 		//Move History
 		for(int i = 1; i < positions.size(); i++)
@@ -570,6 +552,7 @@ public class Chess extends Scene{
 				positions.get(i).renderText(g);
 		}
 		
+		//Game result
 		Position lastMove = positions.get(positions.size()-1);
 		if(lastMove.gState != GameState.ONGOING)
 		{
@@ -583,6 +566,7 @@ public class Chess extends Scene{
 				g.drawString(lastMove.result, (int) (20*Game.SCALE + Game.XOFF), y);
 		}
 			
+		//Buttons
 		save.renderText(g);
 		load.renderText(g);
 		menu.renderText(g);
@@ -591,6 +575,7 @@ public class Chess extends Scene{
 		back.renderText(g);
 		swap.renderText(g);
 		
+		//Text Fields
 		event.renderText(g);
 		site.renderText(g);
 		date.renderText(g);
@@ -696,15 +681,6 @@ public class Chess extends Scene{
 		return -1;
 	}
 	
-	private int getNumPieces()
-	{
-		int num = 0;
-		for(int i = 0; i < board.length; i++)
-			if(board[i].GetPiece() != null)
-				num++;
-		return num;
-	}
-	
 	private void scrollToMove()
 	{
 		//Check if scroll is too high
@@ -714,6 +690,7 @@ public class Chess extends Scene{
 			return;
 		}
 			
+		//Check if scroll is too low
 		//Check if need space for result text
 		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > 100 - (turnNumber-24)*12))
 			historyScroll = 100 - ((turnNumber-23)/2)*24;

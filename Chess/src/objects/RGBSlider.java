@@ -21,6 +21,8 @@ public class RGBSlider extends GameObject{
 	
 	private Button reset;
 	
+	private TextField hexField;
+	
 	public RGBSlider(double x, double y, int width, String label, int defaultValue)
 	{
 		super(x, y, width, 10);
@@ -32,8 +34,10 @@ public class RGBSlider extends GameObject{
 		
 		colorDemo = new Texture(25, 25, new int[25 * 25]);
 		
-		reset = new Button(Game.WIDTH/2 + 250, y, 80, 20, "Reset");
+		reset = new Button(Game.WIDTH/2 + 337, y, 80, 20, "Reset");
 		reset.setFontSize(12);
+		
+		hexField = new TextField(x+230, y, 80, 26, "");
 		
 		setValue(defaultValue);
 		
@@ -42,6 +46,15 @@ public class RGBSlider extends GameObject{
 
 	@Override
 	public void update() {
+		hexField.update();
+		try 
+		{
+			int value = Integer.parseInt(hexField.getText(), 16);
+			if(value != getValue()-0xff000000)
+				setValue(value + 0xff000000);
+		}
+		catch(NumberFormatException ex) {}
+		
 		r.update();
 		g.update();
 		b.update();
@@ -59,6 +72,7 @@ public class RGBSlider extends GameObject{
 			r.setColor(0xff000000 + (color & 0xff0000));
 			g.setColor(0xff000000 + (color & 0xff00));
 			b.setColor(0xff000000 + (color & 0xff));
+			hexField.setText(Integer.toHexString(getValue()-0xff000000));
 		}
 	}
 	
@@ -69,6 +83,7 @@ public class RGBSlider extends GameObject{
 		g.render(pixels);
 		b.render(pixels);
 		colorDemo.render(x + 150, y, pixels);
+		hexField.render(pixels);
 		reset.render(pixels);
 	}
 	
@@ -79,6 +94,7 @@ public class RGBSlider extends GameObject{
 		g.setFont(new Font("Times", 0, (int)(16*Game.SCALE)));
 		g.drawString(label, (int) ((x - 250)*Game.SCALE  + Game.XOFF), (int) ((y + 5)*Game.SCALE + Game.YOFF));
 		
+		hexField.renderText(g);
 		reset.renderText(g);
 	}
 	
@@ -92,6 +108,7 @@ public class RGBSlider extends GameObject{
 		r.setValue(((value & 0xff0000) >> 16)/255.0f);
 		g.setValue(((value & 0xff00) >> 8)/255.0f);
 		b.setValue((value & 0xff)/255.0f);
+		hexField.setText(Integer.toHexString(getValue()-0xff000000));
 	}
 	
 	public void setTextColor(Color c)
@@ -102,6 +119,11 @@ public class RGBSlider extends GameObject{
 	public void setLabel(String label)
 	{
 		this.label = label;
+	}
+	
+	public TextField getHexField()
+	{
+		return hexField;
 	}
 
 }

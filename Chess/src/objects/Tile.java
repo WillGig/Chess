@@ -196,4 +196,13 @@ public class Tile extends GameObject{
 		}
 	}
 	
+	public static int getNumPieces(Tile[] board)
+	{
+		int num = 0;
+		for(int i = 0; i < board.length; i++)
+			if(board[i].GetPiece() != null)
+				num++;
+		return num;
+	}
+	
 }
