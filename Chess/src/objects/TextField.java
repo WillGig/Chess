@@ -14,7 +14,10 @@ public class TextField extends GameObject{
 	private int fontSize, borderColor, fillColor, borderWidth;
 	
 	private boolean selected;
+	public boolean nextField;
 	private String text, label;
+	
+	private int numLines;
 	
 	public TextField(double x, double y, int width, int height, String label) 
 	{
@@ -23,6 +26,7 @@ public class TextField extends GameObject{
 		text = "";
 		this.label = label;
 		fontSize = 16;
+		numLines = 1;
 		
 		borderWidth = 3;
 		borderColor = 0xff555555;
@@ -50,6 +54,7 @@ public class TextField extends GameObject{
 		this.text = text;
 		this.label = label;
 		fontSize = 16;
+		numLines = 1;
 		
 		borderWidth = 3;
 		borderColor = 0xff555555;
@@ -74,16 +79,10 @@ public class TextField extends GameObject{
 	public void update() 
 	{
 		if(InputHandler.MouseClicked(1))
-		{
-			selected = false;
-			setBorderColor(0xff555555);
-		}
+			setSelected(false);
 		
 		if(containsCursor() && InputHandler.MouseClicked(1))
-		{
-			selected = true;
-			setBorderColor(0xffaaaaaa);
-		}
+			setSelected(true);
 		
 		if(selected)
 		{
@@ -92,7 +91,24 @@ public class TextField extends GameObject{
 				if(InputHandler.KEYPRESSED == KeyEvent.VK_BACK_SPACE)
 				{
 					if(text.length() > 0)
+					{
+						if(text.charAt(text.length()-1) == '\n')
+							numLines--;
 						text = text.substring(0, text.length()-1);
+					}
+				}
+				else if(InputHandler.KEYPRESSED == KeyEvent.VK_ENTER)
+				{
+					if(height > (numLines + 1)*fontSize)
+					{
+						text += "\n";
+						numLines++;
+					}
+					else
+					{
+						setSelected(false);
+						nextField = true;
+					}
 				}
 				else
 					text += InputHandler.KEYPRESSED;
@@ -162,5 +178,18 @@ public class TextField extends GameObject{
 	public void setLabel(String label)
 	{
 		this.label = label;
+	}
+	
+	public void setSelected(boolean s)
+	{
+		selected = s;
+		
+		if(s)
+		{
+			setBorderColor(0xffaaaaaa);
+			InputHandler.KEYPRESSED = null;
+		}
+		else
+			setBorderColor(0xff555555);
 	}
 }

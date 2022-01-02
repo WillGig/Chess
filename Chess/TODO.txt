@@ -1,7 +1,8 @@
 TODO:
 
-Make pressing enter go to next textbox unless there is room
-for another line
+Make too much in a textbox overflow to the next line
+show cursor position in textbox
+allow highlighting text?
 
 Add result to PGN writing
 

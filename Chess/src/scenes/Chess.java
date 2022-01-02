@@ -146,13 +146,51 @@ public class Chess extends Scene{
 		
 		//Text Fields
 		event.update();
+		if(event.nextField)
+		{
+			event.nextField = false;
+			site.setSelected(true);
+		}
 		site.update();
+		if(site.nextField)
+		{
+			site.nextField = false;
+			date.setSelected(true);
+		}
 		date.update();
+		if(date.nextField)
+		{
+			date.nextField = false;
+			round.setSelected(true);
+		}
 		round.update();
+		if(round.nextField)
+		{
+			round.nextField = false;
+			white.setSelected(true);
+		}
 		white.update();
+		if(white.nextField)
+		{
+			white.nextField = false;
+			black.setSelected(true);
+		}
 		black.update();
+		if(black.nextField)
+		{
+			black.nextField = false;
+			result.setSelected(true);
+		}
 		result.update();
+		if(result.nextField)
+		{
+			result.nextField = false;
+			comments.setSelected(true);
+		}
 		comments.update();
+		if(comments.nextField)
+			comments.nextField = false;
+		
 		positions.get(turnNumber).comments = comments.getText();
 		
 		//Scroll through moves
