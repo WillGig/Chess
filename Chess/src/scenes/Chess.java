@@ -12,6 +12,7 @@ import game.Game;
 import game.GameData;
 import game.Position;
 import objects.Button;
+import objects.DropDown;
 import objects.ImageButton;
 import objects.TextField;
 import objects.Tile;
@@ -55,7 +56,9 @@ public class Chess extends Scene{
 	
 	private Button save, load, menu, reset, forward, back, swap;
 	
-	private TextField event, site, date, round, white, black, result, comments;
+	private TextField event, site, date, round, white, black, comments;
+	
+	private DropDown result;
 	
 	private ArrayList<Position> positions;
 	
@@ -82,8 +85,12 @@ public class Chess extends Scene{
 		round = new TextField(950, 170, 220, 30, "Round");
 		white = new TextField(950, 210, 220, 30, "White");
 		black = new TextField(950, 250, 220, 30, "Black");
-		result = new TextField(950, 290, 220, 30, "Result");
 		comments = new TextField(920, 450, 280, 240, "");
+		
+		result = new DropDown(950, 290, 220, 30, "");
+		result.addOption(new Button(0, 0, 220, 30, "1-0"));
+		result.addOption(new Button(0, 0, 220, 30, "0-1"));
+		result.addOption(new Button(0, 0, 220, 30, "1/2-1/2"));
 	}
 	
 	@Override
@@ -144,6 +151,12 @@ public class Chess extends Scene{
 		if(swap.IsClicked())
 			Tile.flip(board);
 		
+		//Results Dropdown
+		result.update();
+		String finalScore = positions.get(positions.size()-1).score;
+		if(!finalScore.equals(""))
+			result.setText(finalScore);
+		
 		//Text Fields
 		event.update();
 		if(event.nextField)
@@ -179,12 +192,6 @@ public class Chess extends Scene{
 		if(black.nextField)
 		{
 			black.nextField = false;
-			result.setSelected(true);
-		}
-		result.update();
-		if(result.nextField)
-		{
-			result.nextField = false;
 			comments.setSelected(true);
 		}
 		comments.update();
@@ -417,8 +424,12 @@ public class Chess extends Scene{
 		
 		//Override later moves
 		if(turnNumber-1 != positions.size() - 1)
+		{
 			while(turnNumber-1 != positions.size() - 1)
 				positions.remove(positions.size()-1);
+			
+			result.setText(positions.get(positions.size()-1).score);
+		}
 		
 		//Automatically scroll to new move
 		scrollToMove();
@@ -507,8 +518,10 @@ public class Chess extends Scene{
 		round.render(pixels);
 		white.render(pixels);
 		black.render(pixels);
-		result.render(pixels);
 		comments.render(pixels);
+		
+		//Drop Downs
+		result.render(pixels);
 		
 		//Board
 		for(int i = 0; i < board.length; i++)
@@ -575,6 +588,9 @@ public class Chess extends Scene{
 		back.renderText(g);
 		swap.renderText(g);
 		
+		//Drop Downs
+		result.renderText(g);
+		
 		//Text Fields
 		event.renderText(g);
 		site.renderText(g);
@@ -582,8 +598,8 @@ public class Chess extends Scene{
 		round.renderText(g);
 		white.renderText(g);
 		black.renderText(g);
-		result.renderText(g);
-		comments.renderText(g);
+		if(!result.isShowingOptions())
+			comments.renderText(g);
 	}
 
 	@Override
@@ -597,7 +613,7 @@ public class Chess extends Scene{
 		round.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		white.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		black.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
-		result.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		//result.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		
 		event.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		site.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
@@ -605,7 +621,7 @@ public class Chess extends Scene{
 		round.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		white.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		black.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
-		result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		//result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		
 		if(board == null)
@@ -658,7 +674,6 @@ public class Chess extends Scene{
 		round.setText("");
 		white.setText("");
 		black.setText("");
-		result.setText("");
 		comments.setText("");
 		
 		turnNumber = 0;

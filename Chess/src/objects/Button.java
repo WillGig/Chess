@@ -88,6 +88,11 @@ public class Button extends GameObject
 			image.data[i] = color;
 	}
 	
+	public void setText(String text)
+	{
+		this.text = text;
+	}
+	
 	public String getText()
 	{
 		return text;

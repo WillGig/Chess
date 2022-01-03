@@ -2,7 +2,7 @@ TODO:
 
 add scroll bar
 
-change result to dropdown menu
+make dropdown menus look a little nicer, work with light mode, add label
 
 allow highlighting text?
 
