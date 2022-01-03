@@ -17,8 +17,13 @@ public class DropDown extends Button{
 		super(x, y, width, height, text);
 		
 		options = new ArrayList<Button>();
-		options.add(new Button(x, y, width, height, text));
-		setColor(0xffffffff);
+		addOption(new Button(x, y, width, height, text));
+		
+		setFillColor(0xffffffff);
+		setBorderColor(0xff555555);
+		setBorderWidth(3);
+		setFontSize(16);
+		setFontStyle(0);
 		
 		showingOptions = false;
 	}
@@ -70,21 +75,44 @@ public class DropDown extends Button{
 	{
 		option.setX(x);
 		option.setY(y + height * options.size());
-		option.setColor(getColor());
+		option.setFillColor(getColor());
 		option.setHighlightColor(Color.GRAY);
+		option.setFillColor(0xffffffff);
+		option.setBorderColor(0xff555555);
+		option.setBorderWidth(3);
+		option.setFontSize(getFontSize());
+		option.setFontStyle(getFontStyle());
 		options.add(option);
 	}
 	
-	public void setColor(int color)
+	public void setFillColor(int color)
 	{
-		super.setColor(color);
+		super.setFillColor(color);
 		
 		for(Button b : options)
-			b.setColor(color);
+			b.setFillColor(color);
 	}
 	
 	public boolean isShowingOptions()
 	{
 		return showingOptions;
+	}
+	
+	@Override
+	public void setFontSize(int size)
+	{
+		super.setFontSize(size);
+		
+		for(Button b : options)
+			b.setFontSize(size);
+	}
+	
+	@Override
+	public void setFontStyle(int style)
+	{
+		super.setFontStyle(style);
+		
+		for(Button b : options)
+			b.setFontStyle(style);
 	}
 }

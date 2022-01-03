@@ -2,8 +2,6 @@ TODO:
 
 add scroll bar
 
-make dropdown menus look a little nicer, work with light mode, add label
-
 allow highlighting text?
 
 Database functionality?

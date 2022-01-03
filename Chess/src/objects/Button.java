@@ -12,9 +12,8 @@ public class Button extends GameObject
 
 	private String text;
 	
-	private int color = 0xffaaaaaa;
+	private int borderWidth, fillColor, borderColor, fontSize, style;
 	protected Color textColor, highlightColor;
-	private int fontSize;
 	
 	private boolean selected, clicked, textCentered;
 	
@@ -23,17 +22,19 @@ public class Button extends GameObject
 		super(x, y, width, height);
 		this.text = text;
 
-		int[] pixels = new int[width*height];
-		
-		for(int i = 0; i < width * height; i++)
-			pixels[i] = color;
-		
-		image = new Texture(width, height, pixels);
-		
 		textColor = Color.BLACK;
 		highlightColor = Color.WHITE;
+		fillColor = 0xffaaaaaa;
+		borderColor = 0xff555555;
 		fontSize = 20;
+		style = 1;
 		textCentered = true;
+		
+		int[] pixels = new int[width*height];
+		for(int i = 0; i < width * height; i++)
+			pixels[i] = fillColor;
+		
+		image = new Texture(width, height, pixels);
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class Button extends GameObject
 			g.setColor(highlightColor);
 		else
 			g.setColor(textColor);
-		g.setFont(new Font("Times", 1, (int)(fontSize*Game.SCALE)));
+		g.setFont(new Font("Times", style, (int)(fontSize*Game.SCALE)));
 		
 		int xPos = (int)(x*Game.SCALE) + Game.XOFF;
 		if(textCentered)
@@ -77,15 +78,39 @@ public class Button extends GameObject
 	
 	public int getColor()
 	{
-		return color;
+		return fillColor;
 	}
 	
-	public void setColor(int color)
+	public void setFillColor(int color)
 	{
-		this.color = color;
-		
-		for(int i = 0; i < width * height; i++)
-			image.data[i] = color;
+		this.fillColor = color;
+		updateImage();
+	}
+	
+	public void setBorderColor(int color)
+	{
+		this.borderColor = color;
+		updateImage();
+	}
+	
+	public void setBorderWidth(int width)
+	{
+		borderWidth = width;
+		updateImage();
+	}
+	
+	public void updateImage()
+	{
+		for(int yPix = 0; yPix < height; yPix++)
+		{
+			for(int xPix = 0; xPix < width; xPix++)
+			{
+				if(xPix < borderWidth || width-xPix < borderWidth + 1 || yPix < borderWidth || height - yPix < borderWidth + 1)
+					image.data[xPix + yPix*width] = borderColor;
+				else
+					image.data[xPix + yPix*width] = fillColor;
+			}
+		}
 	}
 	
 	public void setText(String text)
@@ -113,9 +138,24 @@ public class Button extends GameObject
 		highlightColor = c;
 	}
 	
+	public int getFontSize()
+	{
+		return fontSize;
+	}
+	
 	public void setFontSize(int size)
 	{
 		fontSize = size;
+	}
+	
+	public int getFontStyle()
+	{
+		return style;
+	}
+	
+	public void setFontStyle(int style)
+	{
+		this.style = style;
 	}
 	
 	public void setTextCentered(boolean centered)

@@ -589,6 +589,8 @@ public class Chess extends Scene{
 		swap.renderText(g);
 		
 		//Drop Downs
+		g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		g.drawString("Result", (int)(770*Game.SCALE + Game.XOFF), (int)((result.getY()+5)*Game.SCALE + Game.YOFF));
 		result.renderText(g);
 		
 		//Text Fields
@@ -613,8 +615,8 @@ public class Chess extends Scene{
 		round.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		white.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		black.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
-		//result.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		
+		result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		event.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		site.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		date.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
