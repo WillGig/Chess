@@ -4,7 +4,6 @@ add scroll bar
 
 change result to dropdown menu
 
-improve clicking accuracy with scale
 allow highlighting text?
 
 Database functionality?

@@ -349,7 +349,7 @@ public class TextField extends GameObject{
 		
 		for(int i = 0; i < text.length(); i++)
 		{
-			int xPos = (int) (f.getStringBounds(text.substring(0, i), frc).getWidth() + (x - width/2 + 10));
+			int xPos = (int) (f.getStringBounds(text.substring(0, i), frc).getWidth()*0.9/Game.SCALE + (x - width/2 + 15));
 			if(mX < xPos)
 				return new CursorPosition(i, lineNumber);
 		}
