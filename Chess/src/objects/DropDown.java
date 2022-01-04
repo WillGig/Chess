@@ -47,7 +47,7 @@ public class DropDown extends Button{
 			if(InputHandler.MouseClicked(1))
 				showingOptions = false;
 		}
-		else if(containsCursor() && InputHandler.MouseClickedAndSetFalse(1))
+		else if(containsCursor() && !InputHandler.DRAGGING && InputHandler.MouseClickedAndSetFalse(1))
 			showingOptions = true;
 	}
 	

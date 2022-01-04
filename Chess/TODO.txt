@@ -1,7 +1,5 @@
 TODO:
 
-add scroll bar
-
 allow highlighting text?
 
 Database functionality?

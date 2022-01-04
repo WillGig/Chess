@@ -11,7 +11,8 @@ import java.awt.event.MouseWheelListener;
 
 import game.Game;
 
-public class InputHandler implements KeyListener, MouseMotionListener, MouseListener, MouseWheelListener, ComponentListener
+public class InputHandler implements KeyListener, MouseMotionListener, MouseListener, 
+MouseWheelListener, ComponentListener
 {
 
 	public static int MOUSEX, MOUSEY;

@@ -47,26 +47,10 @@ public class Tile extends GameObject{
 	@Override
 	public void update() 
 	{
-		if(containsCursor() && InputHandler.MouseClicked(1))
+		if(containsCursor() && InputHandler.MouseClicked(1) && !InputHandler.DRAGGING)
 			clicked = true;
 		else
 			clicked = false;
-	}
-	
-	@Override
-	public void render(int[] pixels)
-	{
-		super.render(pixels);
-		if(containedPiece != null)
-			containedPiece.render(pixels);
-	}
-	
-	@Override
-	public void renderAtPosition(double x, double y, int[] pixels)
-	{
-		super.renderAtPosition(x, y, pixels);
-		if(containedPiece != null)
-			containedPiece.renderAtPosition(x, y, pixels);
 	}
 	
 	public int getTileX()

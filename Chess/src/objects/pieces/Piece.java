@@ -37,9 +37,7 @@ public abstract class Piece extends GameObject{
 	public abstract String getNotationName();
 
 	@Override
-	public void update() {
-		
-	}
+	public void update() {}
 	
 	//returns captured piece
 	public Piece move(Tile start, Tile end, Tile[] board)
@@ -126,12 +124,12 @@ public abstract class Piece extends GameObject{
 		moveCounter = num;
 	}
 	
-	public int GetTileX()
+	public int getTileX()
 	{
 		return tileX;
 	}
 	
-	public int GetTileY()
+	public int getTileY()
 	{
 		return tileY;
 	}
@@ -150,9 +148,9 @@ public abstract class Piece extends GameObject{
 		boolean rankChange = true;
 		for(Piece p : confusingPieces)
 		{
-			if(p.GetTileX() == start.getTileX())
+			if(p.getTileX() == start.getTileX())
 				fileChange = false;
-			if(p.GetTileY() == start.getTileY())
+			if(p.getTileY() == start.getTileY())
 				rankChange = false;
 		}
 		

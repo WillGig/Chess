@@ -91,7 +91,7 @@ public class TextField extends GameObject{
 		maxCharsPerLine = (int)(width / ((float)fontSize * .5));
 		maxChars = (height/fontSize) * maxCharsPerLine;
 		
-		if(containsCursor() && InputHandler.MouseClicked(1))
+		if(containsCursor() && InputHandler.MouseClicked(1) && !InputHandler.DRAGGING)
 		{
 			if(selected)
 				setCursorPosition(getPositionAtClick());

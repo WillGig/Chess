@@ -14,6 +14,7 @@ import game.Position;
 import objects.Button;
 import objects.DropDown;
 import objects.ImageButton;
+import objects.ScrollBar;
 import objects.TextField;
 import objects.Tile;
 import objects.pieces.Bishop;
@@ -62,6 +63,8 @@ public class Chess extends Scene{
 	
 	private ArrayList<Position> positions;
 	
+	private ScrollBar moveScroller;
+	
 	public Chess()
 	{
 		save = new Button(55, 475, 80, 30, "SAVE");
@@ -91,6 +94,8 @@ public class Chess extends Scene{
 		result.addOption(new Button(0, 0, 220, 30, "1-0"));
 		result.addOption(new Button(0, 0, 220, 30, "0-1"));
 		result.addOption(new Button(0, 0, 220, 30, "1/2-1/2"));
+		
+		moveScroller = new ScrollBar(190, 240, 15, 430, 0);
 	}
 	
 	@Override
@@ -200,25 +205,37 @@ public class Chess extends Scene{
 		
 		positions.get(turnNumber).comments = comments.getText();
 		
+		//Calculate scroll cap
+		int scrollCap = 100 - (positions.size()/2-15)*24;
+		if(positions.get(positions.size()-1).gState != GameState.ONGOING)
+			scrollCap -= 72;
+		if(scrollCap > 40)
+			scrollCap = 40;
+		
 		//Scroll through moves
-		if(InputHandler.MOUSEX < 200)
+		if(positions.size() > 30)
 		{
-			int scrollAmount = InputHandler.getMouseScroll() * 40;
-			if(positions.size() > 30)
+			if(InputHandler.MOUSEX < 200)
 			{
+				int scrollAmount = InputHandler.getMouseScroll() * 40;
 				historyScroll -= scrollAmount;
-				
-				int cap = 100 - (positions.size()-30)*12;
-				if(positions.get(positions.size()-1).gState != GameState.ONGOING)
-					cap -= 72;
 				
 				if(historyScroll > 40)
 					historyScroll = 40;
-				else if(historyScroll < cap)
-					historyScroll = cap;
+				else if(historyScroll < scrollCap)
+					historyScroll = scrollCap;
+				
+				moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 			}
-			else
-				historyScroll = 40;
+			
+			moveScroller.update();
+			moveScroller.setHeightOfScrollMaterial(moveScroller.getHeight() - (scrollCap - 40));
+			historyScroll = (int) (moveScroller.getPosition() * (scrollCap - 40)) + 40;
+		}
+		else
+		{
+			historyScroll = 40;
+			moveScroller.setHeightOfScrollMaterial(moveScroller.getHeight());
 		}
 		
 		//Check if a move in the move history is clicked
@@ -229,7 +246,7 @@ public class Chess extends Scene{
 		//Update move history positions
 		for(int i = 1; i < positions.size(); i++)
 			positions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f));
-			
+		
 		//Check if arrow keys or forward and back buttons are pressed
 		forward.update();
 		back.update();
@@ -511,6 +528,9 @@ public class Chess extends Scene{
 		back.render(pixels);
 		swap.render(pixels);
 		
+		//Scroll bar
+		moveScroller.render(pixels);
+		
 		//Text Fields
 		event.render(pixels);
 		site.render(pixels);
@@ -525,8 +545,13 @@ public class Chess extends Scene{
 		
 		//Board
 		for(int i = 0; i < board.length; i++)
+		{
 			board[i].render(pixels);
-		
+			Piece p = board[i].GetPiece();
+			if(p != null && ! (p == draggingPiece))
+				p.render(pixels);
+		}
+			
 		//Highlighted Squares
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
@@ -624,7 +649,7 @@ public class Chess extends Scene{
 		white.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		black.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		//result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
-		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+//		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		
 		if(board == null)
 		{
