@@ -41,7 +41,8 @@ public class ScrollBar extends GameObject{
 	
 	public void setPosition(float position)
 	{
-		bar.setValue(position);
+		if(bar != null)
+			bar.setValue(position);
 	}
 	
 	public void setHeightOfScrollMaterial(int h)
@@ -54,7 +55,10 @@ public class ScrollBar extends GameObject{
 			int barHeight = (int) (((float)(height*height))/h);
 			if(barHeight < 20)
 				barHeight = 20;
+			float position = getPosition();
 			bar = new Bar(x, y - height/2 + barHeight/2, width, barHeight, height);
+			if(position != -1)
+				bar.setValue(position);
 		}
 	}
 

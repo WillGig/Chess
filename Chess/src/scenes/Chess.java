@@ -230,7 +230,9 @@ public class Chess extends Scene{
 			
 			moveScroller.update();
 			moveScroller.setHeightOfScrollMaterial(moveScroller.getHeight() - (scrollCap - 40));
-			historyScroll = (int) (moveScroller.getPosition() * (scrollCap - 40)) + 40;
+			if(moveScroller.getPosition() != -1)
+				historyScroll = (int) (moveScroller.getPosition() * (scrollCap - 40)) + 40;
+			moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 		}
 		else
 		{
@@ -725,19 +727,33 @@ public class Chess extends Scene{
 	
 	private void scrollToMove()
 	{
+		int scrollCap = 100 - (positions.size()/2-15)*24;
+		if(positions.get(positions.size()-1).gState != GameState.ONGOING)
+			scrollCap -= 72;
+		if(scrollCap > 40)
+			scrollCap = 40;
+		
 		//Check if scroll is too high
 		if(historyScroll < 40 - ((turnNumber-1)/2) * 24)
 		{
 			historyScroll = 40 - ((turnNumber-1)/2) * 24;
+			moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 			return;
 		}
 			
 		//Check if scroll is too low
 		//Check if need space for result text
-		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > 100 - (turnNumber-24)*12))
+		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > 100 - ((turnNumber-23)/2)*24))
 			historyScroll = 100 - ((turnNumber-23)/2)*24;
-		else if(turnNumber > 29 && historyScroll > 100 - (turnNumber-29)*12)
+		else if(turnNumber > 29 && historyScroll > 100 - ((turnNumber-29)/2)*24)
 			historyScroll = 100 - ((turnNumber-29)/2)*24;
+		
+		if(historyScroll > 40)
+			historyScroll = 40;
+		else if(historyScroll < scrollCap)
+			historyScroll = scrollCap;
+		
+		moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 	}
 	
 }

@@ -1,5 +1,7 @@
 TODO:
 
+Clean up scrollToMove function
+
 allow highlighting text?
 
 Database functionality?
