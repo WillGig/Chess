@@ -596,13 +596,13 @@ public class Chess extends Scene{
 		Position lastMove = positions.get(positions.size()-1);
 		if(lastMove.gState != GameState.ONGOING)
 		{
-			g.setColor(Color.WHITE);
+			g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 			
 			int y = (int) ((historyScroll + (positions.size()/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
-			if(y > 90*Game.SCALE && y < 450*Game.SCALE)
+			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
 				g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
-			if(y > 90*Game.SCALE && y < 450*Game.SCALE)
+			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
 				g.drawString(lastMove.result, (int) (20*Game.SCALE + Game.XOFF), y);
 		}
 			
@@ -650,8 +650,8 @@ public class Chess extends Scene{
 		round.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		white.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		black.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
-		//result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
-//		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		result.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		comments.setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		
 		if(board == null)
 		{
