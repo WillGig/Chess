@@ -96,6 +96,8 @@ public class Tile extends GameObject{
 			image.data[i] = color;
 	}
 	
+	//Returns the tile the cursor is currently over
+	//Returns null if no tiles contain the cursor
 	public static Tile getCursorTile(Tile[] board)
 	{
 		for(int i = 0; i < board.length; i++)

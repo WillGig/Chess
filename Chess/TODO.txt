@@ -1,11 +1,14 @@
 TODO:
 
+add option to change arrow color in main menu
+
 Clean up scrollToMove function
+Clean up movearrow and texture.combine
 
 allow highlighting text?
 
 Database functionality?
 	- multiple lines
-	- draw arrows on board
+	- save arrows between moves. Save to pgn?
 
 Engine

@@ -66,7 +66,40 @@ public class Texture {
 		}
 	}
 	
-	public static int blend(int color1, int color2)
+	public Texture rotate(double angle)
+	{
+		int[] newData = new int[width*height];
+		
+		double c = Math.cos(-angle);
+		double s = Math.sin(-angle);
+		int x0 = width/2-1;
+		int y0 = height/2-1;
+		int x1 = width/2-1;
+		int y1 = height/2-1;
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				// coordinate inside dst image rotation center biased
+				int xp = x-x0;
+				int yp = y-y0;
+				// rotate inverse
+				int xx = (int)((float)((float)(xp)*c - (float)(yp)*s));
+				int yy = (int)((float)((float)(xp)*s + (float)(yp)*c));
+				// coordinate inside src image
+				xp = xx+x1;
+				yp = yy+y1;
+				if ((xp > -1) && (xp < width) && (yp > -1) && (yp < height))
+				    newData[x+y*width] = data[xp + yp*width]; // copy pixel
+				else
+					newData[x+y*width]=0; // out of src range pixel is black
+			}
+		}
+
+		return new Texture(width, height, newData);
+	}
+	
+	private int blend(int color1, int color2)
 	{
 		float a1 = (color1 >> 24 & 0xff)/255.0f;
 		float r1 = ((color1 & 0xff0000) >> 16)/255.0f;
@@ -84,6 +117,53 @@ public class Texture {
 	    float b = ((1 - a1)*a2*b2 + a1*b1) / a;
 		
 		return (int)(a*255) << 24 | (int)(r*255) << 16 | (int)(g*255) << 8 | (int)(b*255);
+	}
+	
+	public void setColor(int color)
+	{
+		for(int i = 0; i < data.length; i++)
+			if(data[i] != 0)
+				data[i] = color;
+	}
+	
+	//returns a new Texture with the other texture on top of the current texture
+	//oX and oY are the coordinates of the top left corner of the second texture relative to the first
+	public Texture combine(int tX, int tY, Texture other, int oX, int oY)
+	{
+		int left = Math.min(tX, oX);
+		int right = Math.max(tX + width, oX  + other.width);
+		int top = Math.min(tY, oY);
+		int bottom = Math.max(tY + height, oY + other.height);
+		
+		int width = right - left;
+		int height = bottom - top;
+		
+		tX -= left;
+		oX -= left;
+		tY -= top;
+		oY -= top;
+		
+		int[] pixels = new int[width * height];
+		for(int y = 0; y < height; y++)
+		{
+			for(int x = 0; x < width; x++)
+			{
+				int otherPixel = 0;
+				int pixel = 0;
+				
+				if(x - oX  > 0 && x - oX < other.width && y - oY > 0 && y - oY < other.height)
+					otherPixel = other.data[x - oX + (y-oY)*other.width];
+				if(x - tX  > 0 && x - tX < this.width && y - tY > 0 && y - tY < this.height)
+					pixel = data[x - tX + (y-tY)*this.width];
+
+				if(otherPixel != 0)
+					pixels[x + y * width] = otherPixel;
+				else
+					pixels[x + y * width] = pixel;
+			}
+		}
+		
+		return new Texture(width, height, pixels);
 	}
 	
 	public static Texture getTexture(String name)
@@ -125,6 +205,8 @@ public class Texture {
 		textures.put("RookBlack", 	pieces.load(3, 1));
 		textures.put("QueenBlack", 	pieces.load(4, 1));
 		textures.put("KingBlack", 	pieces.load(5, 1));
+		
+		textures.put("ArrowHead", new Texture("/arrow.png"));
 	}
 }
 

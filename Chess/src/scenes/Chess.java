@@ -14,6 +14,7 @@ import game.Position;
 import objects.Button;
 import objects.DropDown;
 import objects.ImageButton;
+import objects.MoveArrow;
 import objects.ScrollBar;
 import objects.TextField;
 import objects.Tile;
@@ -65,6 +66,11 @@ public class Chess extends Scene{
 	
 	private ScrollBar moveScroller;
 	
+	private MoveArrow currentArrow;
+	private Tile moveArrowStart;
+	
+	private ArrayList<MoveArrow> moveArrows;
+	
 	public Chess()
 	{
 		save = new Button(55, 475, 80, 30, "SAVE");
@@ -101,6 +107,33 @@ public class Chess extends Scene{
 	@Override
 	public void update(Game game) 
 	{
+		//Check for move arrow being drawn
+		if(InputHandler.MouseClicked(2))
+		{
+			Tile t = Tile.getCursorTile(board);
+			if(t != null)
+			{
+				if(moveArrowStart != null && t != moveArrowStart)
+					currentArrow = new MoveArrow(moveArrowStart, t);
+				else
+					moveArrowStart = t;
+			}
+		}
+		else
+		{
+			if(currentArrow != null)
+			{
+				if(moveArrows.contains(currentArrow))
+					moveArrows.remove(currentArrow);
+				else
+					moveArrows.add(currentArrow);
+				currentArrow = null;
+				moveArrowStart = null;
+			}
+			else
+				moveArrowStart = null;
+		}
+		
 		//Saving Button
 		save.update();
 		if(save.IsClicked())
@@ -468,6 +501,8 @@ public class Chess extends Scene{
 			SoundEffect.MOVE.play();
 		else
 			SoundEffect.CAPTURE.play();
+		
+		moveArrows.clear();
 	}
 	
 	public void updateGameState()
@@ -512,6 +547,7 @@ public class Chess extends Scene{
 		selectedPieceTile = null;
 		draggingPiece = null;
 		comments.setText(p.comments);
+		moveArrows.clear();
 		
 		for(Position state : positions)
 			state.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
@@ -558,6 +594,12 @@ public class Chess extends Scene{
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
 				t.RenderHighLighted(pixels);
+		
+		//Move Arrows
+		for(MoveArrow a: moveArrows)
+			a.render(pixels);
+		if(currentArrow != null)
+			currentArrow.render(pixels);
 		
 		//Piece dragging over board
 		if(draggingPiece != null)
@@ -697,6 +739,8 @@ public class Chess extends Scene{
 		positions = new ArrayList<Position>();
 		positions.add(new Position(board, "", gameState, turn, 0, 0));
 		
+		moveArrows = new ArrayList<MoveArrow>();
+		
 		event.setText("");
 		site.setText("");
 		date.setText("");
@@ -755,5 +799,4 @@ public class Chess extends Scene{
 		
 		moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 	}
-	
 }
