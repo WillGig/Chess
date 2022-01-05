@@ -11,17 +11,17 @@ public class RGBSlider extends GameObject{
 
 	private String label;
 	
-	private Slider r, g, b;
+	protected Slider r, g, b;
 	
-	private Texture colorDemo;
+	protected Texture colorDemo;
 	
-	private int defaultValue;
+	protected int defaultValue;
 	
 	private Color textColor;
 	
-	private Button reset;
+	protected Button reset;
 	
-	private TextField hexField;
+	protected TextField hexField;
 	
 	public RGBSlider(double x, double y, int width, String label, int defaultValue)
 	{

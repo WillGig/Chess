@@ -15,6 +15,7 @@ import java.util.Scanner;
 import game.Game;
 import game.GameData;
 import game.Position;
+import objects.MoveArrow;
 import objects.Tile;
 import objects.pieces.Bishop;
 import objects.pieces.Knight;
@@ -413,6 +414,7 @@ public class SaveLoadManager {
 		saveVariable("darkMode", Game.DARKMODE, path);
 		saveVariable("darkColor", Chess.DARKCOLOR, path);
 		saveVariable("lightColor", Chess.LIGHTCOLOR, path);
+		saveVariable("arrowColor", (int)MoveArrow.MOVEARROWCOLOR, path);
 		saveVariable("showCoords", Chess.SHOWCOORDS, path);
 		saveVariable("flipOnMove", Chess.FLIPONMOVE, path);
 		saveVariable("volume", (int)(Sound.VOLUME*100), path);
@@ -430,6 +432,7 @@ public class SaveLoadManager {
 			Game.DARKMODE = Integer.parseInt(settings.getProperty("darkMode")) == 1;
 			Chess.DARKCOLOR = Integer.parseInt(settings.getProperty("darkColor"));
 			Chess.LIGHTCOLOR =  Integer.parseInt(settings.getProperty("lightColor"));
+			MoveArrow.MOVEARROWCOLOR = Integer.parseInt(settings.getProperty("arrowColor"));
 			Chess.SHOWCOORDS = Integer.parseInt(settings.getProperty("showCoords")) == 1;
 			Chess.FLIPONMOVE = Integer.parseInt(settings.getProperty("flipOnMove")) == 1;
 			Sound.VOLUME = Integer.parseInt(settings.getProperty("volume"))/100.0f;

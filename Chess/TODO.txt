@@ -1,7 +1,5 @@
 TODO:
 
-add option to change arrow color in main menu
-
 Clean up scrollToMove function
 Clean up movearrow and texture.combine
 

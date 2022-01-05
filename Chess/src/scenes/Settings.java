@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import game.Game;
 import objects.Button;
 import objects.CheckBox;
+import objects.MoveArrow;
+import objects.RGBASlider;
 import objects.RGBSlider;
 import objects.Slider;
 import utils.SaveLoadManager;
@@ -15,6 +17,7 @@ import utils.Sound;
 public class Settings extends Scene{
 
 	private RGBSlider darkColor, lightColor;
+	private RGBASlider arrowColor;
 	private CheckBox showFPS, capFPS, showCoords, swapOnMove, darkMode;
 	private Slider sound;
 	
@@ -24,6 +27,7 @@ public class Settings extends Scene{
 	public void update(Game game) {
 		darkColor.update();
 		lightColor.update();
+		arrowColor.update();
 		showFPS.update();
 		Game.SHOWFPS = showFPS.isChecked();
 		capFPS.update();
@@ -51,6 +55,7 @@ public class Settings extends Scene{
 	public void render(int[] pixels) {
 		darkColor.render(pixels);
 		lightColor.render(pixels);
+		arrowColor.render(pixels);
 		showFPS.render(pixels);
 		capFPS.render(pixels);
 		showCoords.render(pixels);
@@ -64,6 +69,7 @@ public class Settings extends Scene{
 	public void renderText(Graphics g) {
 		darkColor.renderText(g);
 		lightColor.renderText(g);
+		arrowColor.renderText(g);
 		showFPS.renderText(g);
 		capFPS.renderText(g);
 		showCoords.renderText(g);
@@ -81,10 +87,12 @@ public class Settings extends Scene{
 
 	@Override
 	public void start() {
-		darkColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 80, 200, "Dark Squares", 0xff663400);
+		darkColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 110, 200, "Dark Squares", 0xff663400);
 		darkColor.setValue(Chess.DARKCOLOR);
-		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Light Squares", 0xffFFE7BC);
+		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 80, 200, "Light Squares", 0xffFFE7BC);
 		lightColor.setValue(Chess.LIGHTCOLOR);
+		arrowColor = new RGBASlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Arrows", 0x554cff00, 0.34f);
+		arrowColor.setValue(MoveArrow.MOVEARROWCOLOR);
 		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 - 20, "Show FPS");
 		showFPS.setChecked(Game.SHOWFPS);
 		capFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 + 10, "Cap FPS");
@@ -107,6 +115,7 @@ public class Settings extends Scene{
 	{
 		Chess.DARKCOLOR = darkColor.getValue();
 		Chess.LIGHTCOLOR = lightColor.getValue();
+		MoveArrow.MOVEARROWCOLOR = arrowColor.getValue();
 		Chess.SHOWCOORDS = showCoords.isChecked();
 		Chess.FLIPONMOVE = swapOnMove.isChecked();
 		Sound.VOLUME = sound.getValue();
@@ -119,6 +128,8 @@ public class Settings extends Scene{
 		darkColor.getHexField().setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		lightColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		lightColor.getHexField().setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
+		arrowColor.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		arrowColor.getHexField().setFillColor(Game.DARKMODE ? 0xffffffff : 0xffdddddd);
 		showFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		capFPS.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		showCoords.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);

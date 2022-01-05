@@ -263,6 +263,8 @@ public class TextField extends GameObject{
 	public void setText(String text)
 	{
 		this.text = text;
+		if(cursorIndex > text.length())
+			cursorIndex = text.length();
 	}
 	
 	public String getText()
