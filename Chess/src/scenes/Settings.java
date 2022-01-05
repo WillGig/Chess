@@ -91,7 +91,7 @@ public class Settings extends Scene{
 		darkColor.setValue(Chess.DARKCOLOR);
 		lightColor = new RGBSlider(Game.WIDTH/2, Game.HEIGHT/2 - 80, 200, "Light Squares", 0xffFFE7BC);
 		lightColor.setValue(Chess.LIGHTCOLOR);
-		arrowColor = new RGBASlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Arrows", 0x554cff00, 0.34f);
+		arrowColor = new RGBASlider(Game.WIDTH/2, Game.HEIGHT/2 - 50, 200, "Arrows", 0xaa4cff00, 0.34f);
 		arrowColor.setValue(MoveArrow.MOVEARROWCOLOR);
 		showFPS = new CheckBox(Game.WIDTH/2 + 150, Game.HEIGHT/2 - 20, "Show FPS");
 		showFPS.setChecked(Game.SHOWFPS);

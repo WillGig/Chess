@@ -72,10 +72,10 @@ public class Texture {
 		
 		double c = Math.cos(-angle);
 		double s = Math.sin(-angle);
-		int x0 = width/2-1;
-		int y0 = height/2-1;
-		int x1 = width/2-1;
-		int y1 = height/2-1;
+		int x0 = width/2;
+		int y0 = height/2;
+		int x1 = width/2;
+		int y1 = height/2;
 		for (int y = 0; y < height; y++)
 		{
 			for (int x = 0; x < width; x++)

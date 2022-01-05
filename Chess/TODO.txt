@@ -7,6 +7,6 @@ allow highlighting text?
 
 Database functionality?
 	- multiple lines
-	- save arrows between moves. Save to pgn?
+	- allow pgns with multiple games
 
 Engine

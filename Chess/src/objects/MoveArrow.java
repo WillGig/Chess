@@ -6,13 +6,14 @@ import utils.Texture;
 
 public class MoveArrow{
 
-	public static long MOVEARROWCOLOR = 0x554cff00;
+	public static long MOVEARROWCOLOR;
 	
 	public Tile start, end;
 	
 	private double x, y;
 	
 	Texture image;
+	Texture head;
 	
 	public MoveArrow(Tile start, Tile end) 
 	{
@@ -24,17 +25,17 @@ public class MoveArrow{
 		
 		double angle = Math.atan2(end.getY() - start.getY(), end.getX() - start.getX()) + Math.PI/2;
 		
-		Point b1 = new Point((int)(start.getX() + Math.cos(angle)*12), (int)(start.getY() + Math.sin(angle)*12));
-		Point b2 = new Point((int)(start.getX() - Math.cos(angle)*12), (int)(start.getY() - Math.sin(angle)*12));
-		Point b3 = new Point((int)(end.getX() - Math.cos(angle)*12), (int)(end.getY() - Math.sin(angle)*12));
-		Point b4 = new Point((int)(end.getX() + Math.cos(angle)*12), (int)(end.getY() + Math.sin(angle)*12));
+		Point b1 = new Point((int)(start.getX() + Math.cos(angle)*8), (int)(start.getY() + Math.sin(angle)*8));
+		Point b2 = new Point((int)(start.getX() - Math.cos(angle)*9), (int)(start.getY() - Math.sin(angle)*9));
+		Point b3 = new Point((int)(end.getX() - Math.cos(angle)*9), (int)(end.getY() - Math.sin(angle)*9));
+		Point b4 = new Point((int)(end.getX() + Math.cos(angle)*8), (int)(end.getY() + Math.sin(angle)*8));
 		
 		Texture head = Texture.getTexture("ArrowHead").rotate(angle);
-		Quad body = new Quad(b1, b2, b3, b4, 1);
+		Quad body = new Quad(b1, b2, b3, b4, 0xff00ff00);
 		
 		int bodyX = (int)body.getX() - body.getTexture().width/2;
 		int bodyY = (int)body.getY() - body.getTexture().height/2;
-		image = body.getTexture().combine(bodyX, bodyY, head, (int)end.getX() - head.width/2, (int)end.getY() - head.height/2);
+		image = body.getTexture().combine(bodyX, bodyY, head, (int)(end.getX() - head.width/2), (int)(end.getY() - head.height/2));
 		image.setColor((int)MOVEARROWCOLOR);
 	}
 

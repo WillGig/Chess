@@ -61,10 +61,13 @@ public class RGBASlider extends RGBSlider{
 	
 	public void setValue(long value)
 	{
+		//Restore integer that overflowed
 		if(value < 0)
 			value = (value - (long)Integer.MIN_VALUE) + (long)Integer.MAX_VALUE+1;
 		
 		alpha = ((value & 0xff000000) >> 24)/255.0f;
+		if(alpha > 1)
+			alpha = 1.0f;
 		r.setValue(((value & 0xff0000) >> 16)/255.0f);
 		g.setValue(((value & 0xff00) >> 8)/255.0f);
 		b.setValue((value & 0xff)/255.0f);
