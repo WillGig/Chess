@@ -1,16 +1,15 @@
 package game;
 
-import java.util.ArrayList;
-
 public class GameData {
 
-	public ArrayList<Position> positions;
+	//public ArrayList<Position> positions;
+	public Position startPosition;
 	
 	public String event, site, date, round, white, black, result;
 	
-	public GameData(ArrayList<Position> positions, String event, String site, String date, String round, String white, String black, String result)
+	public GameData(Position start, String event, String site, String date, String round, String white, String black, String result)
 	{
-		this.positions = positions;
+		startPosition = start;
 		this.event = event;
 		this.site = site;
 		this.date = date;

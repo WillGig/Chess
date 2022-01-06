@@ -16,14 +16,19 @@ import scenes.Chess.GameState;
 
 public class Position extends Button{
 
+	private Position parent;
+	private ArrayList<Position> children;
+	
 	public String state = "", colors = "", numMoves = "", score = "", result = "", comments = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, epPawn, fiftyMoves;
 	
-	public Position(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves)
+	public Position(Tile[] board, String moveText, GameState gs, Color turn, int move, int fiftyMoves, Position parent)
 	{
 		super(turn == Color.BLACK ? 60 : 160, 0, 70, 20, moveText);
+		this.parent = parent;
+		children = new ArrayList<Position>();
 		setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		if(!Game.DARKMODE)
 			setHighlightColor(Color.BLACK);
@@ -125,24 +130,67 @@ public class Position extends Button{
 		}
 	}
 	
-	public static boolean Repitition(ArrayList<Position> states, Tile[] board)
+	public Position getParent()
 	{
-		Position currentState = new Position(board, "", null, null, 0, 0);
-		
-		for(int i = 0; i < states.size(); i++)
+		return parent;
+	}
+	
+	public Position getHead()
+	{
+		if(parent != null)
+			return parent.getHead();
+		return this;
+	}
+	
+	public void addChild(Position child)
+	{
+		children.add(child);
+	}
+	
+	public ArrayList<Position> getChildren()
+	{
+		return children;
+	}
+	
+	public Position getNextPosition()
+	{
+		if(children.size() > 0)
+			return children.get(0);
+		return null;
+	}
+	
+	public ArrayList<Position> getAllDescendants()
+	{
+		ArrayList<Position> descendants = new ArrayList<Position>();
+		if(children.size() == 0)
+			descendants.add(this);
+		else
 		{
-			int count = 0;
-			if(states.get(i).state.equals(currentState.state))
+			for(Position p : children)
+				descendants.addAll(p.getAllDescendants());
+			descendants.add(this);
+		}
+		return descendants;
+	}
+	
+	public Position getEndOfLine()
+	{
+		if(children.size() != 0)
+			return children.get(0).getEndOfLine();
+		return this;
+	}
+	
+	public boolean repitition()
+	{
+		int count = 1;
+		Position current = parent;
+		while(current != null)
+		{
+			if(current.state.equals(state))
 				count++;
-			for(int j = i; j < states.size(); j++)
-			{
-				if(states.get(i).state.equals(states.get(j).state))
-				{
-					count++;
-					if(count == 3)
-						return true;
-				}
-			}
+			current = current.parent;
+			if(count > 2)
+				return true;
 		}
 		return false;
 	}

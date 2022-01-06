@@ -62,7 +62,7 @@ public class Chess extends Scene{
 	
 	private DropDown result;
 	
-	private ArrayList<Position> positions;
+	private Position startPosition, currentPosition;
 	
 	private ScrollBar moveScroller;
 	
@@ -143,7 +143,7 @@ public class Chess extends Scene{
 		    dialog.setVisible(true);
 		    String path = dialog.getDirectory() + dialog.getFile();
 		    if(dialog.getDirectory() != null && dialog.getFile() != null)
-		    	SaveLoadManager.saveGame(new GameData(positions, event.getText(), site.getText(), date.getText(), round.getText(), white.getText(), black.getText(), result.getText()), path);
+		    	SaveLoadManager.saveGame(new GameData(startPosition, event.getText(), site.getText(), date.getText(), round.getText(), white.getText(), black.getText(), result.getText()), path);
 		    return;
 		}
 		
@@ -158,10 +158,10 @@ public class Chess extends Scene{
 		    if(dialog.getDirectory() != null && dialog.getFile() != null)
 		    {
 		    	GameData loadedFile = SaveLoadManager.loadGame(file);
-				if(loadedFile != null && loadedFile.positions.size() > 0)
+				if(loadedFile != null)
 				{
-					positions = loadedFile.positions;
-					loadPosition(positions.get(0));
+					startPosition = loadedFile.startPosition;
+					loadPosition(startPosition);
 					event.setText(loadedFile.event);
 					site.setText(loadedFile.site);
 					date.setText(loadedFile.date);
@@ -191,7 +191,7 @@ public class Chess extends Scene{
 		
 		//Results Dropdown
 		result.update();
-		String finalScore = positions.get(positions.size()-1).score;
+		String finalScore = startPosition.getEndOfLine().score;
 		if(!finalScore.equals(""))
 			result.setText(finalScore);
 		
@@ -236,17 +236,17 @@ public class Chess extends Scene{
 		if(comments.nextField)
 			comments.nextField = false;
 		
-		positions.get(turnNumber).comments = comments.getText();
+		currentPosition.comments = comments.getText();
 		
 		//Calculate scroll cap
-		int scrollCap = 100 - (positions.size()/2-15)*24;
-		if(positions.get(positions.size()-1).gState != GameState.ONGOING)
+		int scrollCap = 100 - ((startPosition.getEndOfLine().moveNumber+1)/2-15)*24;
+		if(startPosition.getEndOfLine().gState != GameState.ONGOING)
 			scrollCap -= 72;
 		if(scrollCap > 40)
 			scrollCap = 40;
 		
 		//Scroll through moves
-		if(positions.size() > 30)
+		if(startPosition.getEndOfLine().moveNumber+1 > 30)
 		{
 			if(InputHandler.MOUSEX < 200)
 			{
@@ -274,23 +274,29 @@ public class Chess extends Scene{
 		}
 		
 		//Check if a move in the move history is clicked
-		int selectedMove = getSelectedMove();
-		if(selectedMove != -1 && selectedMove < positions.size())
-			loadPosition(positions.get(selectedMove));
+		Position selected = getSelectedMove();
+		if(selected != null)
+			loadPosition(selected);
 		
 		//Update move history positions
-		for(int i = 1; i < positions.size(); i++)
-			positions.get(i).setY((historyScroll + ((i-1)/2) * 24.0f));
+		int i = 1;
+		Position pos = startPosition.getNextPosition();
+		while(pos != null)
+		{
+			pos.setY(historyScroll + ((i-1)/2) * 24.0f);
+			i++;
+			pos = pos.getNextPosition();
+		}
 		
 		//Check if arrow keys or forward and back buttons are pressed
 		forward.update();
 		back.update();
 		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT) || forward.IsClicked())
 		{
-			if(turnNumber < positions.size() - 1)
+			if(currentPosition.getChildren().size() > 0)
 			{
 				int numP = Tile.getNumPieces(board);
-				loadPosition(positions.get(turnNumber + 1));
+				loadPosition(currentPosition.getChildren().get(0));
 				scrollToMove();
 				if(numP == Tile.getNumPieces(board))
 					SoundEffect.MOVE.play();
@@ -302,7 +308,7 @@ public class Chess extends Scene{
 		{
 			if(turnNumber - 1 > -1)
 			{
-				loadPosition(positions.get(turnNumber-1));
+				loadPosition(currentPosition.getParent());
 				scrollToMove();
 			}
 		}
@@ -475,20 +481,21 @@ public class Chess extends Scene{
 		turnNumber++;
 		
 		//Override later moves
-		if(turnNumber-1 != positions.size() - 1)
+		if(currentPosition.getChildren().size() > 0)
 		{
-			while(turnNumber-1 != positions.size() - 1)
-				positions.remove(positions.size()-1);
-			
-			result.setText(positions.get(positions.size()-1).score);
+			currentPosition.getChildren().clear();
+			result.setText("");
 		}
 		
 		//Automatically scroll to new move
 		scrollToMove();
 		
-		for(Position position : positions)
+		for(Position position : startPosition.getAllDescendants())
 			position.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
-		positions.add(new Position(board, moveText, gameState, turn, turnNumber, fiftyMoves));
+		
+		Position newPos = new Position(board, moveText, gameState, turn, turnNumber, fiftyMoves, currentPosition);
+		currentPosition.addChild(newPos);
+		currentPosition = newPos;
 		comments.setText("");
 		
 		if(FLIPONMOVE)
@@ -513,7 +520,7 @@ public class Chess extends Scene{
 			turn = Color.WHITE;
 		
 		//Check for 3 fold repetition
-		if(Position.Repitition(positions, board))
+		if(currentPosition.repitition())
 		{
 			gameState = GameState.REPETITION;
 			return;
@@ -549,9 +556,11 @@ public class Chess extends Scene{
 		comments.setText(p.comments);
 		moveArrows.clear();
 		
-		for(Position state : positions)
+		for(Position state : startPosition.getAllDescendants())
 			state.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
 		p.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		
+		currentPosition = p;
 	}
 	
 	@Override
@@ -627,20 +636,22 @@ public class Chess extends Scene{
 		}
 		
 		//Move History
-		for(int i = 1; i < positions.size(); i++)
+		Position p = startPosition.getNextPosition();
+		while(p != null)
 		{
-			double y = positions.get(i).getY();
+			double y = p.getY();
 			if(y > 30 && y < 450)
-				positions.get(i).renderText(g);
+				p.renderText(g);
+			p = p.getNextPosition();
 		}
 		
 		//Game result
-		Position lastMove = positions.get(positions.size()-1);
+		Position lastMove = startPosition.getEndOfLine();
 		if(lastMove.gState != GameState.ONGOING)
 		{
 			g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 			
-			int y = (int) ((historyScroll + (positions.size()/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
+			int y = (int) ((historyScroll + ((startPosition.getEndOfLine().moveNumber+1)/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
 			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
 				g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
@@ -701,14 +712,13 @@ public class Chess extends Scene{
 			return;
 		}
 		
-		for(Position p : positions)
+		for(Position p : startPosition.getAllDescendants())
 		{
 			p.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
 			p.setHighlightColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		}
 		
-		positions.get(turnNumber).setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
-			
+		currentPosition.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);	
 		
 		//Update board color
 		for(int y = 0; y < 8; y++)
@@ -736,9 +746,9 @@ public class Chess extends Scene{
 		Pawn.epPawn = -1;
 		
 		gameState = GameState.ONGOING;
-		positions = new ArrayList<Position>();
-		positions.add(new Position(board, "", gameState, turn, 0, 0));
-		
+		startPosition = new Position(board, "", gameState, turn, 0, 0, null);
+		currentPosition = startPosition;
+				
 		moveArrows = new ArrayList<MoveArrow>();
 		
 		event.setText("");
@@ -747,6 +757,7 @@ public class Chess extends Scene{
 		round.setText("");
 		white.setText("");
 		black.setText("");
+		result.setText("");
 		comments.setText("");
 		
 		turnNumber = 0;
@@ -754,25 +765,28 @@ public class Chess extends Scene{
 		historyScroll = 40;
 	}
 	
-	private int getSelectedMove()
+	private Position getSelectedMove()
 	{
-		for(int i = 1; i < positions.size(); i++)
+		Position p = startPosition.getNextPosition();
+		
+		while(p != null)
 		{
-			double y = positions.get(i).getY();
+			double y = p.getY();
 			if(y > 30 && y < 450)
 			{
-				positions.get(i).update();
-				if(positions.get(i).IsClicked())
-					return i;
+				p.update();
+				if(p.IsClicked())
+					return p;
 			}
+			p = p.getNextPosition();
 		}
-		return -1;
+		return null;
 	}
 	
 	private void scrollToMove()
 	{
-		int scrollCap = 100 - (positions.size()/2-15)*24;
-		if(positions.get(positions.size()-1).gState != GameState.ONGOING)
+		int scrollCap = 100 - ((startPosition.getEndOfLine().moveNumber+1)/2-15)*24;
+		if(startPosition.getEndOfLine().gState != GameState.ONGOING)
 			scrollCap -= 72;
 		if(scrollCap > 40)
 			scrollCap = 40;

@@ -25,8 +25,8 @@ public class MoveArrow{
 		
 		double angle = Math.atan2(end.getY() - start.getY(), end.getX() - start.getX()) + Math.PI/2;
 		
-		Point b1 = new Point((int)(start.getX() + Math.cos(angle)*8), (int)(start.getY() + Math.sin(angle)*8));
-		Point b2 = new Point((int)(start.getX() - Math.cos(angle)*9), (int)(start.getY() - Math.sin(angle)*9));
+		Point b1 = new Point((int)(start.getX() + Math.sin(angle)*20 + Math.cos(angle)*8), (int)(start.getY() - Math.cos(angle)*20 + Math.sin(angle)*8));
+		Point b2 = new Point((int)(start.getX() + Math.sin(angle)*20 - Math.cos(angle)*9), (int)(start.getY() - Math.cos(angle)*20 - Math.sin(angle)*9));
 		Point b3 = new Point((int)(end.getX() - Math.cos(angle)*9), (int)(end.getY() - Math.sin(angle)*9));
 		Point b4 = new Point((int)(end.getX() + Math.cos(angle)*8), (int)(end.getY() + Math.sin(angle)*8));
 		

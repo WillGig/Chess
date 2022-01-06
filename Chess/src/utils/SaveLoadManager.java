@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -58,12 +57,14 @@ public class SaveLoadManager {
 			if(gd.result.length() > 0)
 				writer.write("[Result \"" + gd.result + "\"]\n");
 			
-			for(int i = 1; i < gd.positions.size(); i++)
+			Position current = gd.startPosition;
+			while(current != null)
 			{
-				writer.write(gd.positions.get(i).getText() + " ");
-				String moveComments = gd.positions.get(i).comments;
+				writer.write(current.getText() + " ");
+				String moveComments = current.comments;
 				if(moveComments.length() > 0)
 					writer.write("{" + moveComments + "} ");
+				current = current.getNextPosition();
 			}
 			
 			if(gd.result.length() > 0)
@@ -77,7 +78,7 @@ public class SaveLoadManager {
 	public static GameData loadGame(String path)
 	{
 		String event = "", site = "", date = "", round = "", white = "", black = "", result = "";
-		ArrayList<Position> states = new ArrayList<Position>();
+		Position current = null;
 		
 		try
 		{
@@ -87,7 +88,7 @@ public class SaveLoadManager {
 			Pawn.enPassantTile = -1;
 			Pawn.epPawn = -1;
 			
-			states.add(new Position(board, "", GameState.ONGOING, Color.WHITE, 0, 0));
+			current = new Position(board, "", GameState.ONGOING, Color.WHITE, 0, 0, null);
 			
 			int counter = -1;
 			boolean readingComment = false;
@@ -150,6 +151,9 @@ public class SaveLoadManager {
 				
 				for(String s : data.split(" "))
 				{
+					if(s.length() == 0)
+						continue;
+					
 					if(s.charAt(0) == '{')
 						readingComment = true;
 					
@@ -160,7 +164,7 @@ public class SaveLoadManager {
 						{
 							readingComment = false;
 							comment = comment.substring(1, comment.length()-2);
-							states.get(states.size()-1).comments = comment;
+							current.comments = comment;
 							comment = "";
 						}
 						continue;
@@ -168,25 +172,24 @@ public class SaveLoadManager {
 					
 					if(s.equals(result))
 					{
-						Position finalState = states.get(states.size()-1);
-						finalState.score = result;
+						current.score = result;
 						if(result.equals("1/2-1/2"))
 						{
-							finalState.gState = GameState.DRAW;
-							finalState.result = "Draw by agreement";
+							current.gState = GameState.DRAW;
+							current.result = "Draw by agreement";
 						}
 						else if(result.equals("1-0"))
 						{
-							finalState.gState = GameState.CHECKMATE;
-							finalState.result = "White wins by resignation";
+							current.gState = GameState.CHECKMATE;
+							current.result = "White wins by resignation";
 						}
 						else if(result.equals("0-1"))
 						{
-							finalState.gState = GameState.CHECKMATE;
-							finalState.result = "Black wins by resignation";
+							current.gState = GameState.CHECKMATE;
+							current.result = "Black wins by resignation";
 						}
 						reader.close();
-						return new GameData(states, event, site, date, round, white, black, result);
+						return new GameData(current.getHead(), event, site, date, round, white, black, result);
 					}
 						
 					counter++;
@@ -195,45 +198,39 @@ public class SaveLoadManager {
 						continue;
 					//Move data
 					else
-						states.add(generateStateFromPGN(states,  board, s));
+					{
+						Position newPosition = generatePositionFromPGN(current, board, s);
+						current.addChild(newPosition);
+						current = newPosition;
+					}
 				}
 			}
 			
 			reader.close();
 		}
 		catch(Exception ex) { ex.printStackTrace(); }
-		return new GameData(states, event, site, date, round, white, black, result);
+		if(current != null)
+			return new GameData(current.getHead(), event, site, date, round, white, black, result);
+		return null;
 	}
 	
-	public static Position generateStateFromPGN(ArrayList<Position> states, Tile[] board, String move)
+	public static Position generatePositionFromPGN(Position current, Tile[] board, String move)
 	{
-		Position previousState = states.get(states.size()-1);
-		
-		makeMove(board, move, previousState.turn);
+		makeMove(board, move, current.turn);
 		
 		Color c = Color.WHITE;
-		if(previousState.turn == Color.WHITE)
+		if(current.turn == Color.WHITE)
 			c = Color.BLACK;
 		
-		int fiftyMoves = previousState.fiftyMoves+1;
+		int fiftyMoves = current.fiftyMoves+1;
 		
 		if(move.contains("x") || !"NBRQK0".contains(move.charAt(0)+""))
 			fiftyMoves = 0;
-		
-		GameState gs;
-		if(move.contains("#"))
-			gs = GameState.CHECKMATE;
-		else if(fiftyMoves == 100)
-			gs = GameState.FIFTYMOVEDRAW;
-		else if(Position.Repitition(states, board))
-			gs = GameState.REPETITION;
-		else
-			gs = Position.EvaluateState(board, c);
 			
 		if(c == Color.BLACK)
-			move = ((previousState.moveNumber+1)/2+1) + ". " + move;
+			move = ((current.moveNumber+1)/2+1) + ". " + move;
 		
-		return new Position(board, move, gs, c, previousState.moveNumber+1, fiftyMoves);
+		return new Position(board, move, GameState.ONGOING, c, current.moveNumber+1, fiftyMoves, current);
 	}
 	
 	public static void makeMove(Tile[] board, String move, Color turn)
