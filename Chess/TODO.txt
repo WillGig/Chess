@@ -2,7 +2,6 @@ TODO:
 
 Support variations and multiple lines
 -allow saving and loading files with multiple lines
--option to delete or promote secondary lines
 -option to collapse secondary lines
 
 allow highlighting text?

@@ -147,6 +147,35 @@ public class Position extends Button{
 		children.add(child);
 	}
 	
+	public void removeChild(Position child)
+	{
+		children.remove(child);
+	}
+	
+	public void delete()
+	{
+		parent.removeChild(this);
+	}
+	
+	public void promote()
+	{
+		parent.promoteChild(this);
+	}
+	
+	public void promoteChild(Position child)
+	{
+		for(int i = 1; i < children.size(); i++)
+		{
+			if(children.get(i).equals(child))
+			{
+				Position temp = children.get(i-1);
+				children.set(i-1, child);
+				children.set(i, temp);
+				return;
+			}
+		}
+	}
+	
 	public ArrayList<Position> getChildren()
 	{
 		return children;

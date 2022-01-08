@@ -15,6 +15,8 @@ import objects.Button;
 import objects.DropDown;
 import objects.ImageButton;
 import objects.MoveArrow;
+import objects.PositionOptions;
+import objects.PositionOptions.positionAction;
 import objects.ScrollBar;
 import objects.TextField;
 import objects.Tile;
@@ -68,8 +70,9 @@ public class Chess extends Scene{
 	
 	private MoveArrow currentArrow;
 	private Tile moveArrowStart;
-	
 	private ArrayList<MoveArrow> moveArrows;
+	
+	private PositionOptions positionOptions;
 	
 	public Chess()
 	{
@@ -238,6 +241,40 @@ public class Chess extends Scene{
 		
 		currentPosition.comments = comments.getText();
 		
+		//position options
+		if(positionOptions != null)
+		{
+			if(InputHandler.MouseClicked(1))
+			{
+				positionOptions.update();
+				if(positionOptions.status == positionAction.DELETE)
+				{
+					if(positionOptions.position.getAllDescendants().contains(currentPosition))
+					{
+						loadPosition(positionOptions.position.getParent());
+						scrollToMove();
+					}
+					positionOptions.position.delete();
+					startPosition.setLineBrackets(0, false);
+				}
+				else if(positionOptions.status == positionAction.PROMOTE)
+				{
+					positionOptions.position.promote();
+					startPosition.setLineBrackets(0, false);
+				}
+				else if(positionOptions.status == positionAction.COLLAPSE)
+				{
+					//TODO: collapse sideline
+				}
+				else
+					InputHandler.MouseClickedAndSetFalse(1);
+				positionOptions = null;
+			}
+			else
+				positionOptions.update();
+		}
+			
+		
 		//Update move history positions
 		startPosition.setPositionOfTree(historyScroll - 24);
 		
@@ -251,7 +288,7 @@ public class Chess extends Scene{
 		//Scroll through moves
 		if(scrollCap < 40)
 		{
-			if(InputHandler.MOUSEX < 200)
+			if(InputHandler.MOUSEX < 200 && positionOptions == null)
 			{
 				int scrollAmount = InputHandler.getMouseScroll() * 40;
 				historyScroll -= scrollAmount;
@@ -282,27 +319,30 @@ public class Chess extends Scene{
 			loadPosition(selected);
 		
 		//Check if arrow keys or forward and back buttons are pressed
-		forward.update();
-		back.update();
-		if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT) || forward.IsClicked())
+		if(positionOptions == null)
 		{
-			if(currentPosition.getChildren().size() > 0)
+			forward.update();
+			back.update();
+			if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_RIGHT) || forward.IsClicked())
 			{
-				int numP = Tile.getNumPieces(board);
-				loadPosition(currentPosition.getChildren().get(0));
-				scrollToMove();
-				if(numP == Tile.getNumPieces(board))
-					SoundEffect.MOVE.play();
-				else
-					SoundEffect.CAPTURE.play();
+				if(currentPosition.getChildren().size() > 0)
+				{
+					int numP = Tile.getNumPieces(board);
+					loadPosition(currentPosition.getChildren().get(0));
+					scrollToMove();
+					if(numP == Tile.getNumPieces(board))
+						SoundEffect.MOVE.play();
+					else
+						SoundEffect.CAPTURE.play();
+				}
 			}
-		}
-		else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
-		{
-			if(turnNumber - 1 > -1)
+			else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
 			{
-				loadPosition(currentPosition.getParent());
-				scrollToMove();
+				if(turnNumber - 1 > -1)
+				{
+					loadPosition(currentPosition.getParent());
+					scrollToMove();
+				}
 			}
 		}
 		
@@ -615,6 +655,10 @@ public class Chess extends Scene{
 		if(promoting != null)
 			for(int i = 0; i < promoting.GetPromotionOptions().length; i++)
 				promoting.GetPromotionOptions()[i].render(pixels);
+		
+		//Position Options
+		if(positionOptions != null)
+			positionOptions.render(pixels);
 	}
 
 	@Override
@@ -634,7 +678,7 @@ public class Chess extends Scene{
 		
 		//Move History
 		for(Position p : startPosition.getAllDescendants())
-			if(p.getY() > 30 && p.getY() < 450)
+			if(p.getY() > 30 && p.getY() < 450 && (positionOptions == null || !positionOptions.overlapsRect((int)p.getX(), (int)p.getY(), p.getWidth(), p.getHeight())))
 				p.renderText(g);
 		
 		//Game result
@@ -674,6 +718,10 @@ public class Chess extends Scene{
 		black.renderText(g);
 		if(!result.isShowingOptions())
 			comments.renderText(g);
+		
+		//Position Options
+		if(positionOptions != null)
+			positionOptions.renderText(g);
 	}
 
 	@Override
@@ -767,6 +815,8 @@ public class Chess extends Scene{
 				p.update();
 				if(p.IsClicked())
 					return p;
+				if(p.containsCursor() && InputHandler.MouseClickedAndSetFalse(2))
+					positionOptions = new PositionOptions(p);
 			}
 		}
 		return null;
