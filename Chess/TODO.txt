@@ -5,6 +5,8 @@ Clean up movearrow and texture.combine
 
 allow highlighting text?
 
+Switch position to use FEN to store position data
+
 Database functionality?
 	- multiple lines
 	- allow pgns with multiple games

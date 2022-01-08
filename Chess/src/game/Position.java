@@ -162,14 +162,10 @@ public class Position extends Button{
 	public ArrayList<Position> getAllDescendants()
 	{
 		ArrayList<Position> descendants = new ArrayList<Position>();
-		if(children.size() == 0)
-			descendants.add(this);
-		else
-		{
+		if(children.size() != 0)
 			for(Position p : children)
 				descendants.addAll(p.getAllDescendants());
-			descendants.add(this);
-		}
+		descendants.add(this);
 		return descendants;
 	}
 	
@@ -180,6 +176,60 @@ public class Position extends Button{
 		return this;
 	}
 	
+	public Position getLowestPosition()
+	{
+		Position lowest = null;
+		for(Position p : getAllDescendants())
+		{
+			if(lowest == null || lowest.getY() < p.getY())
+				lowest = p;
+		}
+		return lowest;
+	}
+	
+	public int setPositionOfTree(int yPos)
+	{
+		int yStart = yPos;
+		setY(yPos);
+		//Add row if black made a move
+		if(turn == Color.WHITE)
+			yPos += 24;
+		
+		//Main Move
+		if(children.size() > 0)
+		{
+			children.get(0).setY(yPos);
+			if(children.size() > 1)
+				yPos += 24;
+		}
+		
+		//Alternate Lines
+		for(int i = 1; i < children.size(); i++)
+			yPos += children.get(i).setPositionOfTree(yPos);
+		
+		//Return to Main Line
+		if(children.size() > 0)
+		{
+			double temp = children.get(0).getY();
+			yPos += children.get(0).setPositionOfTree(yPos);
+			children.get(0).setY(temp);
+		}
+		
+		if(yPos - yStart < 24)
+			return 24;
+		
+		return yPos - yStart;
+	}
+	
+	public Position hasChild(Position child)
+	{
+		for(Position p : children)
+			if(p.state.equals(child.state))
+				return p;
+			
+		return null;
+	}
+	
 	public boolean repitition()
 	{
 		int count = 1;
@@ -188,9 +238,9 @@ public class Position extends Button{
 		{
 			if(current.state.equals(state))
 				count++;
-			current = current.parent;
 			if(count > 2)
 				return true;
+			current = current.parent;
 		}
 		return false;
 	}

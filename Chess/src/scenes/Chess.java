@@ -238,15 +238,18 @@ public class Chess extends Scene{
 		
 		currentPosition.comments = comments.getText();
 		
+		//Update move history positions
+		startPosition.setPositionOfTree(historyScroll - 24);
+		
 		//Calculate scroll cap
-		int scrollCap = 100 - ((startPosition.getEndOfLine().moveNumber+1)/2-15)*24;
+		int scrollCap = (int) (436-startPosition.getLowestPosition().getY() + historyScroll);
 		if(startPosition.getEndOfLine().gState != GameState.ONGOING)
 			scrollCap -= 72;
 		if(scrollCap > 40)
 			scrollCap = 40;
 		
 		//Scroll through moves
-		if(startPosition.getEndOfLine().moveNumber+1 > 30)
+		if(scrollCap < 40)
 		{
 			if(InputHandler.MOUSEX < 200)
 			{
@@ -277,16 +280,6 @@ public class Chess extends Scene{
 		Position selected = getSelectedMove();
 		if(selected != null)
 			loadPosition(selected);
-		
-		//Update move history positions
-		int i = 1;
-		Position pos = startPosition.getNextPosition();
-		while(pos != null)
-		{
-			pos.setY(historyScroll + ((i-1)/2) * 24.0f);
-			i++;
-			pos = pos.getNextPosition();
-		}
 		
 		//Check if arrow keys or forward and back buttons are pressed
 		forward.update();
@@ -480,13 +473,6 @@ public class Chess extends Scene{
 			moveText = (turnNumber/2 + 1) + ". " + moveText;
 		turnNumber++;
 		
-		//Override later moves
-		if(currentPosition.getChildren().size() > 0)
-		{
-			currentPosition.getChildren().clear();
-			result.setText("");
-		}
-		
 		//Automatically scroll to new move
 		scrollToMove();
 		
@@ -494,9 +480,18 @@ public class Chess extends Scene{
 			position.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
 		
 		Position newPos = new Position(board, moveText, gameState, turn, turnNumber, fiftyMoves, currentPosition);
-		currentPosition.addChild(newPos);
-		currentPosition = newPos;
-		comments.setText("");
+		Position alreadyExists = currentPosition.hasChild(newPos);
+		if(alreadyExists != null)
+		{
+			currentPosition = alreadyExists;
+			currentPosition.setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
+		}
+		else
+		{
+			currentPosition.addChild(newPos);
+			currentPosition = newPos;
+			comments.setText("");
+		}
 		
 		if(FLIPONMOVE)
 			Tile.flip(board);
@@ -636,14 +631,9 @@ public class Chess extends Scene{
 		}
 		
 		//Move History
-		Position p = startPosition.getNextPosition();
-		while(p != null)
-		{
-			double y = p.getY();
-			if(y > 30 && y < 450)
+		for(Position p : startPosition.getAllDescendants())
+			if(p.getY() > 30 && p.getY() < 450)
 				p.renderText(g);
-			p = p.getNextPosition();
-		}
 		
 		//Game result
 		Position lastMove = startPosition.getEndOfLine();
@@ -651,7 +641,7 @@ public class Chess extends Scene{
 		{
 			g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 			
-			int y = (int) ((historyScroll + ((startPosition.getEndOfLine().moveNumber+1)/2 + 0.5f) * 24.0f)*Game.SCALE) + Game.YOFF;
+			int y = (int) ((startPosition.getLowestPosition().getY()+36.0f)*Game.SCALE) + Game.YOFF;
 			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
 				g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
@@ -767,9 +757,7 @@ public class Chess extends Scene{
 	
 	private Position getSelectedMove()
 	{
-		Position p = startPosition.getNextPosition();
-		
-		while(p != null)
+		for(Position p : startPosition.getAllDescendants())
 		{
 			double y = p.getY();
 			if(y > 30 && y < 450)
@@ -778,33 +766,35 @@ public class Chess extends Scene{
 				if(p.IsClicked())
 					return p;
 			}
-			p = p.getNextPosition();
 		}
+		
 		return null;
 	}
 	
 	private void scrollToMove()
 	{
-		int scrollCap = 100 - ((startPosition.getEndOfLine().moveNumber+1)/2-15)*24;
+		int scrollCap = (int) (436-startPosition.getLowestPosition().getY() + historyScroll);
 		if(startPosition.getEndOfLine().gState != GameState.ONGOING)
 			scrollCap -= 72;
 		if(scrollCap > 40)
 			scrollCap = 40;
 		
 		//Check if scroll is too high
-		if(historyScroll < 40 - ((turnNumber-1)/2) * 24)
+		if(historyScroll < 40 + historyScroll - currentPosition.getY())
 		{
-			historyScroll = 40 - ((turnNumber-1)/2) * 24;
+			historyScroll = (int)(40 + historyScroll - currentPosition.getY());
+			if(historyScroll > 40)
+				historyScroll = 40;
 			moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 			return;
 		}
 			
 		//Check if scroll is too low
 		//Check if need space for result text
-		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > 100 - ((turnNumber-23)/2)*24))
-			historyScroll = 100 - ((turnNumber-23)/2)*24;
-		else if(turnNumber > 29 && historyScroll > 100 - ((turnNumber-29)/2)*24)
-			historyScroll = 100 - ((turnNumber-29)/2)*24;
+		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > (int) (364-currentPosition.getY() + historyScroll)))
+			historyScroll = (int) (364-currentPosition.getY() + historyScroll);
+		else if(turnNumber > 29 && historyScroll > (int) (436-currentPosition.getY() + historyScroll))
+			historyScroll = (int) (436-currentPosition.getY() + historyScroll);
 		
 		if(historyScroll > 40)
 			historyScroll = 40;
