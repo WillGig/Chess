@@ -1,14 +1,16 @@
 TODO:
 
-Clean up scrollToMove function
-Clean up movearrow and texture.combine
+Support variations and multiple lines
+-allow saving and loading files with multiple lines
+-option to delete or promote secondary lines
+-option to collapse secondary lines
 
 allow highlighting text?
 
 Switch position to use FEN to store position data
 
 Database functionality?
-	- multiple lines
 	- allow pgns with multiple games
 
+opening book
 Engine

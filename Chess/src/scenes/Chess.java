@@ -493,6 +493,8 @@ public class Chess extends Scene{
 			comments.setText("");
 		}
 		
+		startPosition.setLineBrackets(0, false);
+		
 		if(FLIPONMOVE)
 			Tile.flip(board);
 		
@@ -767,12 +769,12 @@ public class Chess extends Scene{
 					return p;
 			}
 		}
-		
 		return null;
 	}
 	
 	private void scrollToMove()
 	{
+		//Find minimum scroll value
 		int scrollCap = (int) (436-startPosition.getLowestPosition().getY() + historyScroll);
 		if(startPosition.getEndOfLine().gState != GameState.ONGOING)
 			scrollCap -= 72;
@@ -790,7 +792,7 @@ public class Chess extends Scene{
 		}
 			
 		//Check if scroll is too low
-		//Check if need space for result text
+		//Check if a space is needed for result text
 		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > (int) (364-currentPosition.getY() + historyScroll)))
 			historyScroll = (int) (364-currentPosition.getY() + historyScroll);
 		else if(turnNumber > 29 && historyScroll > (int) (436-currentPosition.getY() + historyScroll))
@@ -801,6 +803,7 @@ public class Chess extends Scene{
 		else if(historyScroll < scrollCap)
 			historyScroll = scrollCap;
 		
+		//Update position of scroll bar
 		moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
 	}
 }

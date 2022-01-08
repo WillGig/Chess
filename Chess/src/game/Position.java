@@ -221,6 +221,33 @@ public class Position extends Button{
 		return yPos - yStart;
 	}
 	
+	//Goes through tree originating from position and sets text to include correct number of ( and )
+	//for each line
+	public void setLineBrackets(int numberOfOpenBrackets, boolean startOfLine)
+	{
+		//Trim any brackets
+		setText(getText().replace("(", ""));
+		setText(getText().replace(")", ""));
+		
+		if(startOfLine)
+			setText("(" + getText());
+		
+		//If end of line, close all brackets
+		if(children.size() == 0)
+		{
+			for(int i = 0; i < numberOfOpenBrackets; i++)
+				setText(getText() + ")");
+		}
+		else
+		{
+			//continue main line with same number of brackets
+			children.get(0).setLineBrackets(numberOfOpenBrackets, false);
+			//alternate lines start a new set of brackets
+			for(int i = 1; i < children.size(); i++)
+				children.get(i).setLineBrackets(numberOfOpenBrackets+1, true);
+		}
+	}
+	
 	public Position hasChild(Position child)
 	{
 		for(Position p : children)
