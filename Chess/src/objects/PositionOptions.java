@@ -7,7 +7,7 @@ import game.Position;
 
 public class PositionOptions {
 
-	public enum positionAction {DELETE, PROMOTE, COLLAPSE, NULL}
+	public enum positionAction {DELETE, PROMOTE, TOGGLESHOW, NULL}
 	
 	public positionAction status;
 	
@@ -26,11 +26,20 @@ public class PositionOptions {
 		promote = new Button(90, p.getY() + 20, 140, 20, "Promote Line");
 		promote.setFontSize(14);
 		promote.setBorderWidth(2);
-		collapse = new Button(90, p.getY() + 40, 140, 20, "Collapse Line");
-		collapse.setFontSize(14);
-		collapse.setBorderWidth(2);
 		
-		collider = new Rectangle(90 - 70, (int)p.getY() - p.height/2, 140, 60);
+		if(p.getChildren().size() > 0)
+		{
+			if(p.getChildren().get(0).hidden)
+				collapse = new Button(90, p.getY() + 40, 140, 20, "Show Line");
+			else
+				collapse = new Button(90, p.getY() + 40, 140, 20, "Hide Line");
+			collapse.setFontSize(14);
+			collapse.setBorderWidth(2);
+			
+			collider = new Rectangle(90 - 70, (int)p.getY() - p.height/2, 140, 60);
+		}
+		else
+			collider = new Rectangle(90 - 70, (int)p.getY() - p.height/2, 140, 40);
 		
 		status = positionAction.NULL;
 	}
@@ -43,23 +52,28 @@ public class PositionOptions {
 		promote.update();
 		if(promote.IsClicked())
 			status = positionAction.PROMOTE;
-		collapse.update();
-		if(collapse.IsClicked())
-			status = positionAction.COLLAPSE;
+		if(collapse != null)
+		{
+			collapse.update();
+			if(collapse.IsClicked())
+				status = positionAction.TOGGLESHOW;
+		}
 	}
 	
 	public void render(int[] pixels)
 	{
 		delete.render(pixels);
 		promote.render(pixels);
-		collapse.render(pixels);
+		if(collapse != null)
+			collapse.render(pixels);
 	}
 	
 	public void renderText(Graphics g)
 	{
 		delete.renderText(g);
 		promote.renderText(g);
-		collapse.renderText(g);
+		if(collapse != null)
+			collapse.renderText(g);
 	}
 	
 	public boolean containsPoint(int x, int y)

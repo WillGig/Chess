@@ -18,6 +18,7 @@ public class Position extends Button{
 
 	private Position parent;
 	private ArrayList<Position> children;
+	public boolean hidden;
 	
 	public String state = "", colors = "", numMoves = "", score = "", result = "", comments = "";
 	public GameState gState;
@@ -29,6 +30,7 @@ public class Position extends Button{
 		super(turn == Color.BLACK ? 60 : 160, 0, 70, 20, moveText);
 		this.parent = parent;
 		children = new ArrayList<Position>();
+		hidden = false;
 		setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		if(!Game.DARKMODE)
 			setHighlightColor(Color.BLACK);
@@ -216,8 +218,20 @@ public class Position extends Button{
 		return lowest;
 	}
 	
+	public void showLine(boolean show)
+	{
+		for(Position p : children)
+		{
+			p.hidden = !show;
+			p.showLine(show);
+		}
+	}
+	
 	public int setPositionOfTree(int yPos)
 	{
+		if(hidden)
+			return 0;
+		
 		int yStart = yPos;
 		setY(yPos);
 		//Add row if black made a move

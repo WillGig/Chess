@@ -262,9 +262,20 @@ public class Chess extends Scene{
 					positionOptions.position.promote();
 					startPosition.setLineBrackets(0, false);
 				}
-				else if(positionOptions.status == positionAction.COLLAPSE)
+				else if(positionOptions.status == positionAction.TOGGLESHOW)
 				{
-					//TODO: collapse sideline
+					Position p = positionOptions.position;
+					if(p.getChildren().get(0).hidden)
+					{
+						p.showLine(true);
+						p.setText(p.getText().replace("...", ""));
+					}
+					else
+					{
+						p.showLine(false);
+						p.setText(p.getText() + "...");
+					}
+					startPosition.setPositionOfTree(historyScroll - 24);
 				}
 				else
 					InputHandler.MouseClickedAndSetFalse(1);
@@ -273,7 +284,6 @@ public class Chess extends Scene{
 			else
 				positionOptions.update();
 		}
-			
 		
 		//Update move history positions
 		startPosition.setPositionOfTree(historyScroll - 24);
@@ -678,7 +688,7 @@ public class Chess extends Scene{
 		
 		//Move History
 		for(Position p : startPosition.getAllDescendants())
-			if(p.getY() > 30 && p.getY() < 450 && (positionOptions == null || !positionOptions.overlapsRect((int)p.getX(), (int)p.getY(), p.getWidth(), p.getHeight())))
+			if(!p.hidden && p.getY() > 30 && p.getY() < 450 && (positionOptions == null || !positionOptions.overlapsRect((int)p.getX(), (int)p.getY(), p.getWidth(), p.getHeight())))
 				p.renderText(g);
 		
 		//Game result
@@ -810,7 +820,7 @@ public class Chess extends Scene{
 		for(Position p : startPosition.getAllDescendants())
 		{
 			double y = p.getY();
-			if(y > 30 && y < 450)
+			if(!p.hidden && y > 30 && y < 450)
 			{
 				p.update();
 				if(p.IsClicked())
@@ -843,9 +853,9 @@ public class Chess extends Scene{
 			
 		//Check if scroll is too low
 		//Check if a space is needed for result text
-		if(gameState != GameState.ONGOING && (turnNumber > 29 && historyScroll > (int) (364-currentPosition.getY() + historyScroll)))
+		if(startPosition.getEndOfLine().gState != GameState.ONGOING && (historyScroll > (int) (364-currentPosition.getY() + historyScroll)))
 			historyScroll = (int) (364-currentPosition.getY() + historyScroll);
-		else if(turnNumber > 29 && historyScroll > (int) (436-currentPosition.getY() + historyScroll))
+		else if(historyScroll > (int) (436-currentPosition.getY() + historyScroll))
 			historyScroll = (int) (436-currentPosition.getY() + historyScroll);
 		
 		if(historyScroll > 40)
