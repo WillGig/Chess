@@ -212,6 +212,9 @@ public class Position extends Button{
 		Position lowest = null;
 		for(Position p : getAllDescendants())
 		{
+			if(p.hidden)
+				continue;
+			
 			if(lowest == null || lowest.getY() < p.getY())
 				lowest = p;
 		}

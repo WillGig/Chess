@@ -699,7 +699,8 @@ public class Chess extends Scene{
 			
 			int y = (int) ((startPosition.getLowestPosition().getY()+36.0f)*Game.SCALE) + Game.YOFF;
 			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
-				g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
+				if(positionOptions == null || !positionOptions.overlapsRect(20, (int)(startPosition.getLowestPosition().getY()+30.0f), 50, 20))
+					g.drawString(lastMove.score, (int) (20*Game.SCALE + Game.XOFF), y);
 			y += 24.0f*Game.SCALE;
 			if(y > 90*Game.SCALE + Game.YOFF && y < 450*Game.SCALE + Game.YOFF)
 				g.drawString(lastMove.result, (int) (20*Game.SCALE + Game.XOFF), y);
