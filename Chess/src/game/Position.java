@@ -20,7 +20,7 @@ public class Position extends Button{
 	private ArrayList<Position> children;
 	public boolean hidden;
 	
-	public String state = "", colors = "", numMoves = "", score = "", result = "", comments = "";
+	public String state = "", colors = "", numMoves = "", score = "", result = "", rawText, comments = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, epPawn, fiftyMoves;
@@ -29,6 +29,7 @@ public class Position extends Button{
 	{
 		super(turn == Color.BLACK ? 60 : 160, 0, 70, 20, moveText);
 		this.parent = parent;
+		rawText = moveText;
 		children = new ArrayList<Position>();
 		hidden = false;
 		setTextColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
@@ -286,11 +287,28 @@ public class Position extends Button{
 		}
 		else
 		{
-			//continue main line with same number of brackets
-			children.get(0).setLineBrackets(numberOfOpenBrackets, false);
-			//alternate lines start a new set of brackets
-			for(int i = 1; i < children.size(); i++)
-				children.get(i).setLineBrackets(numberOfOpenBrackets+1, true);
+			// line continues with same number of brackets
+			if(children.size() == 1) 
+			{
+				children.get(0).setLineBrackets(numberOfOpenBrackets, false);
+			}
+			// line continuation will hold the remaining open brackets, new lines get 1 bracket
+			else if(children.get(0).getChildren().size() > 0)
+			{
+				children.get(0).setLineBrackets(numberOfOpenBrackets, false);
+				for(int i = 1; i < children.size(); i++)
+					children.get(i).setLineBrackets(1, true);
+			}
+			//main line is on last move, alternate lines will end with remaining open brackets
+			else
+			{
+				children.get(0).setLineBrackets(0, false);
+				for(int i = 1; i < children.size(); i++)
+					if(i == children.size() - 1)
+						children.get(i).setLineBrackets(numberOfOpenBrackets+1, true);
+					else
+						children.get(i).setLineBrackets(1, true);
+			}
 		}
 	}
 	

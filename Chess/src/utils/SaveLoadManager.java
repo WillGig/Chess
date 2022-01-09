@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
@@ -57,15 +58,17 @@ public class SaveLoadManager {
 			if(gd.result.length() > 0)
 				writer.write("[Result \"" + gd.result + "\"]\n");
 			
-			Position current = gd.startPosition;
-			while(current != null)
-			{
-				writer.write(current.getText() + " ");
-				String moveComments = current.comments;
-				if(moveComments.length() > 0)
-					writer.write("{" + moveComments + "} ");
-				current = current.getNextPosition();
-			}
+//			Position current = gd.startPosition;
+//			while(current != null)
+//			{
+//				writer.write(current.rawText + " ");
+//				String moveComments = current.comments;
+//				if(moveComments.length() > 0)
+//					writer.write("{" + moveComments + "} ");
+//				current = current.getNextPosition();
+//			}
+			
+			saveLine(gd.startPosition, 0, writer);
 			
 			if(gd.result.length() > 0)
 				writer.write(gd.result);
@@ -73,6 +76,34 @@ public class SaveLoadManager {
 			writer.close();
 		}
 		catch(Exception ex) {}
+	}
+	
+	public static void saveMove(Position p, int numberOfOpenBrackets, boolean startOfLine, FileWriter writer) throws IOException
+	{
+		if(startOfLine)
+			writer.write("(");
+		writer.write(p.rawText + " ");
+		String moveComments = p.comments;
+		if(moveComments.length() > 0)
+			writer.write("{" + moveComments + "}");
+		if(p.getChildren().size() == 0)
+			for(int i  = 0; i < numberOfOpenBrackets; i++)
+				writer.write(")");
+		writer.write(" ");
+	}
+	
+	public static void saveLine(Position p, int numberOfOpenBrackets, FileWriter writer) throws IOException
+	{
+		if(p.getChildren().size() > 0)
+		{
+			saveMove(p.getChildren().get(0), numberOfOpenBrackets, false, writer);
+			for(int i = 1; i < p.getChildren().size(); i++)
+			{
+				saveMove(p.getChildren().get(i), numberOfOpenBrackets+1, true, writer);
+				saveLine(p.getChildren().get(i), numberOfOpenBrackets+1, writer);
+			}
+			saveLine(p.getChildren().get(0), numberOfOpenBrackets, writer);
+		}
 	}
 	
 	public static GameData loadGame(String path)
