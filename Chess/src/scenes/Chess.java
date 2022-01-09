@@ -268,7 +268,7 @@ public class Chess extends Scene{
 					if(p.getChildren().get(0).hidden)
 					{
 						p.showLine(true);
-						p.setText(p.getText().replace("...", ""));
+						p.setText(p.getText().replaceAll("...$", ""));
 					}
 					else
 					{
