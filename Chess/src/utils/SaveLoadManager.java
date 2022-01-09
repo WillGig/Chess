@@ -58,16 +58,6 @@ public class SaveLoadManager {
 			if(gd.result.length() > 0)
 				writer.write("[Result \"" + gd.result + "\"]\n");
 			
-//			Position current = gd.startPosition;
-//			while(current != null)
-//			{
-//				writer.write(current.rawText + " ");
-//				String moveComments = current.comments;
-//				if(moveComments.length() > 0)
-//					writer.write("{" + moveComments + "} ");
-//				current = current.getNextPosition();
-//			}
-			
 			saveLine(gd.startPosition, 0, writer);
 			
 			if(gd.result.length() > 0)
@@ -78,32 +68,65 @@ public class SaveLoadManager {
 		catch(Exception ex) {}
 	}
 	
-	public static void saveMove(Position p, int numberOfOpenBrackets, boolean startOfLine, FileWriter writer) throws IOException
-	{
-		if(startOfLine)
-			writer.write("(");
-		writer.write(p.rawText + " ");
-		String moveComments = p.comments;
-		if(moveComments.length() > 0)
-			writer.write("{" + moveComments + "}");
-		if(p.getChildren().size() == 0)
-			for(int i  = 0; i < numberOfOpenBrackets; i++)
-				writer.write(")");
-		writer.write(" ");
-	}
-	
+	//Saves all move and comment data for all moves within line
 	public static void saveLine(Position p, int numberOfOpenBrackets, FileWriter writer) throws IOException
 	{
-		if(p.getChildren().size() > 0)
+		if(p.getChildren().size() == 0)
+			return;
+		
+		if(p.getChildren().size() == 1)
+		{
+			saveMove(p.getChildren().get(0), numberOfOpenBrackets, false, writer);
+			saveLine(p.getChildren().get(0), numberOfOpenBrackets, writer);
+		}
+		else if(p.getChildren().get(0).getChildren().size() > 0)
 		{
 			saveMove(p.getChildren().get(0), numberOfOpenBrackets, false, writer);
 			for(int i = 1; i < p.getChildren().size(); i++)
 			{
-				saveMove(p.getChildren().get(i), numberOfOpenBrackets+1, true, writer);
-				saveLine(p.getChildren().get(i), numberOfOpenBrackets+1, writer);
+				saveMove(p.getChildren().get(i), 1, true, writer);
+				saveLine(p.getChildren().get(i), 1, writer);
 			}
 			saveLine(p.getChildren().get(0), numberOfOpenBrackets, writer);
 		}
+		else
+		{
+			saveMove(p.getChildren().get(0), 0, false, writer);
+			for(int i = 1; i < p.getChildren().size(); i++)
+			{
+				if(i == p.getChildren().size()-1)
+				{
+					saveMove(p.getChildren().get(i), numberOfOpenBrackets+1, true, writer);
+					saveLine(p.getChildren().get(i), numberOfOpenBrackets+1, writer);
+				}
+				else
+				{
+					saveMove(p.getChildren().get(i), 1, true, writer);
+					saveLine(p.getChildren().get(i), 1, writer);
+				}
+			}
+		}
+	}
+
+	//Helper function for saveLine. Saves move data of a specific move.
+	//Must be split from saveLine since with variations a move will be saved, then variations, then the line from the move
+	public static void saveMove(Position p, int numberOfOpenBrackets, boolean startOfLine, FileWriter writer) throws IOException
+	{
+		if(startOfLine)
+		{
+			if(p.turn == Color.BLACK)
+				writer.write("(");
+			else
+				writer.write("(" + p.moveNumber/2 + "... ");
+		}
+		writer.write(p.rawText);
+		String moveComments = p.comments;
+		if(moveComments.length() > 0)
+			writer.write(" {" + moveComments + "}");
+		if(p.getChildren().size() == 0)
+			for(int i  = 0; i < numberOfOpenBrackets; i++)
+				writer.write(")");
+		writer.write(" ");
 	}
 	
 	public static GameData loadGame(String path)
@@ -127,9 +150,11 @@ public class SaveLoadManager {
 			while(reader.hasNextLine())
 			{
 				String data = reader.nextLine();
+				//skip empty lines
 				if(data.length() < 1)
 					continue;
 				
+				//Read in game attributes
 				if(data.charAt(0) == '[')
 				{
 					if(data.length() > 6)
@@ -180,8 +205,10 @@ public class SaveLoadManager {
 					continue;
 				}
 				
+				//read in move data
 				for(String s : data.split(" "))
 				{
+					//skip empty spaces
 					if(s.length() == 0)
 						continue;
 					
@@ -201,6 +228,7 @@ public class SaveLoadManager {
 						continue;
 					}
 					
+					//Check for result tag at end of game
 					if(s.equals(result))
 					{
 						current.score = result;
@@ -224,7 +252,7 @@ public class SaveLoadManager {
 					}
 						
 					counter++;
-					//Move number
+					//Skip reading move number
 					if(counter%3 == 0)
 						continue;
 					//Move data

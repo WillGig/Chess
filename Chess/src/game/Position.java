@@ -277,7 +277,18 @@ public class Position extends Button{
 		setText(getText().replace(")", ""));
 		
 		if(startOfLine)
-			setText("(" + getText());
+		{
+			if(turn == Color.BLACK)
+				setText("(" + getText());
+			else
+			{
+				if(children.size() > 0 && children.get(0).hidden)
+					setText("(" + moveNumber/2 + "... " + rawText + "...");
+				else
+					setText("(" + moveNumber/2 + "... " + rawText);
+			}
+				
+		}
 		
 		//If end of line, close all brackets
 		if(children.size() == 0)

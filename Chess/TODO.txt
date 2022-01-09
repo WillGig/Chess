@@ -6,7 +6,7 @@ fix bug with scrolling to move
 then playing Nc3. Scrolling does not occur until the next move
 
 Support variations and multiple lines
--allow saving and loading files with multiple lines
+-allow loading files with multiple lines
 
 allow highlighting text?
 
