@@ -9,11 +9,10 @@ Support variations and multiple lines
 -allow loading files with multiple lines
 
 allow highlighting text?
+allowing pasting?
 
 Switch position to use FEN to store position data
-
-Database functionality?
-		
+Allow loading via FEN
 
 opening book
 Engine
