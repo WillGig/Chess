@@ -10,7 +10,7 @@ import objects.Button;
 public class MainMenu extends Scene
 {
 
-	private Button continueGame, newGame, settings, exit;
+	private Button continueGame, board, settings, exit;
 	
 	public MainMenu()
 	{
@@ -25,8 +25,8 @@ public class MainMenu extends Scene
 		if(continueGame.IsClicked())
 			game.SetScene(1);
 		
-		newGame.update();
-		if(newGame.IsClicked())
+		board.update();
+		if(board.IsClicked())
 		{
 			game.resetScene(1);
 			game.SetScene(1);
@@ -46,7 +46,7 @@ public class MainMenu extends Scene
 	{	
 		if(Chess.CANCONTINUE)
 			continueGame.render(pixels);
-		newGame.render(pixels);
+		board.render(pixels);
 		settings.render(pixels);
 		exit.render(pixels);
 	}
@@ -56,7 +56,7 @@ public class MainMenu extends Scene
 	{
 		if(Chess.CANCONTINUE)
 			continueGame.renderText(g);
-		newGame.renderText(g);
+		board.renderText(g);
 		settings.renderText(g);
 		exit.renderText(g);
 		
@@ -69,8 +69,8 @@ public class MainMenu extends Scene
 	@Override
 	public void start()
 	{
-		continueGame = new Button(Game.WIDTH/2, Game.HEIGHT/2 - 50, 150, 40, "CONTINUE");
-		newGame = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 0, 150, 40, "NEW GAME");
+		continueGame = new Button(Game.WIDTH/2, Game.HEIGHT/2 - 50, 150, 40, "RESUME");
+		board = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 0, 150, 40, "BOARD");
 		settings = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 50, 150, 40, "SETTINGS");
 		exit = new Button(Game.WIDTH/2, Game.HEIGHT/2 + 100, 150, 40, "EXIT");
 	}
