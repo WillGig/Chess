@@ -49,6 +49,12 @@ public class Pawn extends Piece{
 	}
 	
 	@Override
+	public char getFENName()
+	{
+		return getColor() == Color.WHITE ? 'P' : 'p';
+	}
+	
+	@Override
 	public Piece move(Tile start, Tile end, Tile[] board)
 	{
 		//Set en passant tile if moved forward twice
@@ -63,8 +69,8 @@ public class Pawn extends Piece{
 		//Captured en passant
 		if(end.getTileX() != start.getTileX() && p == null)
 		{
-			p = board[tileX + (tileY - direction)*8].GetPiece();
-			board[tileX + (tileY - direction)*8].SetPiece(null);
+			p = board[tileX + (tileY - direction)*8].getPiece();
+			board[tileX + (tileY - direction)*8].setPiece(null);
 		}
 		
 		return p;
@@ -83,26 +89,26 @@ public class Pawn extends Piece{
 		//Restore piece captured by en passant to correct square
 		if(cY != -1)
 		{
-			board[captured.tileX + cY * 8].SetPiece(captured);
-			end.SetPiece(null);
+			board[captured.tileX + cY * 8].setPiece(captured);
+			end.setPiece(null);
 		}
 	}
 	
 	@Override
 	public ArrayList<Tile> getPossibleMoves(Tile[] board) {
 		ArrayList<Tile> moves = new ArrayList<Tile>();
-		if(Tile.GetPieceAtTile(tileX, tileY + direction, board) == null)
+		if(Tile.getPieceAtTile(tileX, tileY + direction, board) == null)
 		{
 			moves.add(board[tileX + (tileY + direction) * 8]);
-			if(!hasMoved() && Tile.GetPieceAtTile(tileX, tileY + direction * 2, board) == null)
+			if(!hasMoved() && Tile.getPieceAtTile(tileX, tileY + direction * 2, board) == null)
 				moves.add(board[tileX + (tileY + direction * 2) * 8]);
 		}
 		
-		Piece p = Tile.GetPieceAtTile(tileX - 1, tileY + direction, board);
+		Piece p = Tile.getPieceAtTile(tileX - 1, tileY + direction, board);
 		if(p != null && p.getColor() != getColor())
 			moves.add(board[tileX - 1 + (tileY + direction) * 8]);
 		
-		p = Tile.GetPieceAtTile(tileX + 1, tileY + direction, board);
+		p = Tile.getPieceAtTile(tileX + 1, tileY + direction, board);
 		if(p != null && p.getColor() != getColor())
 			moves.add(board[tileX + 1 + (tileY + direction) * 8]);
 		

@@ -24,6 +24,12 @@ public class Knight extends Piece{
 		return "N";
 	}
 	
+	@Override
+	public char getFENName()
+	{
+		return getColor() == Color.WHITE ? 'N' : 'n';
+	}
+	
 	static Point[] moveCoords = new Point[] {new Point(2, 1), new Point(2, -1), new Point(-2, 1), new Point(-2, -1),
 											new Point(1, 2), new Point(1, -2), new Point(-1, 2), new Point(-1, -2)};
 	
@@ -39,7 +45,7 @@ public class Knight extends Piece{
 			if(tx < 0 || tx > 7 || ty < 0 || ty > 7)
 				continue;
 			
-			Piece piece = board[tx + ty * 8].GetPiece();
+			Piece piece = board[tx + ty * 8].getPiece();
 			if(piece == null || piece.getColor() != getColor())
 				moves.add(board[tx + ty * 8]);
 		}

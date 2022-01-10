@@ -268,7 +268,7 @@ public class SaveLoadManager {
 						{
 							returnPositions.add(current);
 							current = current.getParent();
-							current.LoadState(board);
+							current.loadPieces(board);
 							Position newPosition = generatePositionFromPGN(current, board, s);
 							current.addChild(newPosition);
 							current = newPosition;
@@ -286,7 +286,7 @@ public class SaveLoadManager {
 						for(int i = 0; i < num; i++)
 							current = returnPositions.pop();
 						if(num > 0)
-							current.LoadState(board);
+							current.loadPieces(board);
 					}
 				}
 			}
@@ -330,13 +330,13 @@ public class SaveLoadManager {
 			{
 				Tile start = board[4+7*8];
 				Tile end = board[6+7*8];
-				start.GetPiece().move(start, end, board);
+				start.getPiece().move(start, end, board);
 			}
 			else
 			{
 				Tile start = board[4+0*8];
 				Tile end = board[6+0*8];
-				start.GetPiece().move(start, end, board);
+				start.getPiece().move(start, end, board);
 			}
 			return;
 		}
@@ -346,13 +346,13 @@ public class SaveLoadManager {
 			{
 				Tile start = board[4+7*8];
 				Tile end = board[2+7*8];
-				start.GetPiece().move(start, end, board);
+				start.getPiece().move(start, end, board);
 			}
 			else
 			{
 				Tile start = board[4+0*8];
 				Tile end = board[2+0*8];
-				start.GetPiece().move(start, end, board);
+				start.getPiece().move(start, end, board);
 			}
 			return;
 		}
@@ -410,7 +410,7 @@ public class SaveLoadManager {
 		Tile start = null;
 		for(int i = 0; i < board.length; i++)
 		{
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			if(p != null && p.getColor() == turn && p.getNotationName().equals(piece))
 			{
 				if(p.getLegalMoves(board).contains(end))
@@ -425,7 +425,7 @@ public class SaveLoadManager {
 			}
 		}
 		if(start != null)
-			start.GetPiece().move(start, end, board);
+			start.getPiece().move(start, end, board);
 		else
 			System.out.println("Failed to find piece for move " + move);
 		

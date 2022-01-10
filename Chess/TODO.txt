@@ -3,7 +3,6 @@ TODO:
 allow highlighting text?
 allowing pasting?
 
-Switch position to use FEN to store position data
 Allow loading via FEN
 
 opening book

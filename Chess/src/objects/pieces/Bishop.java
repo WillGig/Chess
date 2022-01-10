@@ -24,6 +24,12 @@ public class Bishop extends Piece{
 	}
 	
 	@Override
+	public char getFENName()
+	{
+		return getColor() == Color.WHITE ? 'B' : 'b';
+	}
+	
+	@Override
 	public ArrayList<Tile> getPossibleMoves(Tile[] board) {
 		ArrayList<Tile> moves = new ArrayList<Tile>();
 		
@@ -31,7 +37,7 @@ public class Bishop extends Piece{
 		int x = tileX + 1;
 		for(int y = tileY - 1; y > -1 && x < 8; y--)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -44,7 +50,7 @@ public class Bishop extends Piece{
 		x = tileX + 1;
 		for(int y = tileY + 1; y < 8 && x < 8; y++)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -57,7 +63,7 @@ public class Bishop extends Piece{
 		x = tileX - 1;
 		for(int y = tileY + 1; y < 8 && x > -1; y++)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -70,7 +76,7 @@ public class Bishop extends Piece{
 		x = tileX - 1;
 		for(int y = tileY - 1; y > -1 && x > -1; y--)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);

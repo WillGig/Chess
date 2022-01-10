@@ -19,7 +19,7 @@ public abstract class Piece extends GameObject{
 	
 	public Piece(Tile t, Color color) {
 		super(t.getX(), t.getY(), 64, 64);
-		t.SetPiece(this);
+		t.setPiece(this);
 		tileX = t.getTileX();
 		tileY = t.getTileY();
 		this.color = color;
@@ -36,31 +36,33 @@ public abstract class Piece extends GameObject{
 	
 	public abstract String getNotationName();
 
+	public abstract char getFENName();
+	
 	@Override
 	public void update() {}
 	
 	//returns captured piece
 	public Piece move(Tile start, Tile end, Tile[] board)
 	{
-		start.SetPiece(null);
+		start.setPiece(null);
 		x = end.getX();
 		y = end.getY();
 		tileX = end.getTileX();
 		tileY = end.getTileY();
-		Piece p = end.GetPiece();
-		end.SetPiece(this);
+		Piece p = end.getPiece();
+		end.setPiece(this);
 		moveCounter++;
 		return p;
 	}
 	
 	public void unmove(Tile start, Tile end, Tile[] board, Piece captured)
 	{
-		start.SetPiece(this);
+		start.setPiece(this);
 		x = start.getX();
 		y = start.getY();
 		tileX = start.getTileX();
 		tileY = start.getTileY();
-		end.SetPiece(captured);
+		end.setPiece(captured);
 		moveCounter--;
 	}
 	
@@ -168,7 +170,7 @@ public abstract class Piece extends GameObject{
 	{
 		ArrayList<Piece> cPieces = new ArrayList<Piece>();
 		
-		Color c = start.GetPiece().getColor();
+		Color c = start.getPiece().getColor();
 		
 		for(int i = 0; i < board.length; i++)
 		{
@@ -176,7 +178,7 @@ public abstract class Piece extends GameObject{
 			if(i == start.getTileX() + start.getTileY()*8)
 				continue;
 			
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			if(p == null)
 				continue;
 			

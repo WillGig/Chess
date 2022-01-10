@@ -418,9 +418,9 @@ public class Chess extends Scene{
 				if(t.isClicked())
 				{
 					//pawn promotion
-					if(selectedPieceTile.GetPiece() instanceof Pawn && t.getTileY() % 7 == 0)
+					if(selectedPieceTile.getPiece() instanceof Pawn && t.getTileY() % 7 == 0)
 					{
-						promoting = (Pawn)selectedPieceTile.GetPiece();
+						promoting = (Pawn)selectedPieceTile.getPiece();
 						promotionSquare = t;
 						promoting.UpdatePromotionPosition(promotionSquare);
 					}
@@ -436,7 +436,7 @@ public class Chess extends Scene{
 			t.update();
 			if(t.isClicked())
 			{
-				Piece p = t.GetPiece();
+				Piece p = t.getPiece();
 				if(p != null && p.getColor() == turn)
 				{
 					//Unselect if the tile is the same
@@ -450,7 +450,7 @@ public class Chess extends Scene{
 					draggingPiece = p;
 					InputHandler.DRAGGING = true;
 					selectedPieceTile = t;
-					moveOptions = t.GetPiece().getLegalMoves(board);
+					moveOptions = t.getPiece().getLegalMoves(board);
 				}
 				return;
 			}
@@ -465,17 +465,17 @@ public class Chess extends Scene{
 		
 		//Check for castling
 		int castling = 0;
-		if(selectedPieceTile.GetPiece() instanceof King)
+		if(selectedPieceTile.getPiece() instanceof King)
 			castling = t.getTileX() - selectedPieceTile.getTileX();
 		
 		//Piece name
-		String moveText = selectedPieceTile.GetPiece().getNotationName();
+		String moveText = selectedPieceTile.getPiece().getNotationName();
 		
 		//Disambiguation text
 		moveText += Piece.getDisambiguationText(moveText, selectedPieceTile, t, board);
 		
 		//Captured text
-		Piece captured = selectedPieceTile.GetPiece().move(selectedPieceTile, t, board);	
+		Piece captured = selectedPieceTile.getPiece().move(selectedPieceTile, t, board);	
 		if(captured != null)
 		{
 			//Name column if pawn captures
@@ -492,7 +492,7 @@ public class Chess extends Scene{
 			moveText = "O-O-O";
 		
 		//50 Move Rule
-		if(t.GetPiece() instanceof Pawn || captured != null)
+		if(t.getPiece() instanceof Pawn || captured != null)
 			fiftyMoves = 0;
 		else
 			fiftyMoves++;
@@ -508,7 +508,7 @@ public class Chess extends Scene{
 			else
 				new Queen(t, promoting.getColor());
 			
-			moveText += "=" + t.GetPiece().getNotationName();
+			moveText += "=" + t.getPiece().getNotationName();
 			promotionPiece = ' ';
 			promoting = null;
 		}
@@ -589,7 +589,7 @@ public class Chess extends Scene{
 	//Sets board to position from move history
 	public void loadPosition(Position p)
 	{
-		p.LoadState(board);
+		p.loadPieces(board);
 		gameState = p.gState;
 		if(turn != p.turn && FLIPONMOVE)
 			Tile.flip(board);
@@ -643,7 +643,7 @@ public class Chess extends Scene{
 		for(int i = 0; i < board.length; i++)
 		{
 			board[i].render(pixels);
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			if(p != null && ! (p == draggingPiece))
 				p.render(pixels);
 		}
@@ -651,7 +651,7 @@ public class Chess extends Scene{
 		//Highlighted Squares
 		if(selectedPieceTile != null)
 			for(Tile t: moveOptions)
-				t.RenderHighLighted(pixels);
+				t.renderHighLighted(pixels);
 		
 		//Move Arrows
 		for(MoveArrow a: moveArrows)

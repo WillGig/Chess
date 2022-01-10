@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Color;
 import java.util.ArrayList;
-
 import objects.Button;
 import objects.Tile;
 import objects.pieces.Bishop;
@@ -20,7 +19,7 @@ public class Position extends Button{
 	private ArrayList<Position> children;
 	public boolean hidden;
 	
-	public String state = "", colors = "", numMoves = "", score = "", result = "", rawText, comments = "";
+	public String FEN = "", pieces = "", rawText = "", comments = "", result = "", score = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, epPawn, fiftyMoves;
@@ -62,72 +61,139 @@ public class Position extends Button{
 		else if(gs == GameState.FIFTYMOVEDRAW)
 			result = "Draw - 50 Moves";
 		
-		for(int i = 0; i < board.length; i++)
+		//Piece placement
+		for(int row = 0; row < 8; row++)
 		{
-			Piece p = board[i].GetPiece();
-			if(p == null)
+			int empty = 0;
+			for(int col = 0; col < 8; col++)
 			{
-				state += "0";
-				colors += "0";
-				numMoves += "0";
+				Piece p = board[col + row*8].getPiece();
+				if(p == null)
+					empty++;
+				else
+				{
+					if(empty > 0)
+					{
+						pieces += "" + empty;
+						empty = 0;
+					}
+					pieces += p.getFENName();
+				}
 			}
-			else
-			{
-				if(p.getColor() == Color.WHITE)
-					colors += "w";
-				else
-					colors += "b";
-				
-				if(p instanceof Pawn)
-					state += "p";
-				else
-					state += p.getNotationName();
-				
-				if(p.hasMoved())
-					numMoves += "1";
-				else
-					numMoves += "0";
-			}
+			if(empty > 0)
+				pieces += "" + empty;
+			pieces += "/";
 		}
+		
+		FEN += pieces;
+		
+		//Active color
+		FEN += turn == Color.WHITE ? " w " : " b ";
+		
+		//Castling
+		Piece K = board[4 + 7*8].getPiece();
+		if(K != null && K instanceof King && K.getColor() == Color.WHITE && !K.hasMoved())
+		{
+			Piece kr = board[7 + 7*8].getPiece();
+			if(kr != null && kr instanceof Rook && kr.getColor() == Color.WHITE && !kr.hasMoved())
+				FEN += "K";
+			Piece qr = board[0 + 7*8].getPiece();
+			if(qr != null && qr instanceof Rook && qr.getColor() == Color.WHITE && !qr.hasMoved())
+				FEN += "Q";
+		}
+		
+		Piece k = board[4].getPiece();
+		if(k != null && k instanceof King && k.getColor() == Color.BLACK && !k.hasMoved())
+		{
+			Piece kr = board[7].getPiece();
+			if(kr != null && kr instanceof Rook && kr.getColor() == Color.BLACK && !kr.hasMoved())
+				FEN += "k";
+			Piece qr = board[0].getPiece();
+			if(qr != null && qr instanceof Rook && qr.getColor() == Color.BLACK && !qr.hasMoved())
+				FEN += "q";
+		}
+		if(FEN.charAt(FEN.length()-1) != ' ')
+			FEN += " ";
+		
+		//En passant square
+		if(Pawn.epPawn == -1)
+			FEN += "- ";
+		else
+			FEN += board[Pawn.enPassantTile].getSquareName() + " ";
+		
+		//HalfMove Clock
+		FEN += fiftyMoves + " ";
+		
+		//FullMove Clock
+		FEN += (move/2 + 1);
 	}
 	
-	public void LoadState(Tile[] board)
+	public void loadPieces(Tile[] board)
 	{
-		for(int i = 0; i < board.length; i++)
+		int row = 0, col = 0;
+		for(int i = 0; i < pieces.length(); i++)
 		{
-			char color = colors.charAt(i);
-			Color c;
-			if(color == 'w')
-				c = Color.WHITE;
-			else
-				c = Color.BLACK;
-			
-			int nMoves = Character.getNumericValue(numMoves.charAt(i));
-			
-			switch(state.charAt(i))
+			char c = pieces.charAt(i);
+			switch(c)
 			{
-			case '0':
-				board[i].SetPiece(null);
+			case '/':
+				row++;
+				col = 0;
+				break;
+			case 'P':
+				new Pawn(board[col + row*8], Color.WHITE);
+				col++;
 				break;
 			case 'p':
-				new Pawn(board[i], c).setNumberOfMoves(nMoves);
+				new Pawn(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			case 'N':
-				new Knight(board[i], c).setNumberOfMoves(nMoves);
+				new Knight(board[col + row*8], Color.WHITE);
+				col++;
+				break;
+			case 'n':
+				new Knight(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			case 'B':
-				new Bishop(board[i], c).setNumberOfMoves(nMoves);
+				new Bishop(board[col + row*8], Color.WHITE);
+				col++;
+				break;
+			case 'b':
+				new Bishop(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			case 'R':
-				new Rook(board[i], c).setNumberOfMoves(nMoves);
+				new Rook(board[col + row*8], Color.WHITE);
+				col++;
+				break;
+			case 'r':
+				new Rook(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			case 'Q':
-				new Queen(board[i], c).setNumberOfMoves(nMoves);
+				new Queen(board[col + row*8], Color.WHITE);
+				col++;
+				break;
+			case 'q':
+				new Queen(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			case 'K':
-				new King(board[i], c).setNumberOfMoves(nMoves);
+				new King(board[col + row*8], Color.WHITE);
+				col++;
+				break;
+			case 'k':
+				new King(board[col + row*8], Color.BLACK);
+				col++;
 				break;
 			default:
+				for(int j = 0; j < Character.getNumericValue(c); j++)
+				{
+					board[col + row*8].setPiece(null);
+					col++;
+				}
 				break;
 			}
 		}
@@ -330,7 +396,7 @@ public class Position extends Button{
 	public Position hasChild(Position child)
 	{
 		for(Position p : children)
-			if(p.state.equals(child.state))
+			if(p.FEN.equals(child.FEN))
 				return p;
 			
 		return null;
@@ -342,7 +408,7 @@ public class Position extends Button{
 		Position current = parent;
 		while(current != null)
 		{
-			if(current.state.equals(state))
+			if(current.pieces.equals(pieces))
 				count++;
 			if(count > 2)
 				return true;
@@ -357,7 +423,7 @@ public class Position extends Button{
 		boolean canMove = false;
 		for(int i = 0; i < board.length; i++)
 		{
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			
 			if(p == null || p.getColor() != turn)
 				continue;

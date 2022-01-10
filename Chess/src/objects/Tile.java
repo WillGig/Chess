@@ -39,7 +39,7 @@ public class Tile extends GameObject{
 		highlightedImage = new Texture(width, height, highlightedPixels);
 	}
 
-	public void RenderHighLighted(int[] pixels)
+	public void renderHighLighted(int[] pixels)
 	{
 		highlightedImage.render(x, y, pixels);
 	}
@@ -63,21 +63,21 @@ public class Tile extends GameObject{
 		return tileY;
 	}
 	
-	public Piece GetPiece()
+	public Piece getPiece()
 	{
 		return containedPiece;
 	}
 	
-	public void SetPiece(Piece p)
+	public void setPiece(Piece p)
 	{
 		containedPiece = p;
 	}
 	
-	public static Piece GetPieceAtTile(int x, int y, Tile[] board)
+	public static Piece getPieceAtTile(int x, int y, Tile[] board)
 	{
 		if(x < 0 || x > 7 || y < 0 || y > 7)
 			return null;
-		return board[x + y * 8].GetPiece();
+		return board[x + y * 8].getPiece();
 	}
 	
 	public boolean isClicked()
@@ -166,18 +166,18 @@ public class Tile extends GameObject{
 			
 			t1.setX(x2);
 			t1.setY(y2);
-			if(t1.GetPiece() != null)
+			if(t1.getPiece() != null)
 			{
-				t1.GetPiece().setX(x2);
-				t1.GetPiece().setY(y2);
+				t1.getPiece().setX(x2);
+				t1.getPiece().setY(y2);
 			}
 			
 			t2.setX(x1);
 			t2.setY(y1);
-			if(t2.GetPiece() != null)
+			if(t2.getPiece() != null)
 			{
-				t2.GetPiece().setX(x1);
-				t2.GetPiece().setY(y1);
+				t2.getPiece().setX(x1);
+				t2.getPiece().setY(y1);
 			}
 		}
 	}
@@ -186,7 +186,7 @@ public class Tile extends GameObject{
 	{
 		int num = 0;
 		for(int i = 0; i < board.length; i++)
-			if(board[i].GetPiece() != null)
+			if(board[i].getPiece() != null)
 				num++;
 		return num;
 	}

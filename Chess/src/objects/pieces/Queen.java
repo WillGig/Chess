@@ -24,12 +24,18 @@ public class Queen extends Piece{
 	}
 
 	@Override
+	public char getFENName()
+	{
+		return getColor() == Color.WHITE ? 'Q' : 'q';
+	}
+	
+	@Override
 	public ArrayList<Tile> getPossibleMoves(Tile[] board) {
 		ArrayList<Tile> moves = new ArrayList<Tile>();
 		//up
 		for(int y = tileY - 1; y > -1; y--)
 		{
-			Piece p = board[tileX + y*8].GetPiece();
+			Piece p = board[tileX + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[tileX + y*8]);
@@ -40,7 +46,7 @@ public class Queen extends Piece{
 		//down
 		for(int y = tileY + 1; y < 8; y++)
 		{
-			Piece p = board[tileX + y*8].GetPiece();
+			Piece p = board[tileX + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[tileX + y*8]);
@@ -51,7 +57,7 @@ public class Queen extends Piece{
 		//left
 		for(int x = tileX - 1; x > -1; x--)
 		{
-			Piece p = board[x + tileY*8].GetPiece();
+			Piece p = board[x + tileY*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + tileY*8]);
@@ -62,7 +68,7 @@ public class Queen extends Piece{
 		//right
 		for(int x = tileX + 1; x < 8; x++)
 		{
-			Piece p = board[x + tileY*8].GetPiece();
+			Piece p = board[x + tileY*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + tileY*8]);
@@ -74,7 +80,7 @@ public class Queen extends Piece{
 		int x = tileX + 1;
 		for(int y = tileY - 1; y > -1 && x < 8; y--)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -87,7 +93,7 @@ public class Queen extends Piece{
 		x = tileX + 1;
 		for(int y = tileY + 1; y < 8 && x < 8; y++)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -100,7 +106,7 @@ public class Queen extends Piece{
 		x = tileX - 1;
 		for(int y = tileY + 1; y < 8 && x > -1; y++)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);
@@ -113,7 +119,7 @@ public class Queen extends Piece{
 		x = tileX - 1;
 		for(int y = tileY - 1; y > -1 && x > -1; y--)
 		{
-			Piece p = board[x + y*8].GetPiece();
+			Piece p = board[x + y*8].getPiece();
 			if(p != null && p.getColor() == getColor())
 				break;
 			moves.add(board[x + y*8]);

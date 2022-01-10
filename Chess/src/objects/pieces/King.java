@@ -24,15 +24,21 @@ public class King extends Piece{
 	}
 
 	@Override
+	public char getFENName()
+	{
+		return getColor() == Color.WHITE ? 'K' : 'k';
+	}
+	
+	@Override
 	public Piece move(Tile start, Tile end, Tile[] board)
 	{
 		//Castle Kingside
 		if(end.getTileX() - start.getTileX() == 2)
-			board[7 + tileY * 8].GetPiece().move(board[7 + tileY * 8], board[5 + tileY * 8], board);
+			board[7 + tileY * 8].getPiece().move(board[7 + tileY * 8], board[5 + tileY * 8], board);
 		
 		//Castle Queenside
 		if(end.getTileX() - start.getTileX() == -2)
-			board[0 + tileY * 8].GetPiece().move(board[0 + tileY * 8], board[3 + tileY * 8], board);
+			board[0 + tileY * 8].getPiece().move(board[0 + tileY * 8], board[3 + tileY * 8], board);
 				
 		
 		return super.move(start, end, board);
@@ -45,15 +51,15 @@ public class King extends Piece{
 		//Castle Kingside
 		if(end.getTileX() - start.getTileX() == 2)
 		{
-			board[5 + tileY * 8].GetPiece().move(board[5 + tileY * 8], board[7 + tileY * 8], board);
-			board[7 + tileY * 8].GetPiece().changeMoved(-2);
+			board[5 + tileY * 8].getPiece().move(board[5 + tileY * 8], board[7 + tileY * 8], board);
+			board[7 + tileY * 8].getPiece().changeMoved(-2);
 		}
 			
 		//Castle Queenside
 		if(end.getTileX() - start.getTileX() == -2)
 		{
-			board[3 + tileY * 8].GetPiece().move(board[3 + tileY * 8], board[0 + tileY * 8], board);
-			board[0 + tileY * 8].GetPiece().changeMoved(-2);
+			board[3 + tileY * 8].getPiece().move(board[3 + tileY * 8], board[0 + tileY * 8], board);
+			board[0 + tileY * 8].getPiece().changeMoved(-2);
 		}
 	}
 	
@@ -76,7 +82,7 @@ public class King extends Piece{
 				if(tx < 0 || tx > 7 || ty < 0 || ty > 7)
 					continue;
 				
-				Piece p = board[tx + ty*8].GetPiece();
+				Piece p = board[tx + ty*8].getPiece();
 				if(p == null || p.getColor() != getColor())
 					moves.add(board[tx + ty*8]);
 			}
@@ -86,19 +92,19 @@ public class King extends Piece{
 		if(!hasMoved())
 		{
 			//Kingside
-			Piece rook = board[7 + tileY * 8].GetPiece();
+			Piece rook = board[7 + tileY * 8].getPiece();
 			if(rook instanceof Rook && !rook.hasMoved())
 			{
 				Tile eFile = board[4 + tileY * 8];
 				Tile fFile = board[5 + tileY * 8];
 				Tile gFile = board[6 + tileY * 8];
 				
-				if(gFile.GetPiece() == null && fFile.GetPiece() == null)
+				if(gFile.getPiece() == null && fFile.getPiece() == null)
 				{
 					boolean squaresAttacked = false;
 					for(int i = 0; i < board.length; i++)
 					{
-						Piece p = board[i].GetPiece();
+						Piece p = board[i].getPiece();
 						if(p == null || p instanceof King || p.getColor() == getColor())
 							continue;
 						
@@ -117,14 +123,14 @@ public class King extends Piece{
 			}
 					
 			//Queenside
-			rook = board[tileY * 8].GetPiece();
+			rook = board[tileY * 8].getPiece();
 			if(rook instanceof Rook && !rook.hasMoved())
 			{
 				Tile eFile = board[4 + tileY * 8];
 				Tile dFile = board[3 + tileY * 8];
 				Tile cFile = board[2 + tileY * 8];
 				
-				if(dFile.GetPiece() == null && cFile.GetPiece() == null)
+				if(dFile.getPiece() == null && cFile.getPiece() == null)
 				{
 					boolean squaresAttacked = false;
 					for(int i = 0; i < board.length; i++)
@@ -132,7 +138,7 @@ public class King extends Piece{
 						if(i == tileX + tileY*8)
 							continue;
 						
-						Piece p = board[i].GetPiece();
+						Piece p = board[i].getPiece();
 						if(p == null || p instanceof King || p.getColor() == getColor())
 							continue;
 						
@@ -159,7 +165,7 @@ public class King extends Piece{
 		Tile currentTile = board[tileX + tileY * 8];
 		for(int i = 0; i < board.length; i++)
 		{
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			if(p == null || p.getColor() == getColor())
 				continue;
 			
@@ -173,7 +179,7 @@ public class King extends Piece{
 	{
 		for(int i = 0; i < board.length; i++)
 		{
-			Piece p = board[i].GetPiece();
+			Piece p = board[i].getPiece();
 			if(p != null && p.getColor() == c && p instanceof King)
 				return (King)p;
 		}
