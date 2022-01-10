@@ -219,6 +219,8 @@ public class Chess extends Scene{
 			Position p = Position.loadFromFEN(FEN.getText());
 			if(p != null)
 			{
+				startPosition.getChildren().clear();
+				startPosition.addChild(p);
 				loadPosition(p);
 				event.setText("");
 				site.setText("");
