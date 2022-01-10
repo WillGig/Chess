@@ -20,7 +20,7 @@ MouseWheelListener, ComponentListener
 	private static boolean[] key = new boolean[68836];
 	public static Character KEYPRESSED = null;
 	private static boolean MOUSE1CLICKED = false, MOUSE2CLICKED = false;
-	public static boolean DRAGGING = false, RESIZED = false;
+	public static boolean DRAGGING = false, RESIZED = false, CTRL = false;
 
 	public static boolean KeyPressed(int k)
 	{
@@ -99,6 +99,10 @@ MouseWheelListener, ComponentListener
 	public void keyPressed(KeyEvent e) 
 	{
 		key[e.getExtendedKeyCode()] = true;
+		if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)
+            CTRL = true;
+		else
+			CTRL = false;
 	}
 
 	public void keyReleased(KeyEvent e) 

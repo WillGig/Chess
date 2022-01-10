@@ -3,9 +3,11 @@ package objects;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
-
 import game.Game;
 import utils.InputHandler;
 import utils.Texture;
@@ -133,6 +135,24 @@ public class TextField extends GameObject{
 					{
 						setSelected(false);
 						nextField = true;
+					}
+				}
+				else if(InputHandler.KeyPressed(KeyEvent.VK_V) && InputHandler.CTRL)
+				{
+					String copy = "";
+					try
+					{
+						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+						copy = (String)clipboard.getData(DataFlavor.stringFlavor);
+					}catch(Exception ex) { ex.printStackTrace(); }
+					
+					if(copy.length() > 0)
+					{
+						if(copy.length() + text.length() > maxChars - 1)
+							copy = copy.substring(0, maxChars - text.length()+1);
+						
+						text = text.substring(0, cursorIndex) + copy + text.substring(cursorIndex);
+						cursorIndex += copy.length();
 					}
 				}
 				else if(text.length() < maxChars)

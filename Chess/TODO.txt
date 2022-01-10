@@ -1,7 +1,6 @@
 TODO:
 
 allow highlighting text?
-allowing pasting?
 
 Allow loading via FEN
 
