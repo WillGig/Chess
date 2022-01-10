@@ -236,8 +236,13 @@ public class Position extends Button{
 		if(hidden)
 			return 0;
 		
-		int yStart = yPos;
 		setY(yPos);
+		
+		if(children.size() == 0)
+			return 24;
+		
+		int yStart = yPos;
+		
 		//Add row if black made a move
 		if(turn == Color.WHITE)
 			yPos += 24;
@@ -253,7 +258,9 @@ public class Position extends Button{
 		//Alternate Lines
 		for(int i = 1; i < children.size(); i++)
 			yPos += children.get(i).setPositionOfTree(yPos);
-		
+		if(children.size() > 1)
+			yPos -= 24;
+			
 		//Return to Main Line
 		if(children.size() > 0)
 		{
@@ -261,9 +268,6 @@ public class Position extends Button{
 			yPos += children.get(0).setPositionOfTree(yPos);
 			children.get(0).setY(temp);
 		}
-		
-		if(yPos - yStart < 24)
-			return 24;
 		
 		return yPos - yStart;
 	}

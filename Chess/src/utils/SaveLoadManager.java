@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.Stack;
 
 import game.Game;
 import game.GameData;
@@ -139,13 +140,13 @@ public class SaveLoadManager {
 			Scanner reader = new Scanner(new File(path));
 			
 			Tile[] board = Tile.getDefaultBoard();
+			Stack<Position> returnPositions = new Stack<Position>();
 			Pawn.enPassantTile = -1;
 			Pawn.epPawn = -1;
 			
 			current = new Position(board, "", GameState.ONGOING, Color.WHITE, 0, 0, null);
 			
-			int counter = -1;
-			boolean readingComment = false;
+			boolean readingComment = false, branching = false;
 			String comment = "";
 			while(reader.hasNextLine())
 			{
@@ -251,16 +252,41 @@ public class SaveLoadManager {
 						return new GameData(current.getHead(), event, site, date, round, white, black, result);
 					}
 						
-					counter++;
+					if(s.contains("("))
+					{
+						branching = true;
+						continue;
+					}
+					
 					//Skip reading move number
-					if(counter%3 == 0)
+					if(s.contains("."))
 						continue;
 					//Move data
 					else
 					{
-						Position newPosition = generatePositionFromPGN(current, board, s);
-						current.addChild(newPosition);
-						current = newPosition;
+						if(branching)
+						{
+							returnPositions.add(current);
+							current = current.getParent();
+							current.LoadState(board);
+							Position newPosition = generatePositionFromPGN(current, board, s);
+							current.addChild(newPosition);
+							current = newPosition;
+							branching = false;
+						}
+						else
+						{
+							Position newPosition = generatePositionFromPGN(current, board, s);
+							current.addChild(newPosition);
+							current = newPosition;
+						}
+						
+						//go back to start of branch
+						int num = s.length() - s.replace(")", "").length();//Number of branches being closed
+						for(int i = 0; i < num; i++)
+							current = returnPositions.pop();
+						if(num > 0)
+							current.LoadState(board);
 					}
 				}
 			}

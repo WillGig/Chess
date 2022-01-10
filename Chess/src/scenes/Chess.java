@@ -172,6 +172,7 @@ public class Chess extends Scene{
 					white.setText(loadedFile.white);
 					black.setText(loadedFile.black);
 					result.setText(loadedFile.result);
+					startPosition.setLineBrackets(0, false);
 				}
 		    }
 		    return;

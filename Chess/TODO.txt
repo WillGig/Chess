@@ -1,12 +1,8 @@
 TODO:
 
-fix bug where extra lines are added sometimes with sidelines
 fix bug with scrolling to move
 - reproduce by loading save, promoting e4 c5 to main line,
 then playing Nc3. Scrolling does not occur until the next move
-
-Support variations and multiple lines
--allow loading files with multiple lines
 
 allow highlighting text?
 allowing pasting?
