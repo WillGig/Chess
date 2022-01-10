@@ -524,9 +524,6 @@ public class Chess extends Scene{
 			moveText = (turnNumber/2 + 1) + ". " + moveText;
 		turnNumber++;
 		
-		//Automatically scroll to new move
-		scrollToMove();
-		
 		for(Position position : startPosition.getAllDescendants())
 			position.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
 		
@@ -543,6 +540,10 @@ public class Chess extends Scene{
 			currentPosition = newPos;
 			comments.setText("");
 		}
+		
+		//Automatically scroll to new move
+		startPosition.setPositionOfTree(historyScroll - 24);
+		scrollToMove();
 		
 		startPosition.setLineBrackets(0, false);
 		

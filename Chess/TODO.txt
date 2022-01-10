@@ -1,9 +1,5 @@
 TODO:
 
-fix bug with scrolling to move
-- reproduce by loading save, promoting e4 c5 to main line,
-then playing Nc3. Scrolling does not occur until the next move
-
 allow highlighting text?
 allowing pasting?
 
