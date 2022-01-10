@@ -36,7 +36,7 @@ public class Chess extends Scene{
 
 	public static int DARKCOLOR = 0xff663400, LIGHTCOLOR = 0xffFFE7BC;
 	
-	public static boolean SHOWCOORDS = true, CANCONTINUE = false, FLIPONMOVE = false;
+	public static boolean SHOWCOORDS = true, FLIPONMOVE = false;
 	
 	private Color turn;
 	
@@ -740,8 +740,6 @@ public class Chess extends Scene{
 	@Override
 	public void start() 
 	{
-		CANCONTINUE = true;
-		
 		event.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		site.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 		date.setLabelColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
