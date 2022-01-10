@@ -1,8 +1,9 @@
 TODO:
 
-allow highlighting text?
-
-Allow loading via FEN
+improve text boxes?
+-highlighing
+-click precision
+-copying
 
 opening book
 Engine

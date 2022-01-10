@@ -297,6 +297,11 @@ public class TextField extends GameObject{
 		this.label = label;
 	}
 	
+	public void setFontSize(int size)
+	{
+		fontSize = size;
+	}
+	
 	public void setSelected(boolean s)
 	{
 		selected = s;

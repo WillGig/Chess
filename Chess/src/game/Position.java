@@ -19,7 +19,7 @@ public class Position extends Button{
 	private ArrayList<Position> children;
 	public boolean hidden;
 	
-	public String FEN = "", pieces = "", rawText = "", comments = "", result = "", score = "";
+	public String FEN = "", pieces = "", castleRights = "", rawText = "", comments = "", result = "", score = "";
 	public GameState gState;
 	public Color turn;
 	public int moveNumber, epSquare, epPawn, fiftyMoves;
@@ -96,10 +96,10 @@ public class Position extends Button{
 		{
 			Piece kr = board[7 + 7*8].getPiece();
 			if(kr != null && kr instanceof Rook && kr.getColor() == Color.WHITE && !kr.hasMoved())
-				FEN += "K";
+				castleRights += "K";
 			Piece qr = board[0 + 7*8].getPiece();
 			if(qr != null && qr instanceof Rook && qr.getColor() == Color.WHITE && !qr.hasMoved())
-				FEN += "Q";
+				castleRights += "Q";
 		}
 		
 		Piece k = board[4].getPiece();
@@ -107,13 +107,16 @@ public class Position extends Button{
 		{
 			Piece kr = board[7].getPiece();
 			if(kr != null && kr instanceof Rook && kr.getColor() == Color.BLACK && !kr.hasMoved())
-				FEN += "k";
+				castleRights += "k";
 			Piece qr = board[0].getPiece();
 			if(qr != null && qr instanceof Rook && qr.getColor() == Color.BLACK && !qr.hasMoved())
-				FEN += "q";
+				castleRights += "q";
 		}
-		if(FEN.charAt(FEN.length()-1) != ' ')
-			FEN += " ";
+		
+		if(castleRights.length() == 0)
+			castleRights += "-";
+		
+		FEN += castleRights + " ";
 		
 		//En passant square
 		if(Pawn.epPawn == -1)
@@ -129,6 +132,11 @@ public class Position extends Button{
 	}
 	
 	public void loadPieces(Tile[] board)
+	{
+		loadPieces(pieces, castleRights, board);
+	}
+	
+	public static void loadPieces(String pieces, String castleRights, Tile[] board)
 	{
 		int row = 0, col = 0;
 		for(int i = 0; i < pieces.length(); i++)
@@ -165,11 +173,15 @@ public class Position extends Button{
 				col++;
 				break;
 			case 'R':
-				new Rook(board[col + row*8], Color.WHITE);
+				Rook R = new Rook(board[col + row*8], Color.WHITE);
+				if(!(col == 0 && row == 7 && castleRights.contains("Q")) && !(col == 7 && row == 7 && castleRights.contains("K")))
+					R.setNumberOfMoves(1);
 				col++;
 				break;
 			case 'r':
-				new Rook(board[col + row*8], Color.BLACK);
+				Rook r = new Rook(board[col + row*8], Color.BLACK);
+				if(!(col == 0 && row == 0 && castleRights.contains("q")) && !(col == 7 && row == 0 && castleRights.contains("k")))
+					r.setNumberOfMoves(1);
 				col++;
 				break;
 			case 'Q':
@@ -181,11 +193,15 @@ public class Position extends Button{
 				col++;
 				break;
 			case 'K':
-				new King(board[col + row*8], Color.WHITE);
+				King K = new King(board[col + row*8], Color.WHITE);
+				if(!castleRights.contains("K") && !castleRights.contains("Q"))
+					K.setNumberOfMoves(1);
 				col++;
 				break;
 			case 'k':
-				new King(board[col + row*8], Color.BLACK);
+				King k = new King(board[col + row*8], Color.BLACK);
+				if(!castleRights.contains("k") && !castleRights.contains("q"))
+					k.setNumberOfMoves(1);
 				col++;
 				break;
 			default:
@@ -417,8 +433,62 @@ public class Position extends Button{
 		return false;
 	}
 	
+	public static Position loadFromFEN(String FEN)
+	{
+		String[] data = FEN.trim().split(" ");
+		
+		if(data.length != 6)
+		{
+			System.out.println("Error loading FEN: insufficient data");
+			return null;
+		}
+		
+		try 
+		{
+			//Pieces
+			Tile[] board = Tile.getDefaultBoard();
+			loadPieces(data[0], data[2], board);
+			
+			//Turn
+			Color turn = data[1].equals("w") ? Color.WHITE : Color.BLACK;
+			
+			//En Passant
+			if(data[3].equals("-"))
+			{
+				Pawn.enPassantTile = -1;
+				Pawn.epPawn = -1;
+			}
+			else
+			{
+				Pawn.enPassantTile = Tile.getTileNumberFromSquareName(data[3]);
+				if(turn == Color.WHITE)
+					Pawn.epPawn = Pawn.enPassantTile + 8;
+				else
+					Pawn.epPawn = Pawn.enPassantTile - 8;
+			}
+			
+			//Fifty move counter
+			int fiftyMoves = Integer.parseInt(data[4]);
+			
+			//Turn number
+			int turnNumber = (Integer.parseInt(data[5])-1)*2;
+			
+			GameState gs;
+			
+			if(fiftyMoves > 99)
+				gs = GameState.FIFTYMOVEDRAW;
+			else
+				gs = evaluateState(board, turn);
+			
+			return new Position(board, "", gs, turn, turnNumber, fiftyMoves, null);
+			
+		}catch (Exception ex) {ex.printStackTrace();}
+		
+		return null;
+	}
+	
 	//Determines if the current positions is checkmate, Stalemate, or neither
-	public static GameState EvaluateState (Tile[] board, Color turn)
+	public static GameState evaluateState (Tile[] board, Color turn)
 	{
 		boolean canMove = false;
 		for(int i = 0; i < board.length; i++)

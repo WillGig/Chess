@@ -5,6 +5,9 @@ import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -58,9 +61,9 @@ public class Chess extends Scene{
 	
 	private GameState gameState;
 	
-	private Button save, load, menu, reset, forward, back, swap;
+	private Button save, load, menu, reset, forward, back, swap, copyFEN, loadFEN;
 	
-	private TextField event, site, date, round, white, black, comments;
+	private TextField event, site, date, round, white, black, comments, FEN;
 	
 	private DropDown result;
 	
@@ -90,6 +93,8 @@ public class Chess extends Scene{
 		back.setFontSize(16);
 		swap = new Button(110, 560, 70, 30, "FLIP");
 		swap.setFontSize(16);
+		copyFEN = new Button(255, 570, 25, 25, "C");
+		loadFEN = new Button(745, 570, 25, 25, "L");
 		
 		event = new TextField(950, 50, 220, 30, "Event");
 		site = new TextField(950, 90, 220, 30, "Site");
@@ -98,6 +103,8 @@ public class Chess extends Scene{
 		white = new TextField(950, 210, 220, 30, "White");
 		black = new TextField(950, 250, 220, 30, "Black");
 		comments = new TextField(920, 450, 280, 240, "");
+		FEN = new TextField(500, 570, 450, 30, "");
+		FEN.setFontSize(12);
 		
 		result = new DropDown(950, 290, 220, 30, "");
 		result.addOption(new Button(0, 0, 220, 30, "1-0"));
@@ -193,6 +200,36 @@ public class Chess extends Scene{
 		if(swap.IsClicked())
 			Tile.flip(board);
 		
+		//Copy FEN
+		copyFEN.update();
+		if(copyFEN.IsClicked())
+		{
+			try
+			{
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				StringSelection fenText = new StringSelection(FEN.getText());
+				clipboard.setContents(fenText, null);
+			}catch(Exception ex) { ex.printStackTrace(); }
+		}
+		
+		//load FEN
+		loadFEN.update();
+		if(loadFEN.IsClicked())
+		{
+			Position p = Position.loadFromFEN(FEN.getText());
+			if(p != null)
+			{
+				loadPosition(p);
+				event.setText("");
+				site.setText("");
+				date.setText("");
+				round.setText("");
+				white.setText("");
+				black.setText("");
+				result.setText("");
+			}
+		}
+		
 		//Results Dropdown
 		result.update();
 		String finalScore = startPosition.getEndOfLine().score;
@@ -239,8 +276,9 @@ public class Chess extends Scene{
 		comments.update();
 		if(comments.nextField)
 			comments.nextField = false;
-		
 		currentPosition.comments = comments.getText();
+		
+		FEN.update();
 		
 		//position options
 		if(positionOptions != null)
@@ -349,7 +387,7 @@ public class Chess extends Scene{
 			}
 			else if(InputHandler.KeyPressedAndSetFalse(KeyEvent.VK_LEFT) || back.IsClicked())
 			{
-				if(turnNumber - 1 > -1)
+				if(currentPosition.getParent() != null)
 				{
 					loadPosition(currentPosition.getParent());
 					scrollToMove();
@@ -547,6 +585,8 @@ public class Chess extends Scene{
 		
 		startPosition.setLineBrackets(0, false);
 		
+		FEN.setText(currentPosition.FEN);
+		
 		if(FLIPONMOVE)
 			Tile.flip(board);
 		
@@ -583,7 +623,7 @@ public class Chess extends Scene{
 		}
 		
 		//Checkmate, stalemate
-		gameState = Position.EvaluateState(board, turn);
+		gameState = Position.evaluateState(board, turn);
 	}
 
 	//Sets board to position from move history
@@ -604,6 +644,7 @@ public class Chess extends Scene{
 		draggingPiece = null;
 		comments.setText(p.comments);
 		moveArrows.clear();
+		FEN.setText(p.FEN);
 		
 		for(Position state : startPosition.getAllDescendants())
 			state.setTextColor(Game.DARKMODE ? new Color(0xffaaaaaa) : new Color(0xff777777));
@@ -623,6 +664,8 @@ public class Chess extends Scene{
 		forward.render(pixels);
 		back.render(pixels);
 		swap.render(pixels);
+		copyFEN.render(pixels);
+		loadFEN.render(pixels);
 		
 		//Scroll bar
 		moveScroller.render(pixels);
@@ -635,6 +678,7 @@ public class Chess extends Scene{
 		white.render(pixels);
 		black.render(pixels);
 		comments.render(pixels);
+		FEN.render(pixels);
 		
 		//Drop Downs
 		result.render(pixels);
@@ -679,12 +723,12 @@ public class Chess extends Scene{
 		//Coordinates
 		if(SHOWCOORDS)
 		{
-			g.setFont(new Font("Arial", 1, (int)(20*Game.SCALE)));
+			g.setFont(new Font("Arial", 1, (int)(16*Game.SCALE)));
 			g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
 			for(int i = 0; i < 8; i++)
 			{
-				g.drawString("" + (8 - i), (int)((210)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
-				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 270) * Game.SCALE) + Game.YOFF);
+				g.drawString("" + (8 - i), (int)((225)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
+				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 245) * Game.SCALE) + Game.YOFF);
 			}
 		}
 		
@@ -716,6 +760,8 @@ public class Chess extends Scene{
 		forward.renderText(g);
 		back.renderText(g);
 		swap.renderText(g);
+		copyFEN.renderText(g);
+		loadFEN.renderText(g);
 		
 		//Drop Downs
 		g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
@@ -731,6 +777,7 @@ public class Chess extends Scene{
 		black.renderText(g);
 		if(!result.isShowingOptions())
 			comments.renderText(g);
+		FEN.renderText(g);
 		
 		//Position Options
 		if(positionOptions != null)
@@ -810,6 +857,7 @@ public class Chess extends Scene{
 		black.setText("");
 		result.setText("");
 		comments.setText("");
+		FEN.setText(currentPosition.FEN);
 		
 		turnNumber = 0;
 		fiftyMoves = 0;

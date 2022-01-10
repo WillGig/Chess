@@ -119,7 +119,7 @@ public class Tile extends GameObject{
 				if((x + y % 2 + 1) % 2 == 0)
 					color = Chess.DARKCOLOR;
 				int xC = (x * 64) + (800 - 7 * 64) / 2 + 100;
-				int yC = (y * 64) + (Game.HEIGHT - 7 * 64) / 2 - 20;
+				int yC = (y * 64) + (Game.HEIGHT - 7 * 64) / 2 - 30;
 				board[x+y*8] = new Tile(xC, yC, 64, 64, x, y, color);
 			}
 		}
@@ -191,4 +191,10 @@ public class Tile extends GameObject{
 		return num;
 	}
 	
+	public static int getTileNumberFromSquareName(String name)
+	{
+		int col = Character.valueOf(name.charAt(0))-97;
+		int row = Character.getNumericValue(name.charAt(1))-1;
+		return col + row*8;
+	}
 }
