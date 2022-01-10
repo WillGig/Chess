@@ -1,7 +1,5 @@
 TODO:
 
-resizing bug - cutting off bottom when shrinking vertically
-
 improve text boxes?
 -highlighing
 -click precision

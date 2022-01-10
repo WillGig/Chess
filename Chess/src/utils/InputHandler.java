@@ -138,8 +138,8 @@ MouseWheelListener, ComponentListener
 		int w = e.getComponent().getWidth();
 		int h = e.getComponent().getHeight();
 		
-		float wRatio = w/(float)(Game.WIDTH);
-		float hRatio = h/((float)Game.HEIGHT+32.0f);
+		float wRatio = w/(float)Game.WIDTH;
+		float hRatio = (h-32.0f)/(float)Game.HEIGHT;
 		
 		if(wRatio > hRatio)
 		{
