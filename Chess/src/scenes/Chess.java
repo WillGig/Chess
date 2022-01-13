@@ -10,7 +10,11 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Map;
 
+import engine.Engine;
+import engine.Engine.ENGINE;
+import engine.Engine.Line;
 import game.Game;
 import game.GameData;
 import game.Position;
@@ -35,7 +39,7 @@ import utils.SaveLoadManager;
 import utils.Sound.SoundEffect;
 import utils.Texture;
 
-public class Chess extends Scene{
+public class Chess extends Scene implements Runnable{
 
 	public static int DARKCOLOR = 0xff663400, LIGHTCOLOR = 0xffFFE7BC;
 	
@@ -61,7 +65,7 @@ public class Chess extends Scene{
 	
 	private GameState gameState;
 	
-	private Button save, load, menu, reset, forward, back, swap, copyFEN, loadFEN;
+	private Button save, load, menu, reset, forward, back, swap, copyFEN, loadFEN, toggleAnalysis;
 	
 	private TextField event, site, date, round, white, black, comments, FEN;
 	
@@ -76,6 +80,14 @@ public class Chess extends Scene{
 	private ArrayList<MoveArrow> moveArrows;
 	
 	private PositionOptions positionOptions;
+	
+	private Engine engine;
+	
+	private Map<Integer, Line> analysis;
+	
+	private Thread analysisThread;
+	
+	private boolean analysing;
 	
 	public Chess()
 	{
@@ -95,6 +107,8 @@ public class Chess extends Scene{
 		swap.setFontSize(16);
 		copyFEN = new Button(255, 570, 25, 25, "C");
 		loadFEN = new Button(745, 570, 25, 25, "L");
+		toggleAnalysis = new Button(80, 630, 120, 30, "ENGINE ON");
+		toggleAnalysis.setFontSize(16);
 		
 		event = new TextField(950, 50, 220, 30, "Event");
 		site = new TextField(950, 90, 220, 30, "Site");
@@ -229,6 +243,23 @@ public class Chess extends Scene{
 				white.setText("");
 				black.setText("");
 				result.setText("");
+			}
+		}
+		
+		//Toggle Engine
+		toggleAnalysis.update();
+		if(toggleAnalysis.IsClicked())
+		{
+			if(toggleAnalysis.getText().equals("ENGINE ON"))
+			{
+				analysisThread = new Thread(this);
+				analysisThread.start();
+				toggleAnalysis.setText("ENGINE OFF");
+			}
+			else if(toggleAnalysis.getText().equals("ENGINE OFF"))
+			{
+				analysing = false;
+				toggleAnalysis.setText("ENGINE ON");
 			}
 		}
 		
@@ -668,6 +699,7 @@ public class Chess extends Scene{
 		swap.render(pixels);
 		copyFEN.render(pixels);
 		loadFEN.render(pixels);
+		toggleAnalysis.render(pixels);
 		
 		//Scroll bar
 		moveScroller.render(pixels);
@@ -730,7 +762,7 @@ public class Chess extends Scene{
 			for(int i = 0; i < 8; i++)
 			{
 				g.drawString("" + (8 - i), (int)((225)*Game.SCALE) + Game.XOFF, (int)((board[i * 8].getY() + 8) * Game.SCALE) + Game.YOFF);
-				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((Game.HEIGHT/2 + 245) * Game.SCALE) + Game.YOFF);
+				g.drawString(String.valueOf((char)(i + 65)), (int)((board[i].getX() - 8)*Game.SCALE) + Game.XOFF, (int)((545) * Game.SCALE) + Game.YOFF);
 			}
 		}
 		
@@ -764,6 +796,7 @@ public class Chess extends Scene{
 		swap.renderText(g);
 		copyFEN.renderText(g);
 		loadFEN.renderText(g);
+		toggleAnalysis.renderText(g);
 		
 		//Drop Downs
 		g.setColor(Game.DARKMODE ? Color.WHITE : Color.BLACK);
@@ -784,6 +817,16 @@ public class Chess extends Scene{
 		//Position Options
 		if(positionOptions != null)
 			positionOptions.renderText(g);
+		
+		g.setColor(Color.WHITE);
+		if(analysis != null)
+		{
+			analysis.forEach((k,v) -> {
+				g.drawString(k + "", (int)(150 * Game.SCALE) + Game.XOFF, (int)((590 + k*20)*Game.SCALE) + Game.YOFF);
+				g.drawString("|  " + v.getEval(), (int)(160 * Game.SCALE) + Game.XOFF, (int)((590 + k*20)*Game.SCALE) + Game.YOFF);
+				g.drawString("|     " + v.moves, (int)(200 * Game.SCALE) + Game.XOFF, (int)((590 + k*20)*Game.SCALE) + Game.YOFF);
+	    	});
+		}
 	}
 
 	@Override
@@ -916,5 +959,41 @@ public class Chess extends Scene{
 		
 		//Update position of scroll bar
 		moveScroller.setPosition((historyScroll - 40.0f)/(scrollCap - 40.0f));
+	}
+
+	@Override
+	public void run() {
+		analysing = true;
+		
+		engine = new Engine(ENGINE.STOCKFISH);
+		engine.start();
+		engine.setOption("MultiPV", "3");
+		engine.setPosition(currentPosition.FEN);
+		
+		String position = currentPosition.FEN;
+		int depth = 7;
+		
+		while(analysing)
+		{
+			if(!position.equals(currentPosition.FEN))
+			{
+				depth = 7;
+				position = currentPosition.FEN;
+				engine.setPosition(currentPosition.FEN);
+			}
+			if(depth < 20)
+				analysis = engine.getAnalysis(++depth);
+		}
+		
+		engine.stop();
+		
+		try
+		{
+			analysisThread.join();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 }

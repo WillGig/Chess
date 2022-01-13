@@ -2,7 +2,6 @@ package objects;
 
 import java.awt.Color;
 
-import game.Game;
 import objects.pieces.Bishop;
 import objects.pieces.King;
 import objects.pieces.Knight;
@@ -119,7 +118,7 @@ public class Tile extends GameObject{
 				if((x + y % 2 + 1) % 2 == 0)
 					color = Chess.DARKCOLOR;
 				int xC = (x * 64) + (800 - 7 * 64) / 2 + 100;
-				int yC = (y * 64) + (Game.HEIGHT - 7 * 64) / 2 - 30;
+				int yC = (y * 64) + (600 - 7 * 64) / 2 - 30;
 				board[x+y*8] = new Tile(xC, yC, 64, 64, x, y, color);
 			}
 		}
